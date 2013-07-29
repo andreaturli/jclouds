@@ -24,6 +24,7 @@ import java.util.Random;
 
 import org.jclouds.compute.ComputeServiceAdapter.NodeAndInitialCredentials;
 import org.jclouds.compute.domain.ExecResponse;
+import org.jclouds.compute.domain.OsFamily;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.functions.DefaultCredentialsFromImageOrOverridingCredentials;

@@ -52,6 +52,7 @@ import org.jclouds.softlayer.SoftLayerClient;
 import org.jclouds.softlayer.compute.functions.ProductItemToImage;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
 import org.jclouds.softlayer.domain.Datacenter;
+import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.Password;
 import org.jclouds.softlayer.domain.ProductItem;
 import org.jclouds.softlayer.domain.ProductItemPrice;

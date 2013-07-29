@@ -94,7 +94,6 @@ public class ProductPackageClientLiveTest extends BaseSoftLayerClientLiveTest {
             checkProductItem(item);
          }
 
-         assertTrue(response.getDatacenters().size() > 0);
          for (Datacenter datacenter : response.getDatacenters()) {
             checkDatacenter(datacenter);
          }

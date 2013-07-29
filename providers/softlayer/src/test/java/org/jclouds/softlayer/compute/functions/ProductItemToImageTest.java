@@ -16,6 +16,18 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
+import com.google.common.collect.ImmutableSet;
+import org.jclouds.compute.domain.Image;
+import org.jclouds.compute.domain.OperatingSystem;
+import org.jclouds.compute.domain.OsFamily;
+import org.jclouds.softlayer.domain.ProductItem;
+import org.jclouds.softlayer.domain.ProductItemPrice;
+import org.testng.annotations.Test;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 import static org.jclouds.softlayer.compute.functions.ProductItemToImage.imageId;
 import static org.jclouds.softlayer.compute.functions.ProductItemToImage.osBits;
 import static org.jclouds.softlayer.compute.functions.ProductItemToImage.osFamily;
@@ -25,19 +37,6 @@ import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertNotNull;
 import static org.testng.AssertJUnit.assertNull;
 import static org.testng.AssertJUnit.assertTrue;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import org.jclouds.compute.domain.Image;
-import org.jclouds.compute.domain.OperatingSystem;
-import org.jclouds.compute.domain.OsFamily;
-import org.jclouds.softlayer.domain.ProductItem;
-import org.jclouds.softlayer.domain.ProductItemPrice;
-import org.testng.annotations.Test;
-
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Tests {@code ProductItemToImage}
@@ -189,7 +188,7 @@ public class ProductItemToImageTest {
    @Test
    public void testId() {
       ProductItemPrice price = ProductItemPrice.builder().id(1234).build();
-      ProductItem item = ProductItem.builder().prices(price).build();
+      ProductItem item = ProductItem.builder().id(1234).prices(price).build();
       assertEquals("1234",imageId().apply(item));
    }
 
@@ -197,7 +196,7 @@ public class ProductItemToImageTest {
    public void testIdManyPrices() {
       ProductItemPrice price1 = ProductItemPrice.builder().id(1234).build();
       ProductItemPrice price2 = ProductItemPrice.builder().id(5678).build();
-      ProductItem item = ProductItem.builder().prices(ImmutableSet.of(price1,price2)).build();
+      ProductItem item = ProductItem.builder().id(1234).prices(ImmutableSet.of(price1,price2)).build();
       assertEquals("1234",imageId().apply(item));
    }
 
