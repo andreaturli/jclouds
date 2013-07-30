@@ -35,7 +35,8 @@ import org.jclouds.rest.InvocationContext;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
-import org.apache.commons.collections.map.CaseInsensitiveMap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 /**
  * This parses {@link AuthenticationResponse} from HTTP headers.
@@ -58,14 +59,13 @@ public class ParseAuthenticationResponseFromHeaders implements Function<HttpResp
       releasePayload(from);
 
       // HTTP headers are case in-sensitive (RFC 2616) so we must allow for that when looking an header names for the URL keyword
-      //FIXME When Apache commons-collections 4 is out of Snapshot it will provide generics for CaseInsensitiveMap 
-      final CaseInsensitiveMap services = new CaseInsensitiveMap();
-      for (final Entry<String, String> entry : from.getHeaders().entries()) {
+      Builder<String, URI> builder = ImmutableMap.builder();
+      for (Entry<String, String> entry : from.getHeaders().entries()) {
          if (entry.getKey().toLowerCase().endsWith(URL_SUFFIX.toLowerCase()))
-            services.put(entry.getKey(), getURI(entry.getValue()));
+            builder.put(entry.getKey(), getURI(entry.getValue()));
       }
       AuthenticationResponse response = new AuthenticationResponse(checkNotNull(from.getFirstHeaderOrNull(AUTH_TOKEN),
-               AUTH_TOKEN), services);
+               AUTH_TOKEN), builder.build());
       logger.debug("will connect to: ", response);
       return response;
    }

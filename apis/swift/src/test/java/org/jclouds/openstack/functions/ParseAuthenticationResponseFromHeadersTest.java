@@ -60,18 +60,20 @@ public class ParseAuthenticationResponseFromHeadersTest {
                                           .addHeader("X-Storage-Url", "http://127.0.0.1:8080/v1/token").build();
 
       AuthenticationResponse md = parser.apply(response);
-      assertEquals(md, new AuthenticationResponse("token", ImmutableMap.<String, URI> of("X-Storage-Url".toLowerCase(), URI
+      assertEquals(md, new AuthenticationResponse("token", ImmutableMap.<String, URI> of("X-Storage-Url", URI
                .create("http://fooman:8080/v1/token"))));
+   }
 
+   public void testHandleHeadersCaseInsensitively() {
+      ParseAuthenticationResponseFromHeaders parser = i.getInstance(ParseAuthenticationResponseFromHeaders.class);
+      parser = parser.setHostToReplace("fooman");
 
-      // Additional test that verifies that the case insensitive header "X-Storage-Url" is actually replaced
-      //	https://issues.apache.org/jira/browse/JCLOUDS-155
-      response = HttpResponse.builder().statusCode(204).message("No Content")
-              .addHeader("X-Auth-Token".toLowerCase(), "token")
-              .addHeader("X-Storage-Token".toLowerCase(), "token")
-              .addHeader("X-Storage-Url".toLowerCase(), "http://127.0.0.1:8080/v1/token").build();
-      md = parser.apply(response);
-      assertEquals(md, new AuthenticationResponse("token", ImmutableMap.<String, URI> of("X-Storage-Url".toLowerCase(), URI
+      HttpResponse response = HttpResponse.builder().statusCode(204).message("No Content")
+              .addHeader("x-auth-token", "token")
+              .addHeader("x-storage-token", "token")
+              .addHeader("x-storage-url", "http://127.0.0.1:8080/v1/token").build();
+      AuthenticationResponse md = parser.apply(response);
+      assertEquals(md, new AuthenticationResponse("token", ImmutableMap.<String, URI> of("x-storage-url".toLowerCase(), URI
               .create("http://fooman:8080/v1/token"))));
    }
 }
