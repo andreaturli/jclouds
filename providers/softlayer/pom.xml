@@ -28,7 +28,7 @@
   <groupId>org.apache.jclouds.provider</groupId>
   <artifactId>softlayer</artifactId>
   <name>jclouds SoftLayer core</name>
-  <version>1.6.1-SNAPSHOT</version>
+  <version>1.6.1-cloudsoft.1</version>
   <description>jclouds components to access SoftLayer</description>
   <packaging>bundle</packaging>
 
@@ -65,35 +65,44 @@
     <dependency>
       <groupId>org.apache.jclouds</groupId>
       <artifactId>jclouds-compute</artifactId>
-      <version>${project.version}</version>
+      <version>1.6.1-incubating</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds</groupId>
       <artifactId>jclouds-core</artifactId>
-      <version>${project.version}</version>
+      <version>1.6.1-incubating</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds</groupId>
       <artifactId>jclouds-compute</artifactId>
-      <version>${project.version}</version>
+      <version>1.6.1-incubating</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds.driver</groupId>
       <artifactId>jclouds-log4j</artifactId>
-      <version>${project.version}</version>
+      <version>1.6.1-incubating</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds.driver</groupId>
       <artifactId>jclouds-sshj</artifactId>
-      <version>${project.version}</version>
+      <version>1.6.1-incubating</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <distributionManagement>
+      <repository>
+          <id>cloudsoft-releases</id>
+          <name>cloudsoft-releases</name>
+          <url>scpexe://maven@releng2.cloudsoftcorp.com/var/www/developer/maven/releases/</url>
+      </repository>
+  </distributionManagement>
+
   <profiles>
     <profile>
       <id>live</id>
@@ -128,6 +137,13 @@
   </profiles>
 
    <build>
+       <extensions>
+           <extension>
+               <groupId>org.apache.maven.wagon</groupId>
+               <artifactId>wagon-ssh-external</artifactId>
+               <version>2.4</version>
+           </extension>
+       </extensions>
        <plugins>
            <plugin>
                <artifactId>maven-remote-resources-plugin</artifactId>
