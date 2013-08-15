@@ -22,12 +22,13 @@
   <parent>
     <groupId>org.apache.jclouds</groupId>
     <artifactId>jclouds-project</artifactId>
-    <version>1.6.1-SNAPSHOT</version>
+    <version>1.6.1-incubating</version>
     <relativePath>../../project/pom.xml</relativePath>
   </parent>
   <groupId>org.apache.jclouds.provider</groupId>
   <artifactId>softlayer</artifactId>
   <name>jclouds SoftLayer core</name>
+  <version>1.6.1-SNAPSHOT</version>
   <description>jclouds components to access SoftLayer</description>
   <packaging>bundle</packaging>
 
@@ -126,4 +127,25 @@
     </profile>
   </profiles>
 
+   <build>
+       <plugins>
+           <plugin>
+               <artifactId>maven-remote-resources-plugin</artifactId>
+               <version>1.4</version>
+               <executions>
+                   <execution>
+                       <id>process-remote-resources</id>
+                       <goals>
+                           <goal>process</goal>
+                       </goals>
+                       <configuration>
+                           <resourceBundles>
+                               <resourceBundle>org.apache.jclouds:jclouds-resources:1.6.1-incubating</resourceBundle>
+                           </resourceBundles>
+                       </configuration>
+                   </execution>
+               </executions>
+           </plugin>
+       </plugins>
+   </build>
 </project>
