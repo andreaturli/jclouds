@@ -16,5 +16,24 @@
  */
 package org.jclouds.softlayer;
 
-public interface SoftLayerApi extends SoftLayerClient {
+import org.jclouds.rest.annotations.Delegate;
+import org.jclouds.softlayer.features.DatacenterApi;
+import org.jclouds.softlayer.features.VirtualGuestApi;
+
+import java.io.Closeable;
+
+public interface SoftLayerApi extends Closeable {
+
+   /**
+    * Provides access to VirtualGuest features.
+    */
+   @Delegate
+   VirtualGuestApi getVirtualGuestApi();
+
+   /**
+    * Provides access to Datacenter features.
+    */
+   @Delegate
+   DatacenterApi getDatacenterApi();
+
 }

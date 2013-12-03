@@ -14,20 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.softlayer.config;
+package org.jclouds.softlayer.features;
 
-import org.jclouds.json.config.GsonModule;
-import com.google.inject.AbstractModule;
+import com.google.common.io.Closeables;
+import org.jclouds.apis.BaseApiLiveTest;
+import org.jclouds.softlayer.SoftLayerApi;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.Test;
 
 /**
+ * Tests behavior of {@code SoftLayerClient}
  * 
- * @author Adrian Cole, Andrea Turli
+ * @author Adrian Cole
  */
-public class SoftLayerParserModule extends AbstractModule {
+@Test(groups = "live")
+public class BaseSoftLayerApiLiveTest extends BaseApiLiveTest<SoftLayerApi> {
 
-   @Override
-   protected void configure() {
-      bind(GsonModule.DateAdapter.class).to(GsonModule.Iso8601DateAdapter.class);
+   public BaseSoftLayerApiLiveTest() {
+      this.provider = "softlayer";
    }
 
 }

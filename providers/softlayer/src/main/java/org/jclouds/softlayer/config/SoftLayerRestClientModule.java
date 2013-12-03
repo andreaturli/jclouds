@@ -16,8 +16,6 @@
  */
 package org.jclouds.softlayer.config;
 
-import java.util.Map;
-
 import org.jclouds.http.HttpErrorHandler;
 import org.jclouds.http.HttpRetryHandler;
 import org.jclouds.http.annotation.ClientError;
@@ -27,40 +25,23 @@ import org.jclouds.http.handlers.BackoffLimitedRetryHandler;
 import org.jclouds.location.config.LocationModule;
 import org.jclouds.location.suppliers.ImplicitLocationSupplier;
 import org.jclouds.location.suppliers.implicit.OnlyLocationOrFirstZone;
+import org.jclouds.rest.ConfiguresHttpApi;
 import org.jclouds.rest.ConfiguresRestClient;
-import org.jclouds.rest.config.RestClientModule;
-import org.jclouds.softlayer.SoftLayerAsyncClient;
-import org.jclouds.softlayer.SoftLayerClient;
-import org.jclouds.softlayer.features.AccountAsyncClient;
-import org.jclouds.softlayer.features.AccountClient;
-import org.jclouds.softlayer.features.DatacenterAsyncClient;
-import org.jclouds.softlayer.features.DatacenterClient;
-import org.jclouds.softlayer.features.ProductPackageAsyncClient;
-import org.jclouds.softlayer.features.ProductPackageClient;
-import org.jclouds.softlayer.features.VirtualGuestAsyncClient;
-import org.jclouds.softlayer.features.VirtualGuestClient;
+import org.jclouds.rest.config.HttpApiModule;
+import org.jclouds.softlayer.SoftLayerApi;
 import org.jclouds.softlayer.handlers.SoftLayerErrorHandler;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.inject.Scopes;
 
 /**
  * Configures the SoftLayer connection.
  * 
- * @author Adrian Cole
+ * @author Adrian Cole, Andrea Turli
  */
-@ConfiguresRestClient
-public class SoftLayerRestClientModule extends RestClientModule<SoftLayerClient, SoftLayerAsyncClient> {
-
-   public static final Map<Class<?>, Class<?>> DELEGATE_MAP = ImmutableMap.<Class<?>, Class<?>> builder()//
-            .put(VirtualGuestClient.class, VirtualGuestAsyncClient.class)//
-            .put(DatacenterClient.class, DatacenterAsyncClient.class)//
-            .put(ProductPackageClient.class, ProductPackageAsyncClient.class)//
-            .put(AccountClient.class, AccountAsyncClient.class)//
-            .build();
+@ConfiguresHttpApi
+public class SoftLayerRestClientModule extends HttpApiModule<SoftLayerApi> {
 
    public SoftLayerRestClientModule() {
-      super(DELEGATE_MAP);
    }
 
    @Override

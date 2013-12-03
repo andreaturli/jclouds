@@ -18,9 +18,9 @@ package org.jclouds.softlayer.compute;
 
 import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
 import static org.jclouds.compute.util.ComputeServiceUtils.getSpace;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED;
+//import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX;
+//import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE;
+//import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
       ComputeServiceContext context = null;
       try {
          Properties overrides = setupProperties();
-         overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED, "1000");
+         //overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED, "1000");
 
          context = createView(overrides, setupModules());
 
@@ -119,7 +119,7 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
       ComputeServiceContext context = null;
       try {
          Properties overrides = setupProperties();
-         overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED, "100");
+         //overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED, "100");
 
          context = createView(overrides, setupModules());
 
@@ -137,7 +137,7 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
       ComputeServiceContext context = null;
       try {
          Properties overrides = setupProperties();
-         overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE, "SAN");
+         //overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE, "SAN");
 
          context = createView(overrides, setupModules());
 
@@ -157,7 +157,7 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
       ComputeServiceContext context = null;
       try {
          Properties overrides = setupProperties();
-         overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX, "Private [0-9]+ x ([.0-9]+) GHz Core[s]?");
+         //overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX, "Private [0-9]+ x ([.0-9]+) GHz Core[s]?");
 
          context = createView(overrides, setupModules());
 
@@ -177,7 +177,7 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
       ComputeServiceContext context = null;
       try {
          Properties overrides = setupProperties();
-         overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX, "Private [0-9]+ x ([.0-9]+) GHz Core[s]?");
+         //overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX, "Private [0-9]+ x ([.0-9]+) GHz Core[s]?");
 
          context = createView(overrides, setupModules());
          

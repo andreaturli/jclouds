@@ -48,13 +48,13 @@ public class OperatingSystem {
    public abstract static class Builder<T extends Builder<T>>  {
       protected abstract T self();
 
-      protected int id;
+      protected String id;
       protected Set<Password> passwords = ImmutableSet.of();
 
       /**
        * @see OperatingSystem#getId()
        */
-      public T id(int id) {
+      public T id(String id) {
          this.id = id;
          return self();
       }
@@ -89,13 +89,13 @@ public class OperatingSystem {
       }
    }
 
-   private final int id;
+   private final String id;
    private final Set<Password> passwords;
 
    @ConstructorProperties({
          "id", "passwords"
    })
-   protected OperatingSystem(int id, @Nullable Set<Password> passwords) {
+   protected OperatingSystem(String id, @Nullable Set<Password> passwords) {
       this.id = id;
       this.passwords = passwords == null ? ImmutableSet.<Password>of() : ImmutableSet.copyOf(passwords);
    }
@@ -103,7 +103,7 @@ public class OperatingSystem {
    /**
     * @return An ID number identifying this Software Component (Software Installation)
     */
-   public int getId() {
+   public String getId() {
       return this.id;
    }
 

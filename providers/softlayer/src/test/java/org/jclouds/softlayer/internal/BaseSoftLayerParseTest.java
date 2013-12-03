@@ -14,20 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.softlayer.config;
+package org.jclouds.softlayer.internal;
 
-import org.jclouds.json.config.GsonModule;
-import com.google.inject.AbstractModule;
+        import org.jclouds.json.BaseItemParserTest;
+        import org.jclouds.json.config.GsonModule;
+
+        import com.google.inject.Guice;
+        import com.google.inject.Injector;
+        import org.jclouds.softlayer.config.SoftLayerParserModule;
 
 /**
- * 
- * @author Adrian Cole, Andrea Turli
+ * @author Andrea Turli
  */
-public class SoftLayerParserModule extends AbstractModule {
+public abstract class BaseSoftLayerParseTest<T> extends BaseItemParserTest<T> {
 
    @Override
-   protected void configure() {
-      bind(GsonModule.DateAdapter.class).to(GsonModule.Iso8601DateAdapter.class);
+   protected Injector injector() {
+      return Guice.createInjector(new GsonModule(), new SoftLayerParserModule());
    }
 
 }

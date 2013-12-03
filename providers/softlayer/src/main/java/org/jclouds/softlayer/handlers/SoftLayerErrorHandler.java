@@ -26,11 +26,10 @@ import org.jclouds.http.HttpResponse;
 import org.jclouds.http.HttpResponseException;
 import org.jclouds.rest.AuthorizationException;
 import org.jclouds.rest.ResourceNotFoundException;
-import org.jclouds.softlayer.exceptions.SoftLayerOrderItemDuplicateException;
+import org.jclouds.util.Closeables2;
 import org.jclouds.util.Strings2;
 
 import com.google.common.base.Throwables;
-import com.google.common.io.Closeables;
 
 /**
  * This will parse and set an appropriate exception on the command object.
@@ -65,13 +64,11 @@ public class SoftLayerErrorHandler implements HttpErrorHandler {
                      exception = new ResourceNotFoundException(message, exception);
                   } else if (message.indexOf("currently an active transaction") != -1) {
                      exception = new IllegalStateException(message, exception);
-                  } else if (message.indexOf("SoftLayer_Exception_Order_Item_Duplicate") != -1) {
-                     exception = new SoftLayerOrderItemDuplicateException(command, response, message);
                   }
                }
          }
       } finally {
-         Closeables.closeQuietly(response.getPayload());
+         Closeables2.closeQuietly(response.getPayload());
          command.setException(exception);
       }
    }

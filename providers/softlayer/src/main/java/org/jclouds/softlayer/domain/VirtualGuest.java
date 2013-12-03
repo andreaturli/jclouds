@@ -46,9 +46,7 @@ import com.google.common.base.Objects.ToStringHelper;
  * which may not exceed 253 characters in total length.
  *
  * @author Adrian Cole
- * @see <a href=
-"http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest"
-/>
+ * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest"/>
  */
 public class VirtualGuest {
 
@@ -125,6 +123,8 @@ public class VirtualGuest {
       protected OperatingSystem operatingSystem;
       protected Datacenter datacenter;
       protected PowerState powerState;
+      protected SoftwareLicense softwareLicense;
+      protected int activeTransactionCount;
 
       /**
        * @see VirtualGuest#getAccountId()
@@ -318,11 +318,28 @@ public class VirtualGuest {
          return self();
       }
 
+      /**
+       * @see VirtualGuest#getSoftwareLicense()
+       */
+      public T softwareLicense(SoftwareLicense softwareLicense) {
+         this.softwareLicense = softwareLicense;
+         return self();
+      }
+
+      /**
+       * @see VirtualGuest#getActiveTransactionCount()
+       */
+      public T activeTransactionCount(int activeTransactionCount) {
+         this.activeTransactionCount = activeTransactionCount;
+         return self();
+      }
+
+
       public VirtualGuest build() {
          return new VirtualGuest(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName, hostname,
                id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes, privateNetworkOnly,
                startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress, new BillingItem(billingItemId),
-               operatingSystem, datacenter, powerState);
+               operatingSystem, datacenter, powerState, softwareLicense, activeTransactionCount);
       }
 
       public T fromVirtualGuest(VirtualGuest in) {
@@ -350,7 +367,8 @@ public class VirtualGuest {
                .billingItemId(in.getBillingItemId())
                .operatingSystem(in.getOperatingSystem())
                .datacenter(in.getDatacenter())
-               .powerState(in.getPowerState());
+               .powerState(in.getPowerState())
+               .activeTransactionCount(in.getActiveTransactionCount());
       }
    }
 
@@ -385,16 +403,23 @@ public class VirtualGuest {
    private final OperatingSystem operatingSystem;
    private final Datacenter datacenter;
    private final PowerState powerState;
+   private final SoftwareLicense softwareLicense;
+   private final int activeTransactionCount;
 
    @ConstructorProperties({
-         "accountId", "createDate", "dedicatedAccountHostOnlyFlag", "domain", "fullyQualifiedDomainName", "hostname", "id", "lastVerifiedDate", "maxCpu", "maxCpuUnits", "maxMemory", "metricPollDate", "modifyDate", "notes", "privateNetworkOnlyFlag", "startCpus", "statusId", "uuid", "primaryBackendIpAddress", "primaryIpAddress", "billingItem", "operatingSystem", "datacenter", "powerState"
+         "accountId", "createDate", "dedicatedAccountHostOnlyFlag", "domain", "fullyQualifiedDomainName", "hostname",
+           "id", "lastVerifiedDate", "maxCpu", "maxCpuUnits", "maxMemory", "metricPollDate", "modifyDate", "notes",
+           "privateNetworkOnlyFlag", "startCpus", "statusId", "uuid", "primaryBackendIpAddress", "primaryIpAddress",
+           "billingItem", "operatingSystem", "datacenter", "powerState", "softwareLicense", "activeTransactionCount"
    })
    protected VirtualGuest(int accountId, @Nullable Date createDate, boolean dedicatedAccountHostOnly, @Nullable String domain,
                           @Nullable String fullyQualifiedDomainName, @Nullable String hostname, int id, @Nullable Date lastVerifiedDate,
                           int maxCpu, @Nullable String maxCpuUnits, int maxMemory, @Nullable Date metricPollDate, @Nullable Date modifyDate,
                           @Nullable String notes, boolean privateNetworkOnly, int startCpus, int statusId, @Nullable String uuid,
                           @Nullable String primaryBackendIpAddress, @Nullable String primaryIpAddress, @Nullable BillingItem billingItem,
-                          @Nullable OperatingSystem operatingSystem, @Nullable Datacenter datacenter, @Nullable PowerState powerState) {
+                          @Nullable OperatingSystem operatingSystem, @Nullable Datacenter datacenter,
+                          @Nullable PowerState powerState, @Nullable SoftwareLicense softwareLicense,
+                          @Nullable int activeTransactionCount) {
       this.accountId = accountId;
       this.createDate = createDate;
       this.dedicatedAccountHostOnly = dedicatedAccountHostOnly;
@@ -419,6 +444,8 @@ public class VirtualGuest {
       this.operatingSystem = operatingSystem;
       this.datacenter = datacenter;
       this.powerState = powerState;
+      this.softwareLicense = softwareLicense;
+      this.activeTransactionCount = activeTransactionCount;
    }
 
    /**
@@ -599,6 +626,14 @@ public class VirtualGuest {
    }
 
    /**
+    * @return The softwareLicense of a virtual guest.
+    */
+   @Nullable
+   public SoftwareLicense getSoftwareLicense() {
+      return this.softwareLicense;
+   }
+
+   /**
     * @return The current power state of a virtual guest.
     */
    @Nullable
@@ -606,9 +641,17 @@ public class VirtualGuest {
       return this.powerState;
    }
 
+   @Nullable
+   public int getActiveTransactionCount() {
+      return activeTransactionCount;
+   }
+
    @Override
    public int hashCode() {
-      return Objects.hashCode(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName, hostname, id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes, privateNetworkOnly, startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress, billingItemId, operatingSystem, datacenter, powerState);
+      return Objects.hashCode(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName,
+              hostname, id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes,
+              privateNetworkOnly, startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress,
+              billingItemId, operatingSystem, datacenter, powerState, softwareLicense);
    }
 
    @Override
@@ -639,12 +682,33 @@ public class VirtualGuest {
             && Objects.equal(this.billingItemId, that.billingItemId)
             && Objects.equal(this.operatingSystem, that.operatingSystem)
             && Objects.equal(this.datacenter, that.datacenter)
-            && Objects.equal(this.powerState, that.powerState);
+            && Objects.equal(this.powerState, that.powerState)
+            && Objects.equal(this.softwareLicense, that.softwareLicense);
    }
 
    protected ToStringHelper string() {
       return Objects.toStringHelper(this)
-            .add("accountId", accountId).add("createDate", createDate).add("dedicatedAccountHostOnly", dedicatedAccountHostOnly).add("domain", domain).add("fullyQualifiedDomainName", fullyQualifiedDomainName).add("hostname", hostname).add("id", id).add("lastVerifiedDate", lastVerifiedDate).add("maxCpu", maxCpu).add("maxCpuUnits", maxCpuUnits).add("maxMemory", maxMemory).add("metricPollDate", metricPollDate).add("modifyDate", modifyDate).add("notes", notes).add("privateNetworkOnly", privateNetworkOnly).add("startCpus", startCpus).add("statusId", statusId).add("uuid", uuid).add("primaryBackendIpAddress", primaryBackendIpAddress).add("primaryIpAddress", primaryIpAddress).add("billingItemId", billingItemId).add("operatingSystem", operatingSystem).add("datacenter", datacenter).add("powerState", powerState);
+            .add("accountId", accountId).add("createDate", createDate)
+            .add("dedicatedAccountHostOnly", dedicatedAccountHostOnly)
+              .add("domain", domain).add("fullyQualifiedDomainName", fullyQualifiedDomainName)
+              .add("hostname", hostname)
+              .add("id", id)
+              .add("lastVerifiedDate", lastVerifiedDate)
+              .add("maxCpu", maxCpu)
+              .add("maxCpuUnits", maxCpuUnits)
+              .add("maxMemory", maxMemory)
+              .add("metricPollDate", metricPollDate)
+              .add("modifyDate", modifyDate)
+              .add("notes", notes)
+              .add("privateNetworkOnly", privateNetworkOnly)
+              .add("startCpus", startCpus)
+              .add("statusId", statusId)
+              .add("uuid", uuid).add("primaryBackendIpAddress", primaryBackendIpAddress)
+              .add("primaryIpAddress", primaryIpAddress).add("billingItemId", billingItemId)
+              .add("operatingSystem", operatingSystem)
+              .add("datacenter", datacenter)
+              .add("powerState", powerState)
+              .add("softwareLicense", softwareLicense);
    }
 
    @Override

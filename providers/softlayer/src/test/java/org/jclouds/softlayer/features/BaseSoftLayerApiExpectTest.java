@@ -14,20 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.softlayer.config;
+package org.jclouds.softlayer.features;
 
-import org.jclouds.json.config.GsonModule;
-import com.google.inject.AbstractModule;
+import org.jclouds.providers.ProviderMetadata;
+import org.jclouds.rest.internal.BaseRestApiExpectTest;
+import org.jclouds.softlayer.SoftLayerApi;
+import org.jclouds.softlayer.SoftLayerProviderMetadata;
 
 /**
- * 
  * @author Adrian Cole, Andrea Turli
  */
-public class SoftLayerParserModule extends AbstractModule {
+public abstract class BaseSoftLayerApiExpectTest extends BaseRestApiExpectTest<SoftLayerApi> {
 
    @Override
-   protected void configure() {
-      bind(GsonModule.DateAdapter.class).to(GsonModule.Iso8601DateAdapter.class);
+   public ProviderMetadata createProviderMetadata() {
+      return new SoftLayerProviderMetadata();
    }
 
 }

@@ -18,26 +18,25 @@ package org.jclouds.softlayer.compute;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 
 import java.util.Properties;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Stopwatch;
 import org.jclouds.compute.ComputeServiceAdapter.NodeAndInitialCredentials;
 import org.jclouds.compute.domain.ExecResponse;
-import org.jclouds.compute.domain.OsFamily;
+import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.functions.DefaultCredentialsFromImageOrOverridingCredentials;
 import org.jclouds.compute.strategy.PrioritizeCredentialsFromTemplate;
 import org.jclouds.domain.LoginCredentials;
-import org.jclouds.softlayer.SoftLayerClient;
+import org.jclouds.softlayer.SoftLayerApi;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
 import org.jclouds.softlayer.compute.strategy.SoftLayerComputeServiceAdapter;
-import org.jclouds.softlayer.domain.ProductItem;
+import org.jclouds.softlayer.domain.PowerState;
 import org.jclouds.softlayer.domain.VirtualGuest;
-import org.jclouds.softlayer.features.BaseSoftLayerClientLiveTest;
+import org.jclouds.softlayer.features.BaseSoftLayerApiLiveTest;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.ssh.SshClient.Factory;
 import org.jclouds.sshj.config.SshjSshClientModule;
@@ -52,7 +51,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 
 @Test(groups = "live", singleThreaded = true, testName = "SoftLayerComputeServiceAdapterLiveTest")
-public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerClientLiveTest {
+public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerApiLiveTest {
 
    private SoftLayerComputeServiceAdapter adapter;
    private TemplateBuilder templateBuilder;
@@ -60,17 +59,22 @@ public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerClientL
    private NodeAndInitialCredentials<VirtualGuest> guest;
 
    @Override
-   protected SoftLayerClient create(Properties props, Iterable<Module> modules) {
+   protected SoftLayerApi create(Properties props, Iterable<Module> modules) {
       Injector injector = newBuilder().modules(modules).overrides(props).buildInjector();
       adapter = injector.getInstance(SoftLayerComputeServiceAdapter.class);
       templateBuilder = injector.getInstance(TemplateBuilder.class);
       sshFactory = injector.getInstance(SshClient.Factory.class);
-      return injector.getInstance(SoftLayerClient.class);
+      return injector.getInstance(SoftLayerApi.class);
    }
 
    @Test
    public void testListLocations() {
       assertFalse(Iterables.isEmpty(adapter.listLocations()), "locations must not be empty");
+   }
+
+   @Test
+   public void testListImages() {
+      assertFalse(Iterables.isEmpty(adapter.listImages()), "images must not be empty");
    }
 
    private static final PrioritizeCredentialsFromTemplate prioritizeCredentialsFromTemplate = new PrioritizeCredentialsFromTemplate(
@@ -111,19 +115,19 @@ public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerClientL
 
    @Test
    public void testListHardwareProfiles() {
-      Iterable<Iterable<ProductItem>> profiles = adapter.listHardwareProfiles();
+      Iterable<Hardware> profiles = adapter.listHardwareProfiles();
       assertFalse(Iterables.isEmpty(profiles));
 
-      for (Iterable<ProductItem> profile : profiles) {
-         // CPU, RAM and Volume
-         assertEquals(Iterables.size(profile), 3);
+      for (Hardware profile : profiles) {
+         assertNotNull(profile);
       }
    }
 
    @AfterGroups(groups = "live")
    protected void tearDown() {
-      if (guest != null)
+      if (guest != null) {
          adapter.destroyNode(guest.getNodeId() + "");
+      }
       super.tearDown();
    }
 

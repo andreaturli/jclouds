@@ -14,20 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.softlayer.config;
-
-import org.jclouds.json.config.GsonModule;
-import com.google.inject.AbstractModule;
+package org.jclouds.softlayer.domain;
 
 /**
- * 
- * @author Adrian Cole, Andrea Turli
+ * @author Andrea Turli
  */
-public class SoftLayerParserModule extends AbstractModule {
+public class DatacenterOption {
 
-   @Override
-   protected void configure() {
-      bind(GsonModule.DateAdapter.class).to(GsonModule.Iso8601DateAdapter.class);
+   protected final DatacenterTemplate template;
+
+   public DatacenterOption(DatacenterTemplate template) {
+      this.template = template;
    }
 
+   public String getName() {
+      return template.datacenter.name;
+   }
+
+   public class DatacenterTemplate {
+      protected final DatacenterBlock datacenter;
+      public DatacenterTemplate(DatacenterBlock datacenter) {
+         this.datacenter = datacenter;
+      }
+   }
+
+   private class DatacenterBlock {
+      protected final String name;
+
+      private DatacenterBlock(String name) {
+         this.name = name;
+      }
+   }
 }
