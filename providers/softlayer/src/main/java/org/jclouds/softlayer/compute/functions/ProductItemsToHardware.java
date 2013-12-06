@@ -31,6 +31,8 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.HardwareBuilder;
 import org.jclouds.compute.domain.Processor;
@@ -77,30 +79,48 @@ public class ProductItemsToHardware implements Function<Iterable<ProductItem>, H
    @Override
    public Hardware apply(Iterable<ProductItem> items) {
 
+      /*
       ProductItem coresItem = getOnlyElement(filter(items, matches(cpuDescriptionRegex)));
       ProductItem ramItem = getOnlyElement(filter(items, categoryCode(RAM_CATEGORY)));
       ProductItem volumeItem = get(filter(items, categoryCode(FIRST_GUEST_DISK)), 0);
+      */
+      ProductItem coresItem = get(items, 0);
+      ProductItem ramItem = get(items, 1);
+      ProductItem volumeItem  = get(items, 2);
 
       String hardwareId = hardwareId().apply(ImmutableList.of(coresItem, ramItem, volumeItem));
       double cores = ProductItems.capacity().apply(coresItem).doubleValue();
       Matcher cpuMatcher = cpuDescriptionRegex.matcher(coresItem.getDescription());
       double coreSpeed = (cpuMatcher.matches()) ? Double.parseDouble(cpuMatcher.group(cpuMatcher.groupCount())) : DEFAULT_CORE_SPEED;
-      int ram = ProductItems.capacity().apply(ramItem).intValue() * 1024;
+      int ram = ramItem.getCapacity() == null ? 1024 : ProductItems.capacity().apply(ramItem).intValue() * 1024;
 
-      return new HardwareBuilder().ids(hardwareId).processors(ImmutableList.of(new Processor(cores, coreSpeed)))
-               .ram(ram).hypervisor("XenServer")
-               .volumes(
-                  Iterables.transform(filter(items, categoryCodeMatches(diskCategoryRegex)),
-                        new Function<ProductItem, Volume>() {
-                           @Override
-                           public Volume apply(ProductItem item) {
-                              float volumeSize = ProductItems.capacity().apply(item);
-                              return new VolumeImpl(
-                                       item.getId() + "",
-                                       item.getDescription().indexOf(STORAGE_AREA_NETWORK) != -1 ? Volume.Type.SAN : Volume.Type.LOCAL,
-                                       volumeSize, null, categoryCode(FIRST_GUEST_DISK).apply(item), false);
-                           }
-                        })).build();
+      /*
+      Iterable<Volume> volumes = Iterables.transform(filter(items, categoryCodeMatches(diskCategoryRegex)), new Function<ProductItem, Volume>() {
+      @Override
+      public Volume apply(ProductItem item) {
+         float volumeSize = ProductItems.capacity().apply(item);
+         return new VolumeImpl(
+                 item.getId() + "",
+                 item.getDescription().indexOf(STORAGE_AREA_NETWORK) != -1 ? Volume.Type.SAN : Volume.Type.LOCAL,
+                 volumeSize, null, categoryCode(FIRST_GUEST_DISK).apply(item), false);
+      })};
+      */
+      Volume volume = new Function<ProductItem, Volume>() {
+         @Override
+         public Volume apply(ProductItem item) {
+            float volumeSize = ProductItems.capacity().apply(item);
+            return new VolumeImpl(
+                    item.getId() + "",
+                    item.getDescription().indexOf(STORAGE_AREA_NETWORK) != -1 ? Volume.Type.SAN : Volume.Type.LOCAL,
+                    volumeSize, null, categoryCode(FIRST_GUEST_DISK).apply(item), false);
+         }
+      }.apply(volumeItem);
+      return new HardwareBuilder().ids(hardwareId)
+                                  .processors(ImmutableList.of(new Processor(cores, coreSpeed)))
+                                  .ram(ram)
+                                  .hypervisor("XenServer")
+                                  .volumes(ImmutableList.of(volume))
+                                  .build();
    }
 
    /**
@@ -112,12 +132,26 @@ public class ProductItemsToHardware implements Function<Iterable<ProductItem>, H
       return new Function<List<ProductItem>, String>() {
          @Override
          public String apply(List<ProductItem> productItems) {
+            List<Integer> priceIds = Lists.newArrayList();
+            for (ProductItem item : productItems) {
+               if(item != null && item.getDescription() != null) {
+                  ProductItemPrice price = ProductItems.price().apply(item);
+                  if(price != null) {
+                     priceIds.add(price.getId());
+                  }
+               }
+            }
+            return Joiner.on(",").skipNulls().join(priceIds);
+            /*
             StringBuilder builder = new StringBuilder();
             for (ProductItem item : productItems) {
-               ProductItemPrice price = ProductItems.price().apply(item);
-               builder.append(price.getId()).append(",");
+               if(item != null) {
+                  ProductItemPrice price = ProductItems.price().apply(item);
+                  builder.append(price.getId()).append(",");
+               }
             }
             return builder.toString().substring(0, builder.lastIndexOf(","));
+            */
          }
       };
    }

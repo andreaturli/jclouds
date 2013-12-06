@@ -53,6 +53,10 @@ public class ProductItemToImage implements Function<ProductItem, Image> {
    private static final String UBUNTU = "Ubuntu Linux";
    private static final String WINDOWS = "Windows Server";
    private static final String CLOUD_LINUX = "CloudLinux";
+   private static final String CITRIX_XENSERVER = "Citrix XenServer";
+   private static final String VYATTA = "Vyatta";
+   private static final String FREEBSD = "FreeBSD";
+   private static final String ESX = "VMware ESX";
 
    @Resource
    @Named(ComputeServiceConstants.COMPUTE_LOGGER)
@@ -107,8 +111,9 @@ public class ProductItemToImage implements Function<ProductItem, Image> {
                else if (description.startsWith(UBUNTU)) return OsFamily.UBUNTU;
                else if (description.startsWith(WINDOWS)) return OsFamily.WINDOWS;
                else if (description.startsWith(CLOUD_LINUX)) return OsFamily.CLOUD_LINUX;
+               else if (description.startsWith(FREEBSD)) return OsFamily.FREEBSD;
+               else if (description.startsWith(ESX)) return OsFamily.ESX;
             }
-
             return OsFamily.UNRECOGNIZED;
          }
       };
@@ -132,7 +137,10 @@ public class ProductItemToImage implements Function<ProductItem, Image> {
             else if (Objects.equal(family, OsFamily.UBUNTU)) return parseVersion(description, UBUNTU);
             else if (Objects.equal(family, OsFamily.WINDOWS)) return parseVersion(description, WINDOWS);
             else if (Objects.equal(family, OsFamily.CLOUD_LINUX)) return parseVersion(description, CLOUD_LINUX);
-
+            else if (Objects.equal(family, OsFamily.FREEBSD)) return parseVersion(description, FREEBSD);
+            else if (Objects.equal(family, OsFamily.ESX)) return parseVersion(description, ESX);
+            else if (description.startsWith(CITRIX_XENSERVER)) return parseVersion(description, CITRIX_XENSERVER);
+            else if (description.startsWith(VYATTA)) return parseVersion(description, VYATTA);
             return null;
          }
       };

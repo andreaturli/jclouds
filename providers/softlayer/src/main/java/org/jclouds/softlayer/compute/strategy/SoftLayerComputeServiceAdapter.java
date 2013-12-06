@@ -24,6 +24,7 @@ import static com.google.common.collect.Iterables.contains;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.find;
 import static com.google.common.collect.Iterables.get;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PACKAGE_NAME;
 import static org.jclouds.util.Predicates2.retry;
 import static org.jclouds.softlayer.predicates.ProductItemPredicates.capacity;
 import static org.jclouds.softlayer.predicates.ProductItemPredicates.categoryCode;
@@ -41,6 +42,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import com.google.common.collect.ImmutableList;
 import org.jclouds.collect.Memoized;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceAdapter;
@@ -87,6 +89,7 @@ public class SoftLayerComputeServiceAdapter implements
    private final Pattern disk0Type;
    private final float portSpeed;
    private final Iterable<ProductItemPrice> prices;
+   private final String productPackageName;
 
    @Inject
    public SoftLayerComputeServiceAdapter(SoftLayerClient client,
@@ -95,7 +98,8 @@ public class SoftLayerComputeServiceAdapter implements
          @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX) String cpuRegex,
          @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE) String disk0Type,
          @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED) float portSpeed,
-         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY) long guestLoginDelay) {
+         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY) long guestLoginDelay,
+         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_PACKAGE_NAME) final String productPackageName) {
       this.client = checkNotNull(client, "client");
       this.guestLoginDelay = guestLoginDelay;
       this.productPackageSupplier = checkNotNull(productPackageSupplier, "productPackageSupplier");
@@ -106,6 +110,7 @@ public class SoftLayerComputeServiceAdapter implements
       this.portSpeed = portSpeed;
       checkArgument(portSpeed > 0, "portSpeed must be greater than zero, often 10, 100, 1000, 10000");
       this.disk0Type = Pattern.compile(".*" + checkNotNull(disk0Type, "disk0Type") + ".*");
+      this.productPackageName = checkNotNull(productPackageName, "productPackageName");
    }
 
    @Override
@@ -121,8 +126,25 @@ public class SoftLayerComputeServiceAdapter implements
 
       VirtualGuest newGuest = VirtualGuest.builder().domain(domainName).hostname(name).build();
 
+
+      //final Iterable<ProductItemPrice> prices = getPrices(template);
+
+      ImmutableSet<ProductItemPrice> prices = ImmutableSet.of(
+              ProductItemPrice.builder().id(1921).build(),
+              ProductItemPrice.builder().id(1267).build(),
+              ProductItemPrice.builder().id(13963).build(),
+              ProductItemPrice.builder().id(272).build(),
+              ProductItemPrice.builder().id(21).build(),
+              ProductItemPrice.builder().id(248).build(),
+              ProductItemPrice.builder().id(55).build(),
+              ProductItemPrice.builder().id(418).build(),
+              ProductItemPrice.builder().id(58).build(),
+              ProductItemPrice.builder().id(420).build(),
+              ProductItemPrice.builder().id(905).build(),
+              ProductItemPrice.builder().id(57).build());
+
       ProductOrder order = ProductOrder.builder().packageId(productPackageSupplier.get().getId())
-            .location(template.getLocation().getId()).quantity(1).useHourlyPricing(true).prices(getPrices(template))
+            .location("168642"/*template.getLocation().getId()*/).quantity(1).useHourlyPricing(true).prices(prices)
             .virtualGuests(newGuest).build();
 
       logger.debug(">> ordering new virtualGuest domain(%s) hostname(%s)", domainName, name);
@@ -166,12 +188,24 @@ public class SoftLayerComputeServiceAdapter implements
       ProductPackage productPackage = productPackageSupplier.get();
       Set<ProductItem> items = productPackage.getItems();
       Builder<Iterable<ProductItem>> result = ImmutableSet.builder();
-      for (ProductItem cpuItem : filter(items, matches(cpuPattern))) {
-         for (ProductItem ramItem : filter(items, categoryCode("ram"))) {
-            for (ProductItem sanItem : filter(items, and(matches(disk0Type), categoryCode("guest_disk0")))) {
-               result.add(ImmutableSet.of(cpuItem, ramItem, sanItem));
+      if(productPackageName.equalsIgnoreCase("Cloud Server")) {
+         for (ProductItem cpuItem : filter(items, matches(cpuPattern))) {
+            for (ProductItem ramItem : filter(items, categoryCode("ram"))) {
+               for (ProductItem volumeItem : filter(items, and(matches(disk0Type), categoryCode("guest_disk0")))) {
+                  result.add(ImmutableList.of(cpuItem, ramItem, volumeItem));
+               }
             }
          }
+      } else if(productPackageName.equalsIgnoreCase("Bare Metal Instance")) {
+         Iterable<ProductItem> filteredItems = filter(productPackage.getItems(), matches(Pattern.compile(".*Bare Metal Instance.*")));
+         for (ProductItem cpuItem : filter(filteredItems, matches(cpuPattern))) {
+            for (ProductItem volumeItem : filter(items, matches(Pattern.compile("[0-9]+GB SATA II.*")))) {
+            //and(matches(Pattern.compile("[0-9]+ GB SATA II.*")), categoryCode("nas")))) {
+               result.add(ImmutableList.of(cpuItem, ProductItem.builder().build(), volumeItem));
+            }
+         }
+      } else {
+         throw new IllegalArgumentException("ProductPackageName " + productPackageName + " not supported.");
       }
       return result.build();
    }
