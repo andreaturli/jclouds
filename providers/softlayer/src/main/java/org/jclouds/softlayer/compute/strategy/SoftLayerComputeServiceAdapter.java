@@ -223,11 +223,11 @@ public class SoftLayerComputeServiceAdapter implements
 
    @Override
    public Iterable<Datacenter> listLocations() {
-      return productPackageSupplier.get().getDatacenters();
+      return client.getDatacenterClient().listDatacenters();
    }
 
    @Override
-   public VirtualGuest getNode(String id) {
+   public VirtualGuest getNode(final String id) {
       long serverId = Long.parseLong(id);
       return client.getVirtualGuestClient().getVirtualGuest(serverId);
    }

@@ -50,7 +50,7 @@ public class OperatingSystem {
 
       protected int id;
       protected Set<Password> passwords = ImmutableSet.of();
-
+      protected SoftwareLicense softwareLicense;
       /**
        * @see OperatingSystem#getId()
        */
@@ -71,14 +71,20 @@ public class OperatingSystem {
          return passwords(ImmutableSet.copyOf(in));
       }
 
+      public T softwareLicense(SoftwareLicense softwareLicense) {
+         this.softwareLicense = softwareLicense;
+         return self();
+      }
+
       public OperatingSystem build() {
-         return new OperatingSystem(id, passwords);
+         return new OperatingSystem(id, passwords, softwareLicense);
       }
 
       public T fromOperatingSystem(OperatingSystem in) {
          return this
                .id(in.getId())
-               .passwords(in.getPasswords());
+               .passwords(in.getPasswords())
+               .softwareLicense(in.getSoftwareLicense());
       }
    }
 
@@ -91,13 +97,15 @@ public class OperatingSystem {
 
    private final int id;
    private final Set<Password> passwords;
+   private final SoftwareLicense softwareLicense;
 
    @ConstructorProperties({
-         "id", "passwords"
+         "id", "passwords", "softwareLicense"
    })
-   protected OperatingSystem(int id, @Nullable Set<Password> passwords) {
+   protected OperatingSystem(int id, @Nullable Set<Password> passwords, @Nullable SoftwareLicense softwareLicense) {
       this.id = id;
       this.passwords = passwords == null ? ImmutableSet.<Password>of() : ImmutableSet.copyOf(passwords);
+      this.softwareLicense = softwareLicense;
    }
 
    /**
@@ -114,6 +122,8 @@ public class OperatingSystem {
       return this.passwords;
    }
 
+   public SoftwareLicense getSoftwareLicense() { return this.softwareLicense; }
+
    @Override
    public int hashCode() {
       return Objects.hashCode(id);
@@ -129,7 +139,7 @@ public class OperatingSystem {
 
    protected ToStringHelper string() {
       return Objects.toStringHelper(this)
-            .add("id", id).add("passwords", passwords);
+            .add("id", id).add("passwords", passwords).add("softwareLicense", softwareLicense);
    }
 
    @Override

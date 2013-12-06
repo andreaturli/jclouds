@@ -36,6 +36,8 @@ import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.functions.GroupNamingConvention;
 import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.domain.Location;
+import org.jclouds.domain.LocationBuilder;
+import org.jclouds.domain.LocationScope;
 import org.jclouds.http.HttpCommand;
 import org.jclouds.http.HttpResponseException;
 import org.jclouds.location.predicates.LocationPredicates;
@@ -86,16 +88,18 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
       builder.ids(from.getId() + "");
       builder.name(from.getHostname());
       builder.hostname(from.getHostname());
-      if (from.getDatacenter() != null)
-         builder.location(from(locations.get()).firstMatch(
-               LocationPredicates.idEquals(from.getDatacenter().getId() + "")).orNull());
+      if (from.getDatacenter() != null) {
+         builder.location(new VirtualGuestToLocation().apply(from));
+      }
       builder.group(nodeNamingConvention.groupInUniqueNameOrNull(from.getHostname()));
 
-      Image image = images.getImage(from);
+      Image image = new VirtualGuestToImage().apply(from);
+      //Image image = images.getImage(from);
       if (image != null) {
          builder.imageId(image.getId());
          builder.operatingSystem(image.getOperatingSystem());
-         builder.hardware(hardware.getHardware(from));
+         builder.hardware(new VirtualGuestToHardware().apply(from));
+         //builder.hardware(hardware.getHardware(from));
       }
       builder.status(serverStateToNodeStatus.get(from.getPowerState().getKeyName()));
 

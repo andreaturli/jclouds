@@ -18,6 +18,7 @@ package org.jclouds.softlayer.compute;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 
 import java.util.Properties;
 import java.util.Random;
@@ -116,7 +117,7 @@ public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerClientL
 
       for (Iterable<ProductItem> profile : profiles) {
          // CPU, RAM and Volume
-         assertEquals(Iterables.size(profile), 3);
+         assertEquals(Iterables.size(profile), 2);
       }
    }
 
