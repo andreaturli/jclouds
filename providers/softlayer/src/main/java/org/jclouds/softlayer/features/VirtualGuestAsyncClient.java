@@ -40,6 +40,7 @@ import org.jclouds.softlayer.domain.ProductOrderReceipt;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
 /**
  * Provides asynchronous access to VirtualGuest via their REST API.
@@ -151,4 +152,10 @@ public interface VirtualGuestAsyncClient {
    @Fallback(NullOnNotFoundOr404.class)
    ListenableFuture<ProductOrder> getOrderTemplate(@PathParam("id") long id);
 
+
+   @GET
+   @Path("SoftLayer_Virtual_Guest_Block_Device_Template_Group/getPublicImages")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(NullOnNotFoundOr404.class)
+   ListenableFuture<Set<VirtualGuestBlockDeviceTemplateGroup>> getPublicImages();
 }

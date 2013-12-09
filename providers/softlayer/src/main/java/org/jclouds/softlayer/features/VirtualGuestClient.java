@@ -20,6 +20,7 @@ import java.util.Set;
 import org.jclouds.softlayer.domain.ProductOrder;
 import org.jclouds.softlayer.domain.ProductOrderReceipt;
 import org.jclouds.softlayer.domain.VirtualGuest;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
 /**
  * Provides synchronous access to VirtualGuest.
@@ -116,4 +117,6 @@ public interface VirtualGuestClient {
     *          The ProductOrder used to create the VirtualGust or null if not available
     */
    ProductOrder getOrderTemplate(long id);
+
+   Set<VirtualGuestBlockDeviceTemplateGroup> getPublicImages();
 }

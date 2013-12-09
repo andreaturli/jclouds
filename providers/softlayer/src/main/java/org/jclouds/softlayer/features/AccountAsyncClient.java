@@ -28,9 +28,11 @@ import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
+import org.jclouds.softlayer.domain.BlockDeviceTemplateGroup;
 import org.jclouds.softlayer.domain.ProductPackage;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
 /**
  * Provides asynchronous access to Account via their REST API.
@@ -65,4 +67,13 @@ public interface AccountAsyncClient {
    @Fallback(NullOnNotFoundOr404.class)
    ListenableFuture<Set<ProductPackage>> getActivePackages();
 
+   /**
+    * @see org.jclouds.softlayer.features.AccountClient#getPrivateImages()
+    */
+   @GET
+   @Path("/SoftLayer_Account/getPrivateBlockDeviceTemplateGroups")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(NullOnNotFoundOr404.class)
+   @QueryParams(keys = "objectMask", values = "id;accountId;name")
+   ListenableFuture<Set<BlockDeviceTemplateGroup>> getPrivateImages();
 }

@@ -53,6 +53,7 @@ public class ProductOrder {
       protected Set<VirtualGuest> virtualGuests = ImmutableSet.of();
       protected int quantity;
       protected boolean useHourlyPricing;
+      protected String imageTemplateId;
 
       /**
        * @see ProductOrder#getPackageId()
@@ -110,8 +111,14 @@ public class ProductOrder {
          return self();
       }
 
+
+      public T imageTemplateId(String imageTemplateId) {
+         this.imageTemplateId = imageTemplateId;
+         return self();
+      }
+
       public ProductOrder build() {
-         return new ProductOrder(packageId, location, prices, virtualGuests, quantity, useHourlyPricing);
+         return new ProductOrder(packageId, location, prices, virtualGuests, quantity, useHourlyPricing, imageTemplateId);
       }
 
       public T fromProductOrder(ProductOrder in) {
@@ -138,17 +145,21 @@ public class ProductOrder {
    private final Set<VirtualGuest> virtualGuests;
    private final int quantity;
    private final boolean useHourlyPricing;
+   private final String imageTemplateId;
 
    @ConstructorProperties({
-      "packageId", "location", "prices", "virtualGuests", "quantity", "useHourlyPricing"
+      "packageId", "location", "prices", "virtualGuests", "quantity", "useHourlyPricing", "imageTemplateId"
    })
-   protected ProductOrder(int packageId, @Nullable String location, @Nullable Set<ProductItemPrice> prices, @Nullable Set<VirtualGuest> virtualGuests, int quantity, boolean useHourlyPricing) {
+   protected ProductOrder(int packageId, @Nullable String location, @Nullable Set<ProductItemPrice> prices,
+                          @Nullable Set<VirtualGuest> virtualGuests, int quantity, boolean useHourlyPricing,
+                          String imageTemplateId) {
       this.packageId = packageId;
       this.location = location;
       this.prices = prices == null ? ImmutableSet.<ProductItemPrice>of() : ImmutableSet.copyOf(prices);
       this.virtualGuests = virtualGuests == null ? ImmutableSet.<VirtualGuest>of() : ImmutableSet.copyOf(virtualGuests);
       this.quantity = quantity;
       this.useHourlyPricing = useHourlyPricing;
+      this.imageTemplateId = imageTemplateId;
    }
 
    /**
@@ -192,6 +203,11 @@ public class ProductOrder {
    public boolean getUseHourlyPricing() {
       return this.useHourlyPricing;
    }
+
+   public String getImageTemplateId() {
+      return this.imageTemplateId;
+   }
+
 
    @Override
    public int hashCode() {

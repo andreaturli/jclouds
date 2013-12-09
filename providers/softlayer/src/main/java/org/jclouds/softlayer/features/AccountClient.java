@@ -16,8 +16,11 @@
  */
 package org.jclouds.softlayer.features;
 
-import java.util.Set;
+import org.jclouds.softlayer.domain.BlockDeviceTemplateGroup;
 import org.jclouds.softlayer.domain.ProductPackage;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
+
+import java.util.Set;
 
 /**
  * Provides synchronous access to Account.
@@ -42,4 +45,10 @@ public interface AccountClient {
     */
    Set<ProductPackage> getReducedActivePackages();
 
+
+   /**
+    * @return return all the private images for the account
+    * @see #getPrivateImages()
+    */
+   Set<BlockDeviceTemplateGroup> getPrivateImages();
 }
