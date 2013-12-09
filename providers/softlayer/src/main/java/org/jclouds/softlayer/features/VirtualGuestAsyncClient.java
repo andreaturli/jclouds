@@ -35,6 +35,7 @@ import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.softlayer.binders.ProductOrderToJson;
+import org.jclouds.softlayer.binders.VirtualGuestToJson;
 import org.jclouds.softlayer.domain.ProductOrder;
 import org.jclouds.softlayer.domain.ProductOrderReceipt;
 import org.jclouds.softlayer.domain.VirtualGuest;
@@ -158,4 +159,10 @@ public interface VirtualGuestAsyncClient {
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(NullOnNotFoundOr404.class)
    ListenableFuture<Set<VirtualGuestBlockDeviceTemplateGroup>> getPublicImages();
+
+   @POST
+   @Path("SoftLayer_Virtual_Guest")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(NullOnNotFoundOr404.class)
+   ListenableFuture<VirtualGuest> createObject(@BinderParam(VirtualGuestToJson.class) VirtualGuest virtualGuest);
 }

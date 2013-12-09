@@ -55,6 +55,7 @@ import org.jclouds.softlayer.compute.functions.ProductItemToImage;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
 import org.jclouds.softlayer.domain.BlockDeviceTemplateGroup;
 import org.jclouds.softlayer.domain.Datacenter;
+import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.Password;
 import org.jclouds.softlayer.domain.ProductItem;
 import org.jclouds.softlayer.domain.ProductItemPrice;
@@ -123,6 +124,28 @@ public class SoftLayerComputeServiceAdapter implements
 
       String domainName = template.getOptions().as(SoftLayerTemplateOptions.class).getDomainName();
 
+      /*
+      OperatingSystem operatingSystem = OperatingSystem.builder()
+              .id(Integer.parseInt(template.getImage().getId()))
+              .build();
+      */
+      Datacenter datacenter = Datacenter.builder()
+              .id(Integer.valueOf(template.getLocation().getId()))
+              .name((String) template.getLocation().getMetadata().get("name"))
+              .build();
+      VirtualGuest newGuest = VirtualGuest.builder()
+              .domain(domainName)
+              .hostname(name)
+              .startCpus((int) template.getHardware().getProcessors().get(0).getCores())
+              .maxMemory(template.getHardware().getRam())
+              //.operatingSystem(operatingSystem)
+              .uuid(template.getImage().getId())
+              .datacenter(datacenter)
+              .build();
+      logger.debug(">> creating new virtualGuest (%s)", newGuest);
+      VirtualGuest result = client.getVirtualGuestClient().createObject(newGuest);
+
+      /*
       VirtualGuest newGuest = VirtualGuest.builder().domain(domainName).hostname(name).build();
 
       ProductOrder order = ProductOrder.builder().packageId(productPackageSupplier.get().getId())
@@ -132,6 +155,7 @@ public class SoftLayerComputeServiceAdapter implements
       logger.debug(">> ordering new virtualGuest domain(%s) hostname(%s)", domainName, name);
       ProductOrderReceipt productOrderReceipt = client.getVirtualGuestClient().orderVirtualGuest(order);
       VirtualGuest result = get(productOrderReceipt.getOrderDetails().getVirtualGuests(), 0);
+      */
       logger.trace("<< virtualGuest(%s)", result.getId());
 
       logger.debug(">> awaiting login details for virtualGuest(%s)", result.getId());
@@ -154,8 +178,7 @@ public class SoftLayerComputeServiceAdapter implements
       int imageId = Integer.parseInt(template.getImage().getId());
       result.add(ProductItemPrice.builder().id(imageId).build());
       */
-      BlockDeviceTemplateGroupToImage.osFamily();
-      //result.add()
+      result.add(ProductItemPrice.builder().id(1857).build());
       Iterable<String> hardwareIds = Splitter.on(",").split(template.getHardware().getId());
       for (String hardwareId : hardwareIds) {
          int id = Integer.parseInt(hardwareId);
@@ -191,17 +214,20 @@ public class SoftLayerComputeServiceAdapter implements
 
       for(VirtualGuestBlockDeviceTemplateGroup publicImagesTemplateGroup : publicImagesTemplateGroups) {
          for(BlockDeviceTemplateGroup publicImage : publicImagesTemplateGroup.getChildren()) {
-            images.add(publicImage);
+            if(publicImagesTemplateGroup.getGlobalIdentifier() != null) {
+               images.add(new BlockDeviceTemplateGroup(publicImage.getId(), publicImage.getName(),
+                    publicImagesTemplateGroup.getGlobalIdentifier()));
+            }
          }
       }
 
       Set<BlockDeviceTemplateGroup> privateImagesTemplateGroups = client.getAccountClient()
               .getPrivateImages();
-
       for(BlockDeviceTemplateGroup privateImage : privateImagesTemplateGroups) {
-           images.add(privateImage);
+         if(privateImage.getGlobalIdentifier() != null) {
+            images.add(privateImage);
+         }
       }
-
       return images;
       //return filter(productPackageSupplier.get().getItems(), categoryCode("os"));
    }

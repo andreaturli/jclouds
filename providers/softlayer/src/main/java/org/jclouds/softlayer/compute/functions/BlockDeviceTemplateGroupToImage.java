@@ -80,9 +80,8 @@ public class BlockDeviceTemplateGroupToImage implements Function<BlockDeviceTemp
               .version(osVersion)
               .is64Bit(Objects.equal(bits, 64))
               .build();
-
       return new ImageBuilder()
-              .ids(blockDeviceTemplateGroup.getId())
+              .ids(blockDeviceTemplateGroup.getGlobalIdentifier())
               .description(name)
               .operatingSystem(os)
               .status(Image.Status.AVAILABLE)

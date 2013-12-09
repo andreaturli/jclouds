@@ -48,7 +48,7 @@ public class DatacenterToLocation implements Function<Datacenter,Location> {
     @Override
     public Location apply(Datacenter datacenter) {
         return new LocationBuilder().scope(LocationScope.ZONE)
-                                    .metadata(ImmutableMap.<String, Object>of())
+                                    .metadata(ImmutableMap.<String, Object>of("name", datacenter.getName()))
                                     .description(datacenter.getLongName())
                                     .id(Long.toString(datacenter.getId()))
                                     .iso3166Codes(createIso3166Codes(datacenter.getLocationAddress()))

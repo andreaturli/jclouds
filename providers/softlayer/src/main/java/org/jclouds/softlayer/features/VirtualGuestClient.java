@@ -119,4 +119,6 @@ public interface VirtualGuestClient {
    ProductOrder getOrderTemplate(long id);
 
    Set<VirtualGuestBlockDeviceTemplateGroup> getPublicImages();
+
+   VirtualGuest createObject(VirtualGuest virtualGuest);
 }

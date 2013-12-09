@@ -74,6 +74,5 @@ public interface AccountAsyncClient {
    @Path("/SoftLayer_Account/getPrivateBlockDeviceTemplateGroups")
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(NullOnNotFoundOr404.class)
-   @QueryParams(keys = "objectMask", values = "id;accountId;name")
    ListenableFuture<Set<BlockDeviceTemplateGroup>> getPrivateImages();
 }

@@ -27,10 +27,12 @@ public class BlockDeviceTemplateGroup {
 
    private final String id;
    private final String name;
+   private String globalIdentifier;
 
-   public BlockDeviceTemplateGroup(String id, String name) {
+   public BlockDeviceTemplateGroup(String id, String name, String globalIdentifier) {
       this.id = id;
       this.name = name;
+      this.globalIdentifier = globalIdentifier;
    }
 
    @Override
@@ -38,6 +40,7 @@ public class BlockDeviceTemplateGroup {
       return Objects.toStringHelper(this)
               .add("id", id)
               .add("name", name)
+              .add("globalIdentifier", globalIdentifier)
               .toString();
    }
 
@@ -48,4 +51,10 @@ public class BlockDeviceTemplateGroup {
    public String getName() {
       return name;
    }
+
+
+   public String getGlobalIdentifier() {
+      return globalIdentifier;
+   }
+
 }

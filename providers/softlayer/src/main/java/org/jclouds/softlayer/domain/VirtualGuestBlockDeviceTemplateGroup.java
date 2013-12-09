@@ -31,10 +31,13 @@ public class VirtualGuestBlockDeviceTemplateGroup {
 
    private final String accountId;
    private final Set<BlockDeviceTemplateGroup> children;
+   private final String globalIdentifier;
 
-   public VirtualGuestBlockDeviceTemplateGroup(String accountId, Set<BlockDeviceTemplateGroup> children) {
+
+   public VirtualGuestBlockDeviceTemplateGroup(String accountId, Set<BlockDeviceTemplateGroup> children, String globalIdentifier) {
       this.accountId = accountId;
       this.children = children;
+      this.globalIdentifier = globalIdentifier;
    }
 
    public String getAccountId() {
@@ -43,5 +46,9 @@ public class VirtualGuestBlockDeviceTemplateGroup {
 
    public Set<BlockDeviceTemplateGroup> getChildren() {
       return children;
+   }
+
+   public String getGlobalIdentifier() {
+      return globalIdentifier;
    }
 }
