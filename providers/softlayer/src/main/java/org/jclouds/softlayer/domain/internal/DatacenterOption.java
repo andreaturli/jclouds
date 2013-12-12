@@ -14,26 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.softlayer.features;
-
-import org.jclouds.softlayer.domain.ProductPackage;
+package org.jclouds.softlayer.domain.internal;
 
 /**
- * Provides synchronous access to ProductPackage.
- * <p/>
- * 
- * @see ProductPackageAsyncClient
- * @see <a href="http://sldn.softlayer.com/article/REST" />
- * @author Adrian Cole, Andrea Turli
- * @deprecated This will be renamed to ProductPackageApi in 1.7.0.
+ *
  */
-public interface ProductPackageClient {
+public class DatacenterOption {
 
-   /**
-    * 
-    * @param id
-    *           id of the product package
-    * @return product package or null if not found
-    */
-   ProductPackage getProductPackage(long id);
+   protected final DatacenterTemplate template;
+
+   public DatacenterOption(DatacenterTemplate template) {
+      this.template = template;
+   }
+
+   public String getName() {
+      return template.datacenter.name;
+   }
+
+   public class DatacenterTemplate {
+      private final DatacenterBlock datacenter;
+      public DatacenterTemplate(DatacenterBlock datacenter) {
+         this.datacenter = datacenter;
+      }
+   }
+
+   private class DatacenterBlock {
+      private final String name;
+
+      private DatacenterBlock(String name) {
+         this.name = name;
+      }
+   }
 }

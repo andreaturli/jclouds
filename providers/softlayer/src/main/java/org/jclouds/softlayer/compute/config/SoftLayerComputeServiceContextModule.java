@@ -23,7 +23,6 @@ import static org.jclouds.softlayer.predicates.ProductPackagePredicates.named;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PACKAGE_NAME;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PRICES;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,6 +40,7 @@ import org.jclouds.rest.suppliers.MemoizedRetryOnTimeOutButNotOnAuthorizationExc
 import org.jclouds.softlayer.SoftLayerClient;
 import org.jclouds.softlayer.compute.functions.BlockDeviceTemplateGroupToImage;
 import org.jclouds.softlayer.compute.functions.DatacenterToLocation;
+import org.jclouds.softlayer.compute.functions.HardwareProfileToHardware;
 import org.jclouds.softlayer.compute.functions.ProductItemToImage;
 import org.jclouds.softlayer.compute.functions.ProductItemsToHardware;
 import org.jclouds.softlayer.compute.functions.VirtualGuestToNodeMetadata;
@@ -52,6 +52,8 @@ import org.jclouds.softlayer.domain.ProductItem;
 import org.jclouds.softlayer.domain.ProductItemPrice;
 import org.jclouds.softlayer.domain.ProductPackage;
 import org.jclouds.softlayer.domain.VirtualGuest;
+import org.jclouds.softlayer.domain.VirtualGuestConfiguration;
+import org.jclouds.softlayer.domain.internal.HardwareProfile;
 import org.jclouds.softlayer.features.AccountClient;
 import org.jclouds.softlayer.features.ProductPackageClient;
 
@@ -68,12 +70,12 @@ import com.google.inject.TypeLiteral;
  * @author Adrian Cole
  */
 public class SoftLayerComputeServiceContextModule extends
-         ComputeServiceAdapterContextModule<VirtualGuest, Iterable<ProductItem>, BlockDeviceTemplateGroup, Datacenter> {
+         ComputeServiceAdapterContextModule<VirtualGuest, HardwareProfile, BlockDeviceTemplateGroup, Datacenter> {
 
    @Override
    protected void configure() {
       super.configure();
-      bind(new TypeLiteral<ComputeServiceAdapter<VirtualGuest, Iterable<ProductItem>, BlockDeviceTemplateGroup, Datacenter>>() {
+      bind(new TypeLiteral<ComputeServiceAdapter<VirtualGuest, HardwareProfile, BlockDeviceTemplateGroup, Datacenter>>() {
       }).to(SoftLayerComputeServiceAdapter.class);
       bind(new TypeLiteral<Function<VirtualGuest, NodeMetadata>>() {
       }).to(VirtualGuestToNodeMetadata.class);
@@ -82,13 +84,16 @@ public class SoftLayerComputeServiceContextModule extends
       }).to(ProductItemToImage.class);
       bind(new TypeLiteral<Function<BlockDeviceTemplateGroup, org.jclouds.compute.domain.Image>>() {
       }).to(BlockDeviceTemplateGroupToImage.class);
+      // TODO remove
       bind(new TypeLiteral<Function<Iterable<ProductItem>, org.jclouds.compute.domain.Hardware>>() {
       }).to(ProductItemsToHardware.class);
+      bind(new TypeLiteral<Function<HardwareProfile, org.jclouds.compute.domain.Hardware>>() {
+      }).to(HardwareProfileToHardware.class);
       bind(new TypeLiteral<Function<Datacenter, Location>>() {
       }).to(DatacenterToLocation.class);
       bind(TemplateOptions.class).to(SoftLayerTemplateOptions.class);
       // to have the compute service adapter override default locations
-      install(new LocationsFromComputeServiceAdapterModule<VirtualGuest, Iterable<ProductItem>, BlockDeviceTemplateGroup, Datacenter>(){});
+      install(new LocationsFromComputeServiceAdapterModule<VirtualGuest, HardwareProfile, BlockDeviceTemplateGroup, Datacenter>(){});
    }
 
    /**

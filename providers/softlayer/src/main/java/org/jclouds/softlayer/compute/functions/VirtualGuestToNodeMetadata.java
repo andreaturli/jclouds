@@ -38,11 +38,13 @@ import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
+import org.jclouds.domain.LoginCredentials;
 import org.jclouds.http.HttpCommand;
 import org.jclouds.http.HttpResponseException;
 import org.jclouds.location.predicates.LocationPredicates;
 import org.jclouds.logging.Logger;
 import org.jclouds.softlayer.SoftLayerClient;
+import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.ProductItem;
 import org.jclouds.softlayer.domain.ProductOrder;
 import org.jclouds.softlayer.domain.VirtualGuest;
@@ -88,6 +90,16 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
       builder.ids(from.getId() + "");
       builder.name(from.getHostname());
       builder.hostname(from.getHostname());
+      final OperatingSystem operatingSystem = from.getOperatingSystem();
+      if (operatingSystem != null) {
+         if (!operatingSystem.getPasswords().isEmpty()) {
+            builder.credentials(
+                    LoginCredentials.builder()
+                            .user(Iterables.get(operatingSystem.getPasswords(), 0).getUsername())
+                            .credential(Iterables.get(operatingSystem.getPasswords(), 0).getUsername())
+                            .build());
+         }
+      }
       if (from.getDatacenter() != null) {
          builder.location(new VirtualGuestToLocation().apply(from));
       }

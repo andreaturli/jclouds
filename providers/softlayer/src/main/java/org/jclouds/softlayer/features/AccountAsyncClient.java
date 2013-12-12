@@ -29,6 +29,7 @@ import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.softlayer.domain.BlockDeviceTemplateGroup;
+import org.jclouds.softlayer.domain.Hardware;
 import org.jclouds.softlayer.domain.ProductPackage;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -75,4 +76,13 @@ public interface AccountAsyncClient {
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(NullOnNotFoundOr404.class)
    ListenableFuture<Set<BlockDeviceTemplateGroup>> getPrivateImages();
+
+   /**
+    * @see org.jclouds.softlayer.features.AccountClient#getHardware()
+    */
+   @GET
+   @Path("/SoftLayer_Account/getHardware")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(NullOnNotFoundOr404.class)
+   ListenableFuture<Set<Hardware>> getHardware();
 }

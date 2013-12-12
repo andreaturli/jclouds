@@ -16,8 +16,11 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.ImageBuilder;
 import org.jclouds.compute.domain.OperatingSystem;
@@ -43,7 +46,7 @@ public class BlockDeviceTemplateGroupToImage implements Function<BlockDeviceTemp
    /**
     * Pattern to capture the number of bits e.g. "a (amd64) os"
     */
-   private static final Pattern OS_BITS_PATTERN = Pattern.compile(".*(amd64|x64|64-bit).*");
+   private static final Pattern OS_BITS_PATTERN = Pattern.compile(".*(amd64|x64|64-bit|x86_64).*");
 
    private static final String CENTOS = "CentOS";
    private static final String DEBIAN = "Debian";
@@ -52,6 +55,14 @@ public class BlockDeviceTemplateGroupToImage implements Function<BlockDeviceTemp
    private static final String UBUNTU = "Ubuntu";
    private static final String WINDOWS = "Windows";
    private static final String CLOUD_LINUX = "CloudLinux";
+
+   private static final Pattern CENTOS_PATTERN = Pattern.compile(".*(CentOS|centos|Centos).*");
+   private static final Pattern DEBIAN_PATTERN = Pattern.compile(".*(Debian).*");
+   private static final Pattern FEDORA_PATTERN = Pattern.compile(".*(Fedora).*");
+   private static final Pattern RHEL_PATTERN = Pattern.compile(".*(RedHat|rhel).*|Red Hat.*");
+   private static final Pattern UBUNTU_PATTERN = Pattern.compile(".*(Ubuntu|ubuntu).*|ubuntu.*");
+   private static final Pattern WINDOWS_2008_PATTERN =
+           Pattern.compile(".*(Microsoft Windows|win2k8R2dc|w2k8R2dc|Win2k3).*|(w2k8R2dc|Windows Server).*");
 
    @Resource
    @Named(ComputeServiceConstants.COMPUTE_LOGGER)
@@ -82,6 +93,7 @@ public class BlockDeviceTemplateGroupToImage implements Function<BlockDeviceTemp
               .build();
       return new ImageBuilder()
               .ids(blockDeviceTemplateGroup.getGlobalIdentifier())
+              .name(name)
               .description(name)
               .operatingSystem(os)
               .status(Image.Status.AVAILABLE)
@@ -96,17 +108,15 @@ public class BlockDeviceTemplateGroupToImage implements Function<BlockDeviceTemp
    public static Function<String, OsFamily> osFamily() {
       return new Function<String, OsFamily>() {
          @Override
-         public OsFamily apply(final String description) {
-            if (description != null) {
-               if (description.contains(CENTOS)) return OsFamily.CENTOS;
-               else if (description.contains(DEBIAN)) return OsFamily.DEBIAN;
-               else if (description.contains(FEDORA)) return OsFamily.FEDORA;
-               else if (description.contains(RHEL)) return OsFamily.RHEL;
-               else if (description.contains(UBUNTU)) return OsFamily.UBUNTU;
-               else if (description.contains(WINDOWS)) return OsFamily.WINDOWS;
-               else if (description.contains(CLOUD_LINUX)) return OsFamily.CLOUD_LINUX;
+         public OsFamily apply(String name) {
+            if (name != null) {
+               if(CENTOS_PATTERN.matcher(name).matches()) { return OsFamily.CENTOS; }
+               if(DEBIAN_PATTERN.matcher(name).matches()) { return OsFamily.DEBIAN; }
+               if(FEDORA_PATTERN.matcher(name).matches()) { return OsFamily.FEDORA; }
+               if(RHEL_PATTERN.matcher(name).matches()) { return OsFamily.RHEL; }
+               if(UBUNTU_PATTERN.matcher(name).matches()) { return OsFamily.UBUNTU; }
+               if(WINDOWS_2008_PATTERN.matcher(name).matches()) { return OsFamily.WINDOWS; }
             }
-
             return OsFamily.UNRECOGNIZED;
          }
       };
@@ -137,26 +147,29 @@ public class BlockDeviceTemplateGroupToImage implements Function<BlockDeviceTemp
    }
 
    private static String parseVersion(String description, String os) {
-      String noOsName = description.replaceFirst(os, "").trim();
-      return noOsName.split(" ")[0];
+       // for 100G OS VERSION BITS like
+      if(Iterables.size(Splitter.on(CharMatcher.WHITESPACE).split(description)) == 4) {
+         return Iterables.get(Splitter.on(CharMatcher.WHITESPACE).split(description), 2);
+      }
+      // for RightImage_OS_VERSION_BITS and SoftLayer_OS_VERSION_BITS like OR
+      // RightImage_WINDOWSVERSION and WINDOWSVERSION_rightlink_*
+      if(!os.equals(WINDOWS)) {
+         if(Iterables.size(Splitter.on("_").split(description)) == 4) {
+            return Iterables.get(Splitter.on("_").split(description), 2);
+         }
+      } else {
+         if(WINDOWS_2008_PATTERN.matcher(description).matches()) { return "2008"; }
+      }
+      return "unrecognized";
    }
 
-   /**
-    * Parses the item description to determine the number of OS bits
-    * Expects the number to be in parenthesis and to contain the word "bit".
-    * The following return 64: "A (64 bit) OS", "A (64bit) OS"
-    *
-    * @return the number of bits or null if the number of bits cannot be determined
-    */
    public static Function<String, Integer> osBits() {
       return new Function<String, Integer>() {
          @Override
          public Integer apply(String name) {
             if (name != null) {
                Matcher m = OS_BITS_PATTERN.matcher(name);
-               if (m.matches()) {
-                  return 64;
-               }
+               if (m.matches()) { return 64; }
             }
             return 32;
          }

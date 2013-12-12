@@ -42,6 +42,7 @@ import org.jclouds.softlayer.domain.VirtualGuest;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
+import org.jclouds.softlayer.domain.VirtualGuestConfiguration;
 
 /**
  * Provides asynchronous access to VirtualGuest via their REST API.
@@ -165,4 +166,10 @@ public interface VirtualGuestAsyncClient {
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(NullOnNotFoundOr404.class)
    ListenableFuture<VirtualGuest> createObject(@BinderParam(VirtualGuestToJson.class) VirtualGuest virtualGuest);
+
+   @GET
+   @Path("SoftLayer_Virtual_Guest/getCreateObjectOptions")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(NullOnNotFoundOr404.class)
+   ListenableFuture<VirtualGuestConfiguration> getCreateObjectOptions();
 }

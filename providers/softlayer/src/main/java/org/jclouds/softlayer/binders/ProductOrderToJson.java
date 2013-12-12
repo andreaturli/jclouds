@@ -22,24 +22,26 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableSet;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.json.Json;
 import org.jclouds.rest.Binder;
+import org.jclouds.softlayer.domain.Hardware;
 import org.jclouds.softlayer.domain.ProductItemPrice;
 import org.jclouds.softlayer.domain.ProductOrder;
-import org.jclouds.softlayer.domain.VirtualGuest;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import org.jclouds.softlayer.domain.VirtualGuest;
 
 /**
  * Converts a ProductOrder into a json string valid for placing an order via the softlayer api The
  * String is set into the payload of the HttpRequest
  * 
- * @author Jason King
+ * @author Jason King, Andrea Turli
  */
 public class ProductOrderToJson implements Binder {
 
@@ -73,36 +75,49 @@ public class ProductOrderToJson implements Binder {
          }
       });
 
-      Iterable<HostnameAndDomain> hosts = Iterables.transform(order.getVirtualGuests(),
-               new Function<VirtualGuest, HostnameAndDomain>() {
-                  @Override
-                  public HostnameAndDomain apply(VirtualGuest virtualGuest) {
-                     return new HostnameAndDomain(virtualGuest.getHostname(), virtualGuest.getDomain());
-                  }
-               });
 
-      OrderData data = new OrderData(order.getPackageId(), order.getLocation(), Sets.newLinkedHashSet(prices), Sets
-               .newLinkedHashSet(hosts), order.getQuantity(), order.getUseHourlyPricing());
+      Iterable<HardwareData> hardwareData = Iterables.transform(order.getHardware(),
+              new Function<Hardware, HardwareData>() {
+                 @Override
+                 public HardwareData apply(Hardware Hardware) {
+                    return new HardwareData(Hardware.getHostname(), Hardware.getDomain(),
+                            Hardware.getBareMetalInstanceFlag());
+                 }
+              });
+
+      OrderData data = new OrderData(order.getPackageId(), order.getLocation(), Sets.newLinkedHashSet(prices),
+              Sets.newLinkedHashSet(hardwareData), order.getQuantity(), order.getUseHourlyPricing());
 
       return json.toJson(ImmutableMap.of("parameters", ImmutableList.<OrderData> of(data)));
+      /*
+      return "{\"parameters\":[{" +
+              "\"packageId\":50," +
+              "\"location\":\"265592\"," +
+              "\"prices\":[{\"id\":2164},{\"id\":17432},{\"id\":19},{\"id\":21509},{\"id\":21},{\"id\":55},{\"id\":57},{\"id\":58},{\"id\":1800},{\"id\":905},{\"id\":418},{\"id\":420}]," +
+              "\"hardware\":[{\"hostname\":\"mygroup-803\",\"domain\":\"jclouds.org\"," +
+              "\"bareMetalInstanceFlag\":true}],\"useHourlyPricing\":true" +
+              "}]" +
+              "}";
+              */
    }
 
    @SuppressWarnings("unused")
    private static class OrderData {
-      private String complexType = "SoftLayer_Container_Product_Order_Virtual_Guest";
+      //private String complexType = "SoftLayer_Container_Product_Order_Virtual_Guest";
       private long packageId = -1;
       private String location;
       private Set<Price> prices;
-      private Set<HostnameAndDomain> virtualGuests;
+      private Set<HardwareData> hardware;
       private long quantity;
       private boolean useHourlyPricing;
 
-      public OrderData(long packageId, String location, Set<Price> prices, Set<HostnameAndDomain> virtualGuests,
+      public OrderData(long packageId, String location, Set<Price> prices,
+                       Set<HardwareData> hardware,
                long quantity, boolean useHourlyPricing) {
          this.packageId = packageId;
          this.location = location;
          this.prices = prices;
-         this.virtualGuests = virtualGuests;
+         this.hardware = hardware;
          this.quantity = quantity;
          this.useHourlyPricing = useHourlyPricing;
       }
@@ -110,15 +125,16 @@ public class ProductOrderToJson implements Binder {
    }
 
    @SuppressWarnings("unused")
-   private static class HostnameAndDomain {
+   private static class HardwareData {
       private String hostname;
       private String domain;
+      private int bareMetalInstanceFlag;
 
-      public HostnameAndDomain(String hostname, String domain) {
+      public HardwareData(String hostname, String domain, int bareMetalInstanceFlag) {
          this.hostname = hostname;
          this.domain = domain;
+         this.bareMetalInstanceFlag = bareMetalInstanceFlag;
       }
-
    }
 
    @SuppressWarnings("unused")

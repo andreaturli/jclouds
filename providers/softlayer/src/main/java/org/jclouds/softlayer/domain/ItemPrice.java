@@ -43,27 +43,49 @@ public class ItemPrice {
       return item;
    }
 
-   protected class Item {
-      private final String description;
+   public class Item {
       private final String id;
+      private final String description;
       private final SoftwareDescription softwareDescription;
       private final String softwareDescriptionId;
       private final String upgradeItemId;
 
-      protected Item(String description, String id, SoftwareDescription softwareDescription, String softwareDescriptionId, String upgradeItemId) {
-         this.description = description;
+      protected Item(String id,String description, SoftwareDescription softwareDescription, String softwareDescriptionId, String upgradeItemId) {
          this.id = id;
+         this.description = description;
          this.softwareDescription = softwareDescription;
          this.softwareDescriptionId = softwareDescriptionId;
          this.upgradeItemId = upgradeItemId;
+      }
+
+      public String getId() {
+         return id;
       }
 
       public String getDescription() {
          return description;
       }
 
+      public String getSoftwareDescriptionId() {
+         return softwareDescriptionId;
+      }
       public SoftwareDescription getSoftwareDescription() {
          return softwareDescription;
+      }
+
+      public String getUpgradeItemId() {
+         return upgradeItemId;
+      }
+
+      @Override
+      public String toString() {
+         return Objects.toStringHelper(this)
+                 .add("id", id)
+                 .add("description", description)
+                 .add("softwareDescription", softwareDescription)
+                 .add("softwareDescriptionId", softwareDescriptionId)
+                 .add("upgradeItemId", upgradeItemId)
+                 .toString();
       }
    }
 

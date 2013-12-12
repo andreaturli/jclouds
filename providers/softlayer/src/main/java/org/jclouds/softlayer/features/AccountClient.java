@@ -17,6 +17,7 @@
 package org.jclouds.softlayer.features;
 
 import org.jclouds.softlayer.domain.BlockDeviceTemplateGroup;
+import org.jclouds.softlayer.domain.Hardware;
 import org.jclouds.softlayer.domain.ProductPackage;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
@@ -51,4 +52,10 @@ public interface AccountClient {
     * @see #getPrivateImages()
     */
    Set<BlockDeviceTemplateGroup> getPrivateImages();
+
+   /**
+    * @return Retrieve an account's associated hardware objects.
+    * @see #getHardware()
+    */
+   Set<Hardware> getHardware();
 }

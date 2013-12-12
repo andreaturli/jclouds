@@ -21,11 +21,9 @@ import com.google.common.collect.ImmutableMap;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.json.Json;
 import org.jclouds.rest.Binder;
-import org.jclouds.softlayer.domain.NetworkComponentsOption;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
 import javax.inject.Inject;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -59,81 +57,25 @@ public class VirtualGuestToJson implements Binder {
     * @return String
     */
    String buildJson(VirtualGuest virtualGuest) {
-      ObjectData data;
-      if(virtualGuest.getOperatingSystem() != null) {
-          data = new OsObjectData(virtualGuest.getHostname(),
-                  virtualGuest.getDomain(),
-                  virtualGuest.getStartCpus(),
-                  virtualGuest.getMaxMemory(), true,
-                  true,
-                  new Datacenter(virtualGuest.getDatacenter().getName()),
-                  null,
-                  null,
-                  virtualGuest.getOperatingSystem().getId());
-      } else {
-         data = new ObjectData(virtualGuest.getHostname(),
-                 virtualGuest.getDomain(),
-                 virtualGuest.getStartCpus(),
-                 virtualGuest.getMaxMemory(),
-                 true,
-                 true,
-                 new Datacenter(virtualGuest.getDatacenter().getName()), null,
-                 new BlockDeviceTemplateGroup(virtualGuest.getUuid()));
+      ObjectData.Builder<?> dataBuilder = ObjectData.builder();
+      dataBuilder.hostname(virtualGuest.getHostname())
+              .domain(virtualGuest.getDomain())
+              .startCpus(virtualGuest.getStartCpus())
+              .maxMemory(virtualGuest.getMaxMemory())
+              .hourlyBillingFlag(true)
+              .localDiskFlag(true)
+              .datacenterName(virtualGuest.getDatacenter().getName())
+              .networkComponents(null) // TODO
+              // Disallowed when referenceCode is provided, as the template will specify the operating system.
+              .globalIdentifier(virtualGuest.getUuid());
 
+      if (virtualGuest.getOperatingSystem() != null && virtualGuest.getOperatingSystem().getSoftwareLicense() != null
+              && virtualGuest.getOperatingSystem().getSoftwareLicense().getSoftwareDescription() != null) {
+         String referenceCode = virtualGuest.getOperatingSystem().getSoftwareLicense().getSoftwareDescription()
+                 .getReferenceCode();
+         dataBuilder.operatingSystemReferenceCode(referenceCode);
       }
-      return json.toJson(ImmutableMap.of("parameters", ImmutableList.<ObjectData> of(data)));
+      return json.toJson(ImmutableMap.of("parameters", ImmutableList.<ObjectData> of(dataBuilder.build())));
    }
 
-   private static class ObjectData {
-      private final String hostname;
-      private final String domain;
-      private final int startCpus;
-      private final int maxMemory;
-      private final boolean hourlyBillingFlag;
-      private final boolean localDiskFlag;
-      private final Datacenter datacenter;
-      private final Set<NetworkComponentsOption> networkComponents;
-      private final BlockDeviceTemplateGroup blockDeviceTemplateGroup;
-
-      private ObjectData(String hostname, String domain, int startCpus, int maxMemory, boolean hourlyBillingFlag,
-                         boolean localDiskFlag, Datacenter datacenter,
-                         Set<NetworkComponentsOption> networkComponents, BlockDeviceTemplateGroup blockDeviceTemplateGroup) {
-         this.hostname = hostname;
-         this.domain = domain;
-         this.startCpus = startCpus;
-         this.maxMemory = maxMemory;
-         this.hourlyBillingFlag = hourlyBillingFlag;
-         this.localDiskFlag = localDiskFlag;
-         this.datacenter = datacenter;
-         this.networkComponents = networkComponents;
-         this.blockDeviceTemplateGroup = blockDeviceTemplateGroup;
-      }
-   }
-
-   private static class OsObjectData extends ObjectData {
-      private final int operatingSystemReferenceCode;
-
-      private OsObjectData(String hostname, String domain, int startCpus, int maxMemory, boolean hourlyBillingFlag,
-                           boolean localDiskFlag, Datacenter datacenter,
-                           Set<NetworkComponentsOption> networkComponents, BlockDeviceTemplateGroup blockDeviceTemplateGroup, int operatingSystemReferenceCode) {
-         super(hostname, domain, startCpus, maxMemory, hourlyBillingFlag, localDiskFlag,  datacenter, networkComponents, blockDeviceTemplateGroup);
-         this.operatingSystemReferenceCode = operatingSystemReferenceCode;
-      }
-   }
-
-   private class Datacenter {
-      private String name;
-
-      private Datacenter(String name) {
-         this.name = name;
-      }
-   }
-
-   private class BlockDeviceTemplateGroup {
-      private final String globalIdentifier;
-
-      public BlockDeviceTemplateGroup(String globalIdentifier) {
-         this.globalIdentifier = globalIdentifier;
-      }
-   }
 }

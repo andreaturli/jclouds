@@ -26,6 +26,7 @@ import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
 import org.jclouds.location.suppliers.all.JustProvider;
 import org.jclouds.softlayer.domain.Address;
+import org.jclouds.softlayer.domain.Hardware;
 import org.jclouds.softlayer.domain.Datacenter;
 
 import com.google.common.base.Function;

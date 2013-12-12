@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.softlayer.domain;
+package org.jclouds.softlayer.domain.internal;
 
 
 import com.google.common.base.Objects;
+import org.jclouds.softlayer.domain.ItemPrice;
 
 import java.util.List;
 
@@ -30,6 +31,14 @@ public class NetworkComponentsOption {
       this.itemPrice = itemPrice;
       this.template = template;
    }
+
+   public int getMaxSpeed() {
+     if(!template.networkComponents.isEmpty()) {
+        return template.networkComponents.get(0).maxSpeed;
+     }
+      return 0;
+   }
+
 
    @Override
    public String toString() {
@@ -55,10 +64,10 @@ public class NetworkComponentsOption {
    }
 
    private class NetworkComponentsDetails {
-      private final String maxSpeed;
+      private final int maxSpeed;
 
 
-      private NetworkComponentsDetails(String maxSpeed) {
+      private NetworkComponentsDetails(int maxSpeed) {
          this.maxSpeed = maxSpeed;
       }
 

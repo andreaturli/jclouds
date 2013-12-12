@@ -27,22 +27,9 @@ import com.google.common.net.InternetDomainName;
 
 /**
  * Contains options supported by the
- * {@link ComputeService#createNodesInGroup(String, int, TemplateOptions)} and
- * {@link ComputeService#createNodesInGroup(String, int, TemplateOptions)}
- * operations on the <em>gogrid</em> provider.
- * 
- * <h2>Usage</h2> The recommended way to instantiate a
- * {@link SoftLayerTemplateOptions} object is to statically import
- * {@code SoftLayerTemplateOptions.*} and invoke a static creation method
- * followed by an instance mutator (if needed):
- * <p>
- * 
- * <pre>
- * import static org.jclouds.compute.options.SoftLayerTemplateOptions.Builder.*;
- * ComputeService client = // get connection
- * templateBuilder.options(inboundPorts(22, 80, 8080, 443));
- * Set&lt;? extends NodeMetadata&gt; set = client.createNodesInGroup(tag, 2, templateBuilder.build());
- * </pre>
+ * {@link org.jclouds.compute.ComputeService#createNodesInGroup(String, int, TemplateOptions)}
+ * operations on the <em>softlayer</em> provider.
+ *
  * 
  * @author Adrian Cole
  */
@@ -70,7 +57,7 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
     * will replace the default domain used when ordering virtual guests. Note
     * this needs to contain a public suffix!
     * 
-    * @see VirtualGuestClient#orderVirtualGuest
+    * @see org.jclouds.softlayer.features.VirtualGuestClient#orderVirtualGuest(org.jclouds.softlayer.domain.ProductOrder)
     * @see InternetDomainName#hasPublicSuffix
     */
    public TemplateOptions domainName(String domainName) {

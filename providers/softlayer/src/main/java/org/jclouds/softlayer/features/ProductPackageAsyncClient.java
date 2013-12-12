@@ -27,9 +27,12 @@ import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
+import org.jclouds.softlayer.domain.ProductItemCategory;
 import org.jclouds.softlayer.domain.ProductPackage;
 
 import com.google.common.util.concurrent.ListenableFuture;
+
+import java.util.Set;
 
 /**
  * Provides asynchronous access to ProductPackage via their REST API.
@@ -55,6 +58,4 @@ public interface ProductPackageAsyncClient {
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(NullOnNotFoundOr404.class)
    ListenableFuture<ProductPackage> getProductPackage(@PathParam("id") long id);
-
-
 }

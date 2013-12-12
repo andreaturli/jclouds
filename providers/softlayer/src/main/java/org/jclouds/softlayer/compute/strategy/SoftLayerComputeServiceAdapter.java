@@ -16,31 +16,14 @@
  */
 package org.jclouds.softlayer.compute.strategy;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Predicates.and;
-import static com.google.common.collect.Iterables.contains;
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.find;
-import static com.google.common.collect.Iterables.get;
-import static org.jclouds.util.Predicates2.retry;
-import static org.jclouds.softlayer.predicates.ProductItemPredicates.capacity;
-import static org.jclouds.softlayer.predicates.ProductItemPredicates.categoryCode;
-import static org.jclouds.softlayer.predicates.ProductItemPredicates.matches;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED;
-
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Splitter;
+import com.google.common.base.Supplier;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import org.jclouds.collect.Memoized;
 import org.jclouds.compute.ComputeService;
@@ -50,11 +33,13 @@ import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.domain.LoginCredentials;
 import org.jclouds.logging.Logger;
 import org.jclouds.softlayer.SoftLayerClient;
-import org.jclouds.softlayer.compute.functions.BlockDeviceTemplateGroupToImage;
-import org.jclouds.softlayer.compute.functions.ProductItemToImage;
+import org.jclouds.softlayer.compute.functions.ProductItems;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
 import org.jclouds.softlayer.domain.BlockDeviceTemplateGroup;
 import org.jclouds.softlayer.domain.Datacenter;
+import org.jclouds.softlayer.domain.Hardware;
+import org.jclouds.softlayer.domain.VirtualGuestConfiguration;
+import org.jclouds.softlayer.domain.internal.NetworkComponentsOption;
 import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.Password;
 import org.jclouds.softlayer.domain.ProductItem;
@@ -62,27 +47,60 @@ import org.jclouds.softlayer.domain.ProductItemPrice;
 import org.jclouds.softlayer.domain.ProductOrder;
 import org.jclouds.softlayer.domain.ProductOrderReceipt;
 import org.jclouds.softlayer.domain.ProductPackage;
+import org.jclouds.softlayer.domain.SoftwareDescription;
+import org.jclouds.softlayer.domain.SoftwareLicense;
 import org.jclouds.softlayer.domain.VirtualGuest;
-
-import com.google.common.base.Predicate;
-import com.google.common.base.Splitter;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSet.Builder;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
+import org.jclouds.softlayer.domain.internal.BlockDeviceOption;
+import org.jclouds.softlayer.domain.internal.DatacenterOption;
+import org.jclouds.softlayer.domain.internal.HardwareProfile;
+import org.jclouds.softlayer.domain.internal.MemoryOption;
+import org.jclouds.softlayer.domain.internal.ProcessorOption;
+import org.jclouds.softlayer.predicates.ProductItemPredicates;
+
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Predicates.and;
+import static com.google.common.collect.Iterables.contains;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.find;
+import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.getOnlyElement;
+import static com.google.common.collect.Iterables.tryFind;
+import static org.jclouds.softlayer.predicates.ProductItemPredicates.capacity;
+import static org.jclouds.softlayer.predicates.ProductItemPredicates.categoryCode;
+import static org.jclouds.softlayer.predicates.ProductItemPredicates.matches;
+import static org.jclouds.softlayer.predicates.ProductItemPredicates.units;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PACKAGE_NAME;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED;
+import static org.jclouds.util.Predicates2.retry;
 
 /**
  * defines the connection between the {@link SoftLayerClient} implementation and
  * the jclouds {@link ComputeService}
- * 
  */
 @Singleton
 public class SoftLayerComputeServiceAdapter implements
-      ComputeServiceAdapter<VirtualGuest, Iterable<ProductItem>, BlockDeviceTemplateGroup, Datacenter> {
+        ComputeServiceAdapter<VirtualGuest, HardwareProfile, BlockDeviceTemplateGroup, Datacenter> {
 
-   @Resource
-   @Named(ComputeServiceConstants.COMPUTE_LOGGER)
-   protected Logger logger = Logger.NULL;
+   public static final String CCI = "Cloud Server";
+   public static final String BMC = "Bare Metal Instance";
+   private static final String RAM_CATEGORY = "ram";
+   private static final String CPU_CATEGORY = "cpu";
+
 
    private final SoftLayerClient client;
    private final Supplier<ProductPackage> productPackageSupplier;
@@ -92,15 +110,21 @@ public class SoftLayerComputeServiceAdapter implements
    private final Pattern disk0Type;
    private final float portSpeed;
    private final Iterable<ProductItemPrice> prices;
+   private final String virtualGuestPackageName;
+   @Resource
+   @Named(ComputeServiceConstants.COMPUTE_LOGGER)
+   protected Logger logger = Logger.NULL;
 
    @Inject
    public SoftLayerComputeServiceAdapter(SoftLayerClient client,
-         VirtualGuestHasLoginDetailsPresent virtualGuestHasLoginDetailsPresent,
-         @Memoized Supplier<ProductPackage> productPackageSupplier, Iterable<ProductItemPrice> prices,
-         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX) String cpuRegex,
-         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE) String disk0Type,
-         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED) float portSpeed,
-         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY) long guestLoginDelay) {
+                                         VirtualGuestHasLoginDetailsPresent virtualGuestHasLoginDetailsPresent,
+                                         @Memoized Supplier<ProductPackage> productPackageSupplier,
+                                         Iterable<ProductItemPrice> prices,
+                                         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX) String cpuRegex,
+                                         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE) String disk0Type,
+                                         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED) float portSpeed,
+                                         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY) long guestLoginDelay,
+                                         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_PACKAGE_NAME) final String virtualGuestPackageName) {
       this.client = checkNotNull(client, "client");
       this.guestLoginDelay = guestLoginDelay;
       this.productPackageSupplier = checkNotNull(productPackageSupplier, "productPackageSupplier");
@@ -111,51 +135,25 @@ public class SoftLayerComputeServiceAdapter implements
       this.portSpeed = portSpeed;
       checkArgument(portSpeed > 0, "portSpeed must be greater than zero, often 10, 100, 1000, 10000");
       this.disk0Type = Pattern.compile(".*" + checkNotNull(disk0Type, "disk0Type") + ".*");
+      this.virtualGuestPackageName = virtualGuestPackageName;
    }
 
    @Override
    public NodeAndInitialCredentials<VirtualGuest> createNodeWithGroupEncodedIntoName(String group, String name,
-         Template template) {
+                                                                                     Template template) {
       checkNotNull(template, "template was null");
       checkNotNull(template.getOptions(), "template options was null");
       checkArgument(template.getOptions().getClass().isAssignableFrom(SoftLayerTemplateOptions.class),
-            "options class %s should have been assignable from SoftLayerTemplateOptions", template.getOptions()
-                  .getClass());
+              "options class %s should have been assignable from SoftLayerTemplateOptions", template.getOptions()
+              .getClass());
 
       String domainName = template.getOptions().as(SoftLayerTemplateOptions.class).getDomainName();
-
-      /*
-      OperatingSystem operatingSystem = OperatingSystem.builder()
-              .id(Integer.parseInt(template.getImage().getId()))
-              .build();
-      */
-      Datacenter datacenter = Datacenter.builder()
-              .id(Integer.valueOf(template.getLocation().getId()))
-              .name((String) template.getLocation().getMetadata().get("name"))
-              .build();
-      VirtualGuest newGuest = VirtualGuest.builder()
-              .domain(domainName)
-              .hostname(name)
-              .startCpus((int) template.getHardware().getProcessors().get(0).getCores())
-              .maxMemory(template.getHardware().getRam())
-              //.operatingSystem(operatingSystem)
-              .uuid(template.getImage().getId())
-              .datacenter(datacenter)
-              .build();
-      logger.debug(">> creating new virtualGuest (%s)", newGuest);
-      VirtualGuest result = client.getVirtualGuestClient().createObject(newGuest);
-
-      /*
-      VirtualGuest newGuest = VirtualGuest.builder().domain(domainName).hostname(name).build();
-
-      ProductOrder order = ProductOrder.builder().packageId(productPackageSupplier.get().getId())
-            .location(template.getLocation().getId()).quantity(1).useHourlyPricing(true).prices(getPrices(template))
-            .virtualGuests(newGuest).imageTemplateId(template.getImage().getId()).build();
-
-      logger.debug(">> ordering new virtualGuest domain(%s) hostname(%s)", domainName, name);
-      ProductOrderReceipt productOrderReceipt = client.getVirtualGuestClient().orderVirtualGuest(order);
-      VirtualGuest result = get(productOrderReceipt.getOrderDetails().getVirtualGuests(), 0);
-      */
+      VirtualGuest result = null;
+      if (virtualGuestPackageName.equalsIgnoreCase(CCI)) {
+         result = createCloudComputeInstance(name, template, domainName);
+      } else if (virtualGuestPackageName.equalsIgnoreCase(BMC)) {
+         result = createBareMetalInstance(name, domainName, template);
+      }
       logger.trace("<< virtualGuest(%s)", result.getId());
 
       logger.debug(">> awaiting login details for virtualGuest(%s)", result.getId());
@@ -163,88 +161,127 @@ public class SoftLayerComputeServiceAdapter implements
       logger.trace("<< virtualGuest(%s) complete(%s)", result.getId(), orderInSystem);
 
       checkState(orderInSystem, "order for guest %s doesn't have login details within %sms", result,
-            Long.toString(guestLoginDelay));
+              Long.toString(guestLoginDelay));
       result = client.getVirtualGuestClient().getVirtualGuest(result.getId());
 
       Password pw = get(result.getOperatingSystem().getPasswords(), 0);
       return new NodeAndInitialCredentials<VirtualGuest>(result, result.getId() + "", LoginCredentials.builder().user(pw.getUsername()).password(
-            pw.getPassword()).build());
-   }
-
-   private Iterable<ProductItemPrice> getPrices(Template template) {
-      Builder<ProductItemPrice> result = ImmutableSet.builder();
-
-      /*
-      int imageId = Integer.parseInt(template.getImage().getId());
-      result.add(ProductItemPrice.builder().id(imageId).build());
-      */
-      result.add(ProductItemPrice.builder().id(1857).build());
-      Iterable<String> hardwareIds = Splitter.on(",").split(template.getHardware().getId());
-      for (String hardwareId : hardwareIds) {
-         int id = Integer.parseInt(hardwareId);
-         result.add(ProductItemPrice.builder().id(id).build());
-      }
-      ProductItem uplinkItem = find(productPackageSupplier.get().getItems(),
-            and(capacity(portSpeed), categoryCode("port_speed")));
-      result.add(get(uplinkItem.getPrices(), 0));
-      result.addAll(prices);
-      return result.build();
+              pw.getPassword()).build());
    }
 
    @Override
-   public Iterable<Iterable<ProductItem>> listHardwareProfiles() {
-      ProductPackage productPackage = productPackageSupplier.get();
-      Set<ProductItem> items = productPackage.getItems();
-      Builder<Iterable<ProductItem>> result = ImmutableSet.builder();
-      for (ProductItem cpuItem : filter(items, matches(cpuPattern))) {
-         for (ProductItem ramItem : filter(items, categoryCode("ram"))) {
-            for (ProductItem sanItem : filter(items, and(matches(disk0Type), categoryCode("guest_disk0")))) {
-               result.add(ImmutableSet.of(cpuItem, ramItem, sanItem));
+   public Iterable<HardwareProfile> listHardwareProfiles() {
+      Builder<HardwareProfile> result = ImmutableSet.builder();
+      if (virtualGuestPackageName.equalsIgnoreCase(CCI)) {
+         final VirtualGuestConfiguration createObjectOptions = client.getVirtualGuestClient().getCreateObjectOptions();
+         for(ProcessorOption processor : createObjectOptions.getProcessors()) {
+            for(MemoryOption memory : createObjectOptions.getMemory()) {
+               for(BlockDeviceOption blockDevice : createObjectOptions.getBlockDeviceOptions()) {
+                  for(NetworkComponentsOption networkComponents : createObjectOptions
+                          .getNetworkComponents()) {
+                     result.add(
+                             HardwareProfile.builder()
+                                     .id(generateId(processor, memory, blockDevice, networkComponents))
+                                     .cpus(processor.getStartCpus())
+                                     .coreSpeed(processor.getCoreSpeed())
+                                     .memory(memory.getMaxMemory())
+                                     .diskCapacity(blockDevice.getCapacity())
+                                     .diskType(blockDevice.getDiskType())
+                                     .nicSpeed(networkComponents.getMaxSpeed())
+                                     .build()
+                     );
+                  }
+               }
             }
          }
+      } else if (virtualGuestPackageName.equalsIgnoreCase(BMC)) {
+         // TODO
+         ProductPackage productPackage = productPackageSupplier.get();
+         Set<ProductItem> items = productPackage.getItems();
+         result.add(HardwareProfile.builder()
+                 .id("1,2,3,4")
+                 .cpus(1)
+                 .coreSpeed(2)
+                 .memory(1024)
+                 .diskCapacity(25)
+                 .diskType(HardwareProfile.DiskType.LOCAL)
+                 .nicSpeed(100)
+                 .build());
+         /*
+         ProductPackage productPackage = productPackageSupplier.get();
+         Set<ProductItem> items = productPackage.getItems();
+         for (ProductItem cpuItem : filter(items, matches(cpuPattern))) {
+            for (ProductItem ramItem : filter(items, categoryCode("ram"))) {
+               for (ProductItem sanItem : filter(items, and(matches(disk0Type), categoryCode("guest_disk0")))) {
+                  //result.add(ImmutableSet.of(cpuItem, ramItem, sanItem));
+                  // TODO
+                  result.add(HardwareProfile.builder()
+                          .id("1,2,3,4")
+                          .cpus(1)
+                          .coreSpeed(2)
+                          .memory(1024)
+                          .diskCapacity(25)
+                          .diskType(HardwareProfile.DiskType.LOCAL)
+                          .nicSpeed(100)
+                          .build());
+               }
+            }
+         }
+         */
       }
       return result.build();
+   }
+
+   private String generateId(ProcessorOption processor, MemoryOption memory, BlockDeviceOption blockDevice, NetworkComponentsOption networkComponents) {
+      return "cpu=" + (int) processor.getStartCpus() + ",memory=" + memory.getMaxMemory() + "," +
+              "disk=" + Math.round(blockDevice.getCapacity()) + ",nic=" + networkComponents.getMaxSpeed();
    }
 
    @Override
    public Iterable<BlockDeviceTemplateGroup> listImages() {
       Set<BlockDeviceTemplateGroup> images = Sets.newHashSet();
-      Set<VirtualGuestBlockDeviceTemplateGroup> publicImagesTemplateGroups = client.getVirtualGuestClient()
-              .getPublicImages();
+      Set<VirtualGuestBlockDeviceTemplateGroup> publicImagesTemplateGroups = client.getVirtualGuestClient().getPublicImages();
 
-      for(VirtualGuestBlockDeviceTemplateGroup publicImagesTemplateGroup : publicImagesTemplateGroups) {
-         for(BlockDeviceTemplateGroup publicImage : publicImagesTemplateGroup.getChildren()) {
-            if(publicImagesTemplateGroup.getGlobalIdentifier() != null) {
+      for (VirtualGuestBlockDeviceTemplateGroup publicImagesTemplateGroup : publicImagesTemplateGroups) {
+         for (BlockDeviceTemplateGroup publicImage : publicImagesTemplateGroup.getChildren()) {
+            if (publicImagesTemplateGroup.getGlobalIdentifier() != null) {
                images.add(new BlockDeviceTemplateGroup(publicImage.getId(), publicImage.getName(),
-                    publicImagesTemplateGroup.getGlobalIdentifier()));
+                       publicImagesTemplateGroup.getGlobalIdentifier()));
             }
          }
       }
-
       Set<BlockDeviceTemplateGroup> privateImagesTemplateGroups = client.getAccountClient()
               .getPrivateImages();
-      for(BlockDeviceTemplateGroup privateImage : privateImagesTemplateGroups) {
-         if(privateImage.getGlobalIdentifier() != null) {
+      for (BlockDeviceTemplateGroup privateImage : privateImagesTemplateGroups) {
+         if (privateImage.getGlobalIdentifier() != null) {
             images.add(privateImage);
          }
       }
+      // from ActiveProductPackage (cci or bare metal will be filtered using getProductPackage
+      for (ProductItem productItem : filter(productPackageSupplier.get().getItems(), categoryCode("os"))) {
+         String name = productItem.getDescription().trim();
+         BlockDeviceTemplateGroup fromProductPackage = BlockDeviceTemplateGroup.builder().id(productItem.getId() + "")
+                 .name(name)
+                 .globalIdentifier("-")
+                 .build();
+         images.add(fromProductPackage);
+      }
       return images;
-      //return filter(productPackageSupplier.get().getItems(), categoryCode("os"));
    }
-   
+
    // cheat until we have a getProductItem command
    @Override
    public BlockDeviceTemplateGroup getImage(final String id) {
-      return find(listImages(), new Predicate<BlockDeviceTemplateGroup>(){
+      return find(listImages(), new Predicate<BlockDeviceTemplateGroup>() {
 
          @Override
          public boolean apply(BlockDeviceTemplateGroup input) {
             return input.getId().equals(id);
          }
-         
+
       }, null);
    }
-   
+
    @Override
    public Iterable<VirtualGuest> listNodes() {
       return filter(client.getVirtualGuestClient().listVirtualGuests(), new Predicate<VirtualGuest>() {
@@ -265,16 +302,30 @@ public class SoftLayerComputeServiceAdapter implements
    public Iterable<VirtualGuest> listNodesByIds(final Iterable<String> ids) {
       return filter(listNodes(), new Predicate<VirtualGuest>() {
 
-            @Override
-            public boolean apply(VirtualGuest server) {
-               return contains(ids, server.getId());
-            }
-         });
+         @Override
+         public boolean apply(VirtualGuest server) {
+            return contains(ids, server.getId());
+         }
+      });
    }
 
    @Override
    public Iterable<Datacenter> listLocations() {
-      return client.getDatacenterClient().listDatacenters();
+      Set<Datacenter> datacenters = Sets.newHashSet(client.getDatacenterClient().listDatacenters());
+      if (virtualGuestPackageName.equalsIgnoreCase(CCI)) {
+         Set<Datacenter> cciDatacenters = Sets.newHashSet();
+         Set<DatacenterOption> cciDatacentersOption = client.getVirtualGuestClient().getCreateObjectOptions().getDatacenters();
+         for (final DatacenterOption datacenterOption : cciDatacentersOption) {
+            cciDatacenters.addAll(FluentIterable.from(datacenters).filter(new Predicate<Datacenter>() {
+               @Override
+               public boolean apply(Datacenter datacenter) {
+                  return datacenter.getName().equals(datacenterOption.getName());
+               }
+            }).toSet());
+         }
+         return cciDatacenters;
+      }
+      return datacenters;
    }
 
    @Override
@@ -291,7 +342,7 @@ public class SoftLayerComputeServiceAdapter implements
 
       if (guest.getBillingItemId() == -1)
          throw new IllegalStateException(String.format("no billing item for guest(%s) so we cannot cancel the order",
-               id));
+                 id));
 
       logger.debug(">> canceling service for guest(%s) billingItem(%s)", id, guest.getBillingItemId());
       client.getVirtualGuestClient().cancelService(guest.getBillingItemId());
@@ -312,6 +363,113 @@ public class SoftLayerComputeServiceAdapter implements
       client.getVirtualGuestClient().pauseVirtualGuest(Long.parseLong(id));
    }
 
+   private VirtualGuest createCloudComputeInstance(String name, Template template, String domainName) {
+      OperatingSystem operatingSystem = null;
+      if (template.getImage().getName() != null) {
+         operatingSystem = OperatingSystem.builder()
+                 .softwareLicense(SoftwareLicense.builder()
+                         .softwareDescription(SoftwareDescription.builder()
+                                 .name(template.getImage().getName())
+                                 .build())
+                         .build())
+                 .build();
+      }
+      Datacenter datacenter = Datacenter.builder()
+              .id(Integer.valueOf(template.getLocation().getId()))
+              .name((String) template.getLocation().getMetadata().get("name"))
+              .build();
+      VirtualGuest newGuest = VirtualGuest.builder()
+              .domain(domainName)
+              .hostname(name)
+              .startCpus((int) template.getHardware().getProcessors().get(0).getCores())
+              .maxMemory(template.getHardware().getRam())
+              .operatingSystem(operatingSystem)
+              .uuid(template.getImage().getId())
+              .datacenter(datacenter)
+              .build();
+      logger.debug(">> creating new virtualGuest (%s)", newGuest);
+      VirtualGuest result = client.getVirtualGuestClient().createObject(newGuest);
+      return result;
+   }
+
+   private VirtualGuest createBareMetalInstance(final String name, final String domainName, Template template) {
+      VirtualGuest newGuest = VirtualGuest.builder().domain(domainName).hostname(name).build();
+
+      ProductOrder order = ProductOrder.builder()
+              .packageId(productPackageSupplier.get().getId())
+              .location(template.getLocation().getId())
+              .quantity(1)
+              .useHourlyPricing(true)
+              .prices(getPrices(template))
+              .virtualGuests(newGuest)
+              //.imageTemplateId(template.getImage().getId())
+              .hardware(Hardware.builder().domain(domainName).hostname(name).bareMetalInstanceFlag(1).build())
+              .build();
+
+      logger.debug(">> ordering new virtualGuest domain(%s) hostname(%s)", domainName, name);
+      ProductOrderReceipt productOrderReceipt = client.getVirtualGuestClient().orderVirtualGuest(order);
+
+      Hardware hardware;
+      int hardwareStatusId = -1;
+      do {
+         Optional<Hardware> hardwareOptional = tryFind(client.getAccountClient().getHardware(), new Predicate<Hardware>() {
+            @Override
+            public boolean apply(Hardware hardware) {
+               return hardware.getHostname().equals(name) && hardware.getDomain().equals(domainName);
+            }
+         });
+         if(hardwareOptional.isPresent()) {
+            hardware = hardwareOptional.get();
+            hardwareStatusId = hardware.getHardwareStatusId();
+         }
+      } while (hardwareStatusId == -1);
+
+      VirtualGuest result = get(productOrderReceipt.getOrderDetails().getVirtualGuests(), 0);
+      return result;
+   }
+
+   private Iterable<ProductItemPrice> getPrices(Template template) {
+      Builder<ProductItemPrice> result = ImmutableSet.builder();
+      final Set<ProductItem> items = productPackageSupplier.get().getItems();
+      // cpu and memory
+      float cpuSpeed = (float) 2.0;
+      ProductItem cpuAndRamItem = find(items,
+              and(units("CORE"), capacity(cpuSpeed), categoryCode("server_core")));
+      ProductItemPrice cpuAndRamProductItemPrice = get(cpuAndRamItem.getPrices(), 0);
+      result.add(ProductItemPrice.builder().id(cpuAndRamProductItemPrice.getId()).build());
+      // os price
+      ProductItem osItem = find(items, and(matches(Pattern.compile("Ubuntu Linux 12.04.*")), categoryCode("os")));
+
+      ProductItemPrice osProductItemPrice = get(osItem.getPrices(), 0);
+      result.add(ProductItemPrice.builder().id(osProductItemPrice.getId()).build());
+
+      // disk price
+      ProductItem diskItem = find(items, categoryCode("disk0"));
+      ProductItemPrice diskItemPrice = get(diskItem.getPrices(), 0);
+      result.add(ProductItemPrice.builder().id(diskItemPrice.getId()).build());
+
+      ProductItem uplinkItem = find(items,
+              and(capacity(portSpeed), categoryCode("port_speed")));
+      result.add(get(uplinkItem.getPrices(), 0));
+      result.addAll(prices);
+      return result.build();
+      /*
+      int imageId = Integer.parseInt(template.getImage().getId());
+      result.add(ProductItemPrice.builder().id(imageId).build());
+
+      Iterable<String> hardwareIds = Splitter.on(",").split(template.getHardware().getId());
+      for (String hardwareId : hardwareIds) {
+         int id = Integer.parseInt(hardwareId);
+         result.add(ProductItemPrice.builder().id(id).build());
+      }
+      ProductItem uplinkItem = find(items,
+              and(capacity(portSpeed), categoryCode("port_speed")));
+      result.add(get(uplinkItem.getPrices(), 0));
+      result.addAll(prices);
+      return result.build();
+      */
+   }
+
    public static class VirtualGuestHasLoginDetailsPresent implements Predicate<VirtualGuest> {
       private final SoftLayerClient client;
 
@@ -328,9 +486,10 @@ public class SoftLayerComputeServiceAdapter implements
          boolean hasBackendIp = newGuest.getPrimaryBackendIpAddress() != null;
          boolean hasPrimaryIp = newGuest.getPrimaryIpAddress() != null;
          boolean hasPasswords = newGuest.getOperatingSystem() != null
-               && newGuest.getOperatingSystem().getPasswords().size() > 0;
+                 && newGuest.getOperatingSystem().getPasswords().size() > 0;
 
          return hasBackendIp && hasPrimaryIp && hasPasswords;
       }
    }
+
 }

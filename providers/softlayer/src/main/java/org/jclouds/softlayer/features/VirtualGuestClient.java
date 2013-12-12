@@ -17,10 +17,13 @@
 package org.jclouds.softlayer.features;
 
 import java.util.Set;
+
+import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.ProductOrder;
 import org.jclouds.softlayer.domain.ProductOrderReceipt;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
+import org.jclouds.softlayer.domain.VirtualGuestConfiguration;
 
 /**
  * Provides synchronous access to VirtualGuest.
@@ -121,4 +124,13 @@ public interface VirtualGuestClient {
    Set<VirtualGuestBlockDeviceTemplateGroup> getPublicImages();
 
    VirtualGuest createObject(VirtualGuest virtualGuest);
+
+
+   /**
+    * Determine options available when creating a computing instance
+    *
+    * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest/getCreateObjectOptions" />
+    */
+
+   VirtualGuestConfiguration getCreateObjectOptions();
 }

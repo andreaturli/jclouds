@@ -53,6 +53,7 @@ public class ProductOrder {
       protected Set<VirtualGuest> virtualGuests = ImmutableSet.of();
       protected int quantity;
       protected boolean useHourlyPricing;
+      protected Set<Hardware> hardware;
       protected String imageTemplateId;
 
       /**
@@ -111,6 +112,14 @@ public class ProductOrder {
          return self();
       }
 
+      public T hardware(Set<Hardware> hardware) {
+         this.hardware = ImmutableSet.copyOf(checkNotNull(hardware, "hardware"));
+         return self();
+      }
+
+      public T hardware(Hardware... in) {
+         return hardware(ImmutableSet.copyOf(in));
+      }
 
       public T imageTemplateId(String imageTemplateId) {
          this.imageTemplateId = imageTemplateId;
@@ -118,7 +127,8 @@ public class ProductOrder {
       }
 
       public ProductOrder build() {
-         return new ProductOrder(packageId, location, prices, virtualGuests, quantity, useHourlyPricing, imageTemplateId);
+         return new ProductOrder(packageId, location, prices, virtualGuests, quantity, useHourlyPricing,
+                 hardware, imageTemplateId);
       }
 
       public T fromProductOrder(ProductOrder in) {
@@ -128,7 +138,9 @@ public class ProductOrder {
                .prices(in.getPrices())
                .virtualGuests(in.getVirtualGuests())
                .quantity(in.getQuantity())
-               .useHourlyPricing(in.getUseHourlyPricing());
+               .useHourlyPricing(in.getUseHourlyPricing())
+               .hardware(in.getHardware())
+               .imageTemplateId(in.getImageTemplateId());
       }
    }
 
@@ -145,20 +157,22 @@ public class ProductOrder {
    private final Set<VirtualGuest> virtualGuests;
    private final int quantity;
    private final boolean useHourlyPricing;
+   protected Set<Hardware> hardware;
    private final String imageTemplateId;
 
    @ConstructorProperties({
-      "packageId", "location", "prices", "virtualGuests", "quantity", "useHourlyPricing", "imageTemplateId"
+      "packageId", "location", "prices", "virtualGuests", "quantity", "useHourlyPricing", "hardware", "imageTemplateId"
    })
    protected ProductOrder(int packageId, @Nullable String location, @Nullable Set<ProductItemPrice> prices,
                           @Nullable Set<VirtualGuest> virtualGuests, int quantity, boolean useHourlyPricing,
-                          String imageTemplateId) {
+                          Set<Hardware> hardware, String imageTemplateId) {
       this.packageId = packageId;
       this.location = location;
       this.prices = prices == null ? ImmutableSet.<ProductItemPrice>of() : ImmutableSet.copyOf(prices);
       this.virtualGuests = virtualGuests == null ? ImmutableSet.<VirtualGuest>of() : ImmutableSet.copyOf(virtualGuests);
       this.quantity = quantity;
       this.useHourlyPricing = useHourlyPricing;
+      this.hardware = hardware;
       this.imageTemplateId = imageTemplateId;
    }
 
@@ -204,6 +218,8 @@ public class ProductOrder {
       return this.useHourlyPricing;
    }
 
+   public Set<Hardware> getHardware() { return hardware; }
+
    public String getImageTemplateId() {
       return this.imageTemplateId;
    }
@@ -224,12 +240,16 @@ public class ProductOrder {
             && Objects.equal(this.prices, that.prices)
             && Objects.equal(this.virtualGuests, that.virtualGuests)
             && Objects.equal(this.quantity, that.quantity)
-            && Objects.equal(this.useHourlyPricing, that.useHourlyPricing);
+            && Objects.equal(this.useHourlyPricing, that.useHourlyPricing)
+            && Objects.equal(this.hardware, that.hardware)
+            && Objects.equal(this.imageTemplateId, that.imageTemplateId);
    }
 
    protected ToStringHelper string() {
       return Objects.toStringHelper(this)
-            .add("packageId", packageId).add("location", location).add("prices", prices).add("virtualGuests", virtualGuests).add("quantity", quantity).add("useHourlyPricing", useHourlyPricing);
+            .add("packageId", packageId).add("location", location).add("prices", prices)
+            .add("virtualGuests", virtualGuests).add("quantity", quantity).add("useHourlyPricing",
+                      useHourlyPricing).add("hardware", hardware).add("imageTemplateId", imageTemplateId);
    }
 
    @Override
