@@ -21,7 +21,7 @@ import org.jclouds.softlayer.SoftLayerApi;
 import org.testng.annotations.Test;
 
 /**
- * Tests behavior of {@code SoftLayerApi}
+ * Tests behavior of {@code SoftLayerClient}
  * 
  * @author Adrian Cole
  */
@@ -31,4 +31,5 @@ public class BaseSoftLayerApiLiveTest extends BaseApiLiveTest<SoftLayerApi> {
    public BaseSoftLayerApiLiveTest() {
       this.provider = "softlayer";
    }
+
 }

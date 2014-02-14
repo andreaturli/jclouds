@@ -16,22 +16,20 @@
  */
 package org.jclouds.softlayer.domain;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.emptyToNull;
+import com.google.common.base.Objects;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
 
-import org.jclouds.javax.annotation.Nullable;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Objects.ToStringHelper;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * Class Address
  *
  * @author Jason King
- * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Account_Address"
-/>
+ * @author Andrea Turli
+ * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Account_Address"/>
  */
 public class Address {
 
@@ -50,6 +48,13 @@ public class Address {
       protected String country;
       protected String state;
       protected String description;
+      protected int accountId;
+      protected String address;
+      protected String city;
+      protected String contactName;
+      protected int isActive;
+      protected int locationId;
+      protected String postalCode;
 
       /**
        * @see Address#getId()
@@ -83,8 +88,65 @@ public class Address {
          return self();
       }
 
+      /**
+       * @see org.jclouds.softlayer.domain.Address#getAccountId()
+       */
+      public T accountId(int accountId) {
+         this.accountId = accountId;
+         return self();
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.Address#getAddress1()
+       */
+      public T address(String address) {
+         this.address = address;
+         return self();
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.Address#getCity()
+       */
+      public T city(String city) {
+         this.city = city;
+         return self();
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.Address#getContactName()
+       */
+      public T contactName(String contactName) {
+         this.contactName = contactName;
+         return self();
+      }
+
+      /**
+       * @see Address#isActive()
+       */
+      public T isActive(int isActive) {
+         this.isActive = isActive;
+         return self();
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.Address#getLocationId()
+       */
+      public T locationId(int locationId) {
+         this.locationId = locationId;
+         return self();
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.Address#getPostalCode()
+       */
+      public T postalCode(String postalCode) {
+         this.postalCode = postalCode;
+         return self();
+      }
+
       public Address build() {
-         return new Address(id, country, state, description);
+         return new Address(id, country, state, description, accountId, address, city, contactName, isActive,
+                 locationId, postalCode);
       }
 
       public T fromAddress(Address in) {
@@ -92,7 +154,14 @@ public class Address {
                .id(in.getId())
                .country(in.getCountry())
                .state(in.getState())
-               .description(in.getDescription());
+               .description(in.getDescription())
+               .accountId(in.getAccountId())
+               .address(in.getAddress1())
+               .city(in.getCity())
+               .contactName(in.getContactName())
+               .isActive(in.isActive())
+               .locationId(in.getLocationId())
+               .postalCode(in.getPostalCode());
       }
    }
 
@@ -107,13 +176,30 @@ public class Address {
    private final String country;
    private final String state;
    private final String description;
+   private final int accountId;
+   private final String address;
+   private final String city;
+   private final String contactName;
+   private final int isActive;
+   private final int locationId;
+   private final String postalCode;
 
    @ConstructorProperties({
-         "id", "country", "state", "description"
+         "id", "country", "state", "description", "accountId", "address1", "city", "contactName", "isActive",
+           "locationId", "postalCode"
    })
-   protected Address(int id, String country, @Nullable String state, @Nullable String description) {
-      this.id = id;
-      this.country = checkNotNull(emptyToNull(country), "country cannot be null or empty:" + country);
+   protected Address(int id, String country, @Nullable String state, @Nullable String description, @Nullable int accountId,
+                     @Nullable String address, @Nullable String city, @Nullable String contactName,
+                     @Nullable int isActive, @Nullable int locationId, @Nullable String postalCode) {
+      this.id = checkNotNull(id, "id");
+      this.accountId = checkNotNull(accountId, "accountId");
+      this.address = address;
+      this.city = city;
+      this.contactName = contactName;
+      this.isActive = isActive;
+      this.locationId = locationId;
+      this.postalCode = postalCode;
+      this.country = checkNotNull(emptyToNull(country),"country cannot be null or empty:"+country);
       this.state = state;
       this.description = description;
    }
@@ -148,6 +234,62 @@ public class Address {
       return this.description;
    }
 
+   /**
+    * @return The id of the account.
+    */
+   @Nullable
+   public int getAccountId() {
+      return accountId;
+   }
+
+   /**
+    * @return The value of the address.
+    */
+   @Nullable
+   public String getAddress1() {
+      return address;
+   }
+
+   /**
+    * @return The name of the city.
+    */
+   @Nullable
+   public String getCity() {
+      return city;
+   }
+
+   /**
+    * @return The name of the contact.
+    */
+   @Nullable
+   public String getContactName() {
+      return contactName;
+   }
+
+   /**
+    * @return The name of the contact.
+    */
+   @Nullable
+   public int isActive() {
+      return isActive;
+   }
+
+   /**
+    * @return The id of the location.
+    */
+   @Nullable
+   public int getLocationId() {
+      return locationId;
+   }
+
+   /**
+    * @return The postal code of the address.
+    */
+   @Nullable
+   public String getPostalCode() {
+      return postalCode;
+   }
+
    @Override
    public int hashCode() {
       return Objects.hashCode(id);
@@ -161,14 +303,20 @@ public class Address {
       return Objects.equal(this.id, that.id);
    }
 
-   protected ToStringHelper string() {
-      return Objects.toStringHelper(this)
-            .add("id", id).add("country", country).add("state", state).add("description", description);
-   }
-
    @Override
    public String toString() {
-      return string().toString();
+      return "Address{" +
+              "id=" + id +
+              ", country='" + country + '\'' +
+              ", state='" + state + '\'' +
+              ", description='" + description + '\'' +
+              ", accountId=" + accountId +
+              ", address='" + address + '\'' +
+              ", city='" + city + '\'' +
+              ", contactName='" + contactName + '\'' +
+              ", isActive=" + isActive +
+              ", locationId=" + locationId +
+              ", postalCode='" + postalCode + '\'' +
+              '}';
    }
-
 }

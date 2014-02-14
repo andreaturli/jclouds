@@ -16,44 +16,56 @@
  */
 package org.jclouds.softlayer.features;
 
-import java.util.Set;
+import org.jclouds.Fallbacks;
+import org.jclouds.http.filters.BasicAuthentication;
+import org.jclouds.rest.annotations.Fallback;
+import org.jclouds.rest.annotations.QueryParams;
+import org.jclouds.rest.annotations.RequestFilters;
+import org.jclouds.softlayer.domain.VirtualGuest;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-
-import org.jclouds.Fallbacks;
-import org.jclouds.http.filters.BasicAuthentication;
-import org.jclouds.rest.annotations.Fallback;
-import org.jclouds.rest.annotations.RequestFilters;
-import org.jclouds.softlayer.domain.ProductPackage;
+import java.util.Set;
 
 /**
- * Provides synchronous access to Account.
+ * Provides access to Account via their REST API.
  * <p/>
- * 
- * @see <a href="http://sldn.softlayer.com/article/REST" />
- * @author Jason King
+ *
+ * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest_Block_Device_Template_Group" />
+ * @author Andrea Turli
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
 public interface AccountApi {
 
+   public static String GUEST_MASK = "children.blockDevices.diskImage.softwareReferences.softwareDescription";
+   public static String LIST_GUEST_MASK = "powerState;operatingSystem.passwords;datacenter;billingItem;blockDevices.diskImage";
+
    /**
-    * 
-    * @return Gets all the active packages.
-    * This will give you a basic description of the packages that are currently
-    * active and from which you can order a server or additional services.
-    *
-    * Calling ProductPackage.getItems() will return an empty set.
-    * Use ProductPackageApi.getProductPackage(long id) to obtain items data.
-    * @see ProductPackageApi#getProductPackage
+    * @return an account's associated virtual guest objects.
     */
+   @Named("Account:listVirtualGuest")
    @GET
-   @Path("/SoftLayer_Account/ActivePackages.json")
+   @Path("/SoftLayer_Account/VirtualGuests")
+   @QueryParams(keys = "objectMask", values = LIST_GUEST_MASK)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.NullOnNotFoundOr404.class)
-   Set<ProductPackage> getActivePackages();
+   @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
+   Set<VirtualGuest> listVirtualGuests();
+
+   /**
+    * @return retrieve block device groups for an account (private images)
+    * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Account/getBlockDeviceTemplateGroups/" />
+    */
+   @Named("Account:getBlockDeviceTemplateGroups")
+   @GET
+   @Path("/SoftLayer_Account/getBlockDeviceTemplateGroups")
+   @QueryParams(keys = "objectMask", values = GUEST_MASK)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
+   Set<VirtualGuestBlockDeviceTemplateGroup> getBlockDeviceTemplateGroups();
 
 }
