@@ -18,12 +18,14 @@ package org.jclouds.softlayer.compute;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
 
 import java.util.Properties;
 import java.util.Random;
 
 import org.jclouds.compute.ComputeServiceAdapter.NodeAndInitialCredentials;
 import org.jclouds.compute.domain.ExecResponse;
+import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.functions.DefaultCredentialsFromImageOrOverridingCredentials;
@@ -32,7 +34,7 @@ import org.jclouds.domain.LoginCredentials;
 import org.jclouds.softlayer.SoftLayerApi;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
 import org.jclouds.softlayer.compute.strategy.SoftLayerComputeServiceAdapter;
-import org.jclouds.softlayer.domain.ProductItem;
+import org.jclouds.softlayer.domain.PowerState;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.features.BaseSoftLayerApiLiveTest;
 import org.jclouds.ssh.SshClient;
@@ -67,7 +69,12 @@ public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerApiLive
 
    @Test
    public void testListLocations() {
-      assertFalse(Iterables.isEmpty(adapter.listLocations()));
+      assertFalse(Iterables.isEmpty(adapter.listLocations()), "locations must not be empty");
+   }
+
+   @Test
+   public void testListImages() {
+      assertFalse(Iterables.isEmpty(adapter.listImages()), "images must not be empty");
    }
 
    private static final PrioritizeCredentialsFromTemplate prioritizeCredentialsFromTemplate = new PrioritizeCredentialsFromTemplate(
@@ -108,24 +115,31 @@ public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerApiLive
 
    @Test
    public void testListHardwareProfiles() {
-      Iterable<Iterable<ProductItem>> profiles = adapter.listHardwareProfiles();
+      Iterable<Hardware> profiles = adapter.listHardwareProfiles();
       assertFalse(Iterables.isEmpty(profiles));
 
-      for (Iterable<ProductItem> profile : profiles) {
-         // CPU, RAM and Volume
-         assertEquals(Iterables.size(profile), 3);
+      for (Hardware profile : profiles) {
+         assertNotNull(profile);
       }
    }
 
    @AfterGroups(groups = "live")
    protected void tearDown() {
-      if (guest != null)
+      if (guest != null) {
          adapter.destroyNode(guest.getNodeId() + "");
+      }
       super.tearDown();
    }
 
    @Override
    protected Iterable<Module> setupModules() {
       return ImmutableSet.<Module> of(getLoggingModule(), new SshjSshClientModule());
+   }
+
+   @Override
+   protected Properties setupProperties() {
+      Properties properties = super.setupProperties();
+      properties.setProperty("jclouds.ssh.max-retries", "10");
+      return properties;
    }
 }

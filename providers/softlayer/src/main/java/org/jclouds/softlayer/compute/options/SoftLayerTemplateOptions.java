@@ -130,22 +130,6 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
          SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
          return SoftLayerTemplateOptions.class.cast(options.userMetadata(key, value));
       }
-
-      /**
-       * @see TemplateOptions#nodeNames(Iterable)
-       */
-      public static SoftLayerTemplateOptions nodeNames(Iterable<String> nodeNames) {
-         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
-         return SoftLayerTemplateOptions.class.cast(options.nodeNames(nodeNames));
-      }
-
-      /**
-       * @see TemplateOptions#networks(Iterable)
-       */
-      public static SoftLayerTemplateOptions networks(Iterable<String> networks) {
-         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
-         return SoftLayerTemplateOptions.class.cast(options.networks(networks));
-      }
    }
 
    // methods that only facilitate returning the correct object type
@@ -196,21 +180,5 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
    @Override
    public SoftLayerTemplateOptions userMetadata(String key, String value) {
       return SoftLayerTemplateOptions.class.cast(super.userMetadata(key, value));
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public SoftLayerTemplateOptions nodeNames(Iterable<String> nodeNames) {
-      return SoftLayerTemplateOptions.class.cast(super.nodeNames(nodeNames));
-   }
-
-   /**
-    * {@inheritDoc}
-    */
-   @Override
-   public SoftLayerTemplateOptions networks(Iterable<String> networks) {
-      return SoftLayerTemplateOptions.class.cast(super.networks(networks));
    }
 }

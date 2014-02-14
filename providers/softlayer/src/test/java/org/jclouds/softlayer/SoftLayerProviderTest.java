@@ -20,12 +20,10 @@ import org.jclouds.providers.internal.BaseProviderMetadataTest;
 import org.testng.annotations.Test;
 
 /**
- * 
- * @author Adrian Cole
+ * @author Andrea Turli
  */
-@Test(groups = "unit", testName = "SoftLayerProviderTest")
+@Test(groups = "unit", testName = "SoftLayerApiMetadataTest")
 public class SoftLayerProviderTest extends BaseProviderMetadataTest {
-
    public SoftLayerProviderTest() {
       super(new SoftLayerProviderMetadata(), new SoftLayerApiMetadata());
    }
