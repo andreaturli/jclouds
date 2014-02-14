@@ -177,27 +177,24 @@ public class Datacenter {
       return this.regions;
    }
 
+
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      Datacenter that = (Datacenter) o;
+
+      return Objects.equal(this.id, that.id) &&
+              Objects.equal(this.name, that.name) &&
+              Objects.equal(this.longName, that.longName) &&
+              Objects.equal(this.locationAddress, that.locationAddress) &&
+              Objects.equal(this.regions, that.regions);
+   }
+
    @Override
    public int hashCode() {
-      return Objects.hashCode(id);
-   }
-
-   @Override
-   public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if (obj == null || getClass() != obj.getClass()) return false;
-      Datacenter that = Datacenter.class.cast(obj);
-      return Objects.equal(this.id, that.id);
-   }
-
-   protected ToStringHelper string() {
-      return Objects.toStringHelper(this)
-            .add("id", id).add("name", name).add("longName", longName).add("locationAddress", locationAddress).add("regions", regions);
-   }
-
-   @Override
-   public String toString() {
-      return string().toString();
+      return Objects.hashCode(id, name, longName, locationAddress, regions);
    }
 
 }

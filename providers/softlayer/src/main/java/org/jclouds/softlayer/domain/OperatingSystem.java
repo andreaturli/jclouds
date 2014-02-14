@@ -30,10 +30,8 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Extends the SoftLayer_Software_Component data type to include operating system specific properties.
  *
- * @author Jason King
- * @see <a href=
-"http://sldn.softlayer.com/reference/datatypes/SoftLayer_Software_Component_OperatingSystem"
-/>
+ * @author Jason King, Andrea Turli
+ * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Software_Component_OperatingSystem"/>
  */
 public class OperatingSystem {
 
@@ -48,14 +46,32 @@ public class OperatingSystem {
    public abstract static class Builder<T extends Builder<T>>  {
       protected abstract T self();
 
-      protected int id;
+      protected String id;
+      protected SoftwareLicense softwareLicense;
+      protected String operatingSystemReferenceCode;
       protected Set<Password> passwords = ImmutableSet.of();
 
       /**
        * @see OperatingSystem#getId()
        */
-      public T id(int id) {
+      public T id(String id) {
          this.id = id;
+         return self();
+      }
+
+      /**
+       * @see OperatingSystem#getSoftwareLicense()
+       */
+      public T softwareLicense(SoftwareLicense softwareLicense) {
+         this.softwareLicense = softwareLicense;
+         return self();
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.OperatingSystem#getOperatingSystemReferenceCode()
+       */
+      public T operatingSystemReferenceCode(String operatingSystemReferenceCode) {
+         this.operatingSystemReferenceCode = operatingSystemReferenceCode;
          return self();
       }
 
@@ -72,7 +88,7 @@ public class OperatingSystem {
       }
 
       public OperatingSystem build() {
-         return new OperatingSystem(id, passwords);
+         return new OperatingSystem(id, softwareLicense, operatingSystemReferenceCode, passwords);
       }
 
       public T fromOperatingSystem(OperatingSystem in) {
@@ -89,22 +105,35 @@ public class OperatingSystem {
       }
    }
 
-   private final int id;
+   private final String id;
+   private final SoftwareLicense softwareLicense;
+   private final String operatingSystemReferenceCode;
    private final Set<Password> passwords;
 
    @ConstructorProperties({
-         "id", "passwords"
+         "id", "softwareLicense", "operatingSystemReferenceCode", "passwords"
    })
-   protected OperatingSystem(int id, @Nullable Set<Password> passwords) {
+   protected OperatingSystem(String id, @Nullable SoftwareLicense softwareLicense,
+                             @Nullable String operatingSystemReferenceCode, @Nullable Set<Password> passwords) {
       this.id = id;
+      this.softwareLicense = softwareLicense;
+      this.operatingSystemReferenceCode = operatingSystemReferenceCode;
       this.passwords = passwords == null ? ImmutableSet.<Password>of() : ImmutableSet.copyOf(passwords);
    }
 
    /**
     * @return An ID number identifying this Software Component (Software Installation)
     */
-   public int getId() {
+   public String getId() {
       return this.id;
+   }
+
+   public SoftwareLicense getSoftwareLicense() {
+      return softwareLicense;
+   }
+
+   public String getOperatingSystemReferenceCode() {
+      return operatingSystemReferenceCode;
    }
 
    /**
@@ -115,26 +144,30 @@ public class OperatingSystem {
    }
 
    @Override
-   public int hashCode() {
-      return Objects.hashCode(id);
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      OperatingSystem that = (OperatingSystem) o;
+
+      return Objects.equal(this.id, that.id) &&
+              Objects.equal(this.softwareLicense, that.softwareLicense) &&
+              Objects.equal(this.operatingSystemReferenceCode, that.operatingSystemReferenceCode) &&
+              Objects.equal(this.passwords, that.passwords);
    }
 
    @Override
-   public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if (obj == null || getClass() != obj.getClass()) return false;
-      OperatingSystem that = OperatingSystem.class.cast(obj);
-      return Objects.equal(this.id, that.id);
-   }
-
-   protected ToStringHelper string() {
-      return Objects.toStringHelper(this)
-            .add("id", id).add("passwords", passwords);
+   public int hashCode() {
+      return Objects.hashCode(id, softwareLicense, operatingSystemReferenceCode, passwords);
    }
 
    @Override
    public String toString() {
-      return string().toString();
+      return "OperatingSystem{" +
+              "id='" + id + '\'' +
+              ", softwareLicense=" + softwareLicense +
+              ", operatingSystemReferenceCode=" + operatingSystemReferenceCode +
+              ", passwords=" + passwords +
+              '}';
    }
-
 }
