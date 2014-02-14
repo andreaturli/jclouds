@@ -19,38 +19,16 @@ package org.jclouds.softlayer.reference;
 /**
  * Configuration properties and constants used in SoftLayer connections.
  * 
- * @author Adrian Cole
+ * @author Adrian Cole, Andrea Turli
  */
 public interface SoftLayerConstants {
 
-   /**
-    * Name of the product package corresponding to cloud servers
-    */
-   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_PACKAGE_NAME = "jclouds.softlayer.virtualguest.package-name";
-
-   /**
-    * pattern where last group matches core speed
-    */
-   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_CPU_REGEX = "jclouds.softlayer.virtualguest.cpu-regex";
-
-   /**
-    * Uplink port speed for new guests (10, 100, 1000)
-    */
-   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED = "jclouds.softlayer.virtualguest.port-speed";
-
-   /**
-    * Default Boot Disk type (SAN, LOCAL)
-    */
-   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK0_TYPE = "jclouds.softlayer.virtualguest.disk0-type";
+   public static final String SOFTLAYER_PROVIDER_NAME = "softlayer";
 
    /**
     * number of milliseconds to wait for an order to arrive on the api.
     */
-   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY = "jclouds.softlayer.virtualguest.order-delay";
-
-   /**
-    * standard prices for all new guests.
-    */
-   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_PRICES = "jclouds.softlayer.virtualguest.prices";
+   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY = "jclouds.softlayer.virtualguest" +
+           ".login_details_delay";
 
 }

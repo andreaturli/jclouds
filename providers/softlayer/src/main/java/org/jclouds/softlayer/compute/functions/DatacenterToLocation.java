@@ -36,7 +36,7 @@ import com.google.common.collect.Iterables;
 /**
  * Converts an Datacenter into a Location.
  */
-public class DatacenterToLocation implements Function<Datacenter,Location> {
+public class  DatacenterToLocation implements Function<Datacenter,Location> {
    private final JustProvider provider;
 
    // allow us to lazy discover the provider of a resource
@@ -47,17 +47,17 @@ public class DatacenterToLocation implements Function<Datacenter,Location> {
    
     @Override
     public Location apply(Datacenter datacenter) {
-        return new LocationBuilder().scope(LocationScope.ZONE)
-                                    .metadata(ImmutableMap.<String, Object>of())
+        return new LocationBuilder().id(datacenter.getName())
                                     .description(datacenter.getLongName())
-                                    .id(Long.toString(datacenter.getId()))
+                                    .scope(LocationScope.ZONE)
                                     .iso3166Codes(createIso3166Codes(datacenter.getLocationAddress()))
                                     .parent(Iterables.getOnlyElement(provider.get()))
+                                    .metadata(ImmutableMap.<String, Object>of("name", datacenter.getName()))
                                     .build();
    }
 
    private Iterable<String> createIso3166Codes(Address address) {
-      if (address == null) return ImmutableSet.<String> of();
+      if (address== null) return ImmutableSet.<String> of();
 
       final String country = nullToEmpty(address.getCountry()).trim();
       if (country.isEmpty()) return ImmutableSet.<String> of();

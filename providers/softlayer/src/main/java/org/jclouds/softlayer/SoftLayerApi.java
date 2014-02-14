@@ -16,44 +16,30 @@
  */
 package org.jclouds.softlayer;
 
-import java.io.Closeable;
-
 import org.jclouds.rest.annotations.Delegate;
-import org.jclouds.softlayer.features.AccountApi;
 import org.jclouds.softlayer.features.DatacenterApi;
-import org.jclouds.softlayer.features.ProductPackageApi;
+import org.jclouds.softlayer.features.SoftwareDescriptionApi;
 import org.jclouds.softlayer.features.VirtualGuestApi;
 
-/**
- * Provides synchronous access to SoftLayer.
- * <p/>
- * 
- * @see <a href="http://sldn.softlayer.com/article/REST" />
- * @author Adrian Cole
- */
+import java.io.Closeable;
+
 public interface SoftLayerApi extends Closeable {
 
    /**
-    * Provides synchronous access to VirtualGuest features.
+    * Provides access to VirtualGuest features.
     */
    @Delegate
    VirtualGuestApi getVirtualGuestApi();
 
    /**
-    * Provides synchronous access to Datacenter features.
+    * Provides access to Datacenter features.
     */
    @Delegate
    DatacenterApi getDatacenterApi();
 
    /**
-    * Provides synchronous access to ProductPackage features.
+    * Provides access to SoftwareDescription features.
     */
    @Delegate
-   ProductPackageApi getProductPackageApi();
-
-   /**
-    * Provides synchronous access to Account features.
-    */
-   @Delegate
-   AccountApi getAccountApi();
+   SoftwareDescriptionApi getSoftwareDescriptionApi();
 }

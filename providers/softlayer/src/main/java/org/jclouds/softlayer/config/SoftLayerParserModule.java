@@ -16,20 +16,18 @@
  */
 package org.jclouds.softlayer.config;
 
-import org.jclouds.json.config.GsonModule.DateAdapter;
-import org.jclouds.json.config.GsonModule.Iso8601DateAdapter;
-
+import org.jclouds.json.config.GsonModule;
 import com.google.inject.AbstractModule;
 
 /**
  * 
- * @author Adrian Cole
+ * @author Adrian Cole, Andrea Turli
  */
 public class SoftLayerParserModule extends AbstractModule {
 
    @Override
    protected void configure() {
-      bind(DateAdapter.class).to(Iso8601DateAdapter.class);
+      bind(GsonModule.DateAdapter.class).to(GsonModule.Iso8601DateAdapter.class);
    }
 
 }
