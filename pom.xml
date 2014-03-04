@@ -20,9 +20,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.jclouds</groupId>
+    <groupId>io.brooklyn.jclouds</groupId>
     <artifactId>jclouds-project</artifactId>        
-    <version>1.7.2-SNAPSHOT</version>
+    <version>1.7.2-alpha.1</version>
     <relativePath>project/pom.xml</relativePath>
   </parent>
   <artifactId>jclouds</artifactId>
@@ -47,6 +47,13 @@
     <module>all</module>
   </modules>
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>2.4</version>
+      </extension>
+    </extensions>
     <plugins>
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
