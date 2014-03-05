@@ -26,7 +26,7 @@
   </parent>
   <groupId>org.apache.jclouds</groupId>
   <artifactId>jclouds-project</artifactId>
-  <version>1.7.2-SNAPSHOT</version>
+  <version>1.7.2-ea-brooklyn.1</version>
   <packaging>pom</packaging>
   <name>Apache jclouds Project</name>
   <url>http://jclouds.apache.org/</url>
@@ -102,6 +102,11 @@
       <id>jclouds-github-pages-site</id>
       <url>${maven.site.url.base}/${project.version}</url>
     </site>
+    <repository>
+      <id>cloudsoft-releases</id>
+      <name>cloudsoft-releases</name>
+      <url>scpexe://maven@releng2.cloudsoftcorp.com/var/www/developer/maven/releases/</url>
+    </repository>
   </distributionManagement>
 
   <developers>
@@ -317,6 +322,13 @@
   </dependencies>
 
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>2.4</version>
+      </extension>
+    </extensions>
     <resources>
       <resource>
         <directory>src/main/clojure</directory>
@@ -343,6 +355,23 @@
           <goals>deploy</goals>
           <arguments>-Pdoc -Papache-release ${arguments}</arguments>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <id>process-remote-resources</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <resourceBundles>
+                <resourceBundle>org.apache.jclouds:jclouds-resources:1.7.2-ea-brooklyn.1</resourceBundle>
+              </resourceBundles>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       
       <plugin>
