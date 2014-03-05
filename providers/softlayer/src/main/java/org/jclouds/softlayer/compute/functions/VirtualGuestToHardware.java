@@ -20,7 +20,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.HardwareBuilder;
 import org.jclouds.compute.domain.Processor;
@@ -30,10 +29,6 @@ import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
 
 import javax.inject.Singleton;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.FluentIterable.from;
-import static com.google.common.collect.Iterables.filter;
 
 /**
  * @author Andrea Turli

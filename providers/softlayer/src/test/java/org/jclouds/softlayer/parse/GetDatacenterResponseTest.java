@@ -17,11 +17,9 @@
 package org.jclouds.softlayer.parse;
 
 import com.google.common.collect.ImmutableSet;
-import org.jclouds.date.internal.SimpleDateFormatDateService;
 import org.jclouds.softlayer.domain.Address;
 import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.Region;
-import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
 import org.testng.annotations.Test;
 
@@ -47,7 +45,7 @@ public class GetDatacenterResponseTest extends BaseSoftLayerParseTest<Datacenter
               .longName("Amsterdam 1")
               .name("ams01")
               .locationAddress(Address.builder()
-                      .address1("Paul van Vlissingenstraat 16")
+                      .address("Paul van Vlissingenstraat 16")
                       .accountId(1)
                       .city("Amsterdam")
                       .contactName("SoftLayer")

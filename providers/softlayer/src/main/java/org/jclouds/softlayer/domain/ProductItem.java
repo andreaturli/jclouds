@@ -26,14 +26,14 @@ public class ProductItem {
 
    private final int id;
    private final String description;
-   private final String SoftwareDescriptionId;
+   private final String softwareDescriptionId;
    private final SoftwareDescription softwareDescription;
 
 
    public ProductItem(int id, String description, String softwareDescriptionId, SoftwareDescription softwareDescription) {
       this.id = id;
       this.description = description;
-      SoftwareDescriptionId = softwareDescriptionId;
+      this.softwareDescriptionId = softwareDescriptionId;
       this.softwareDescription = softwareDescription;
    }
 
@@ -46,7 +46,7 @@ public class ProductItem {
    }
 
    public String getSoftwareDescriptionId() {
-      return SoftwareDescriptionId;
+      return softwareDescriptionId;
    }
 
    public SoftwareDescription getSoftwareDescription() {
@@ -63,13 +63,13 @@ public class ProductItem {
 
       return Objects.equal(this.id, that.id) &&
               Objects.equal(this.description, that.description) &&
-              Objects.equal(this.SoftwareDescriptionId, that.SoftwareDescriptionId) &&
+              Objects.equal(this.softwareDescriptionId, that.softwareDescriptionId) &&
               Objects.equal(this.softwareDescription, that.softwareDescription);
    }
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(id, description, SoftwareDescriptionId, softwareDescription);
+      return Objects.hashCode(id, description, softwareDescriptionId, softwareDescription);
    }
 
    @Override
@@ -77,7 +77,7 @@ public class ProductItem {
       return "ProductItem{" +
               "id=" + id +
               ", description='" + description + '\'' +
-              ", SoftwareDescriptionId='" + SoftwareDescriptionId + '\'' +
+              ", SoftwareDescriptionId='" + softwareDescriptionId + '\'' +
               ", softwareDescription=" + softwareDescription +
               '}';
    }

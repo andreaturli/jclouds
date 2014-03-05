@@ -21,7 +21,8 @@ import com.google.inject.AbstractModule;
 
 /**
  * 
- * @author Adrian Cole, Andrea Turli
+ * @author Adrian Cole
+ * @author Andrea Turli
  */
 public class SoftLayerParserModule extends AbstractModule {
 

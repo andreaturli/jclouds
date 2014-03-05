@@ -21,8 +21,9 @@ import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
-import org.jclouds.softlayer.domain.SoftwareDescription;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
+import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,25 +31,27 @@ import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
 /**
- * Provides access to Software_Description via their REST API.
+ * Provides asynchronous access to Account via their REST API.
  * <p/>
  *
- * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Software_Description" />
- * @author Adrian Cole
+ * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest_Block_Device_Template_Group" />
  * @author Andrea Turli
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
-public interface SoftwareDescriptionApi {
+public interface AccountApi {
+   public static String GUEST_MASK = "children.blockDevices.diskImage.softwareReferences.softwareDescription";
 
    /**
-    * @return all objects.
+    * @return retrieve block device groups for an account (private images)
+    * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Account/getBlockDeviceTemplateGroups/" />
     */
+   @Named("Account:getBlockDeviceTemplateGroups")
    @GET
-   @Path("/SoftLayer_Software_Description/getAllObjects")
-   @QueryParams(keys = "objectMask", values = "id;name;version;operatingSystem;longDescription;referenceCode")
+   @Path("/SoftLayer_Account/getBlockDeviceTemplateGroups")
+   @QueryParams(keys = "objectMask", values = GUEST_MASK)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
-   Set<SoftwareDescription> getAllObjects();
+   @Fallback(Fallbacks.NullOnNotFoundOr404.class)
+   Set<VirtualGuestBlockDeviceTemplateGroup> getBlockDeviceTemplateGroups();
 
 }

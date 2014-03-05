@@ -28,7 +28,7 @@ import static org.testng.Assert.*;
 /**
  * Tests annotation parsing of {@code DatacenterAsyncClient}
  *
- * @author Adrian Cole, Andrea Turli
+ * @author Andrea Turli
  */
 @Test(groups = "unit")
 public class DatacenterApiExpectTest extends BaseSoftLayerApiExpectTest {
@@ -45,8 +45,8 @@ public class DatacenterApiExpectTest extends BaseSoftLayerApiExpectTest {
 
       DatacenterApi api = requestSendsResponse(listDatacentersRequest, listDatacentersResponse).getDatacenterApi();
 
-      assertEquals(api.listDatacenters().toString(),
-              new ListDatacentersResponseTest().expected().toString());
+      assertEquals(api.listDatacenters(),
+              new ListDatacentersResponseTest().expected());
    }
 
    public void testListDatacenterWhenResponseIs4xx() {
@@ -75,8 +75,8 @@ public class DatacenterApiExpectTest extends BaseSoftLayerApiExpectTest {
 
       DatacenterApi api = requestSendsResponse(getDatacenterRequest, getDatacenterResponse).getDatacenterApi();
 
-      assertEquals(api.getDatacenter(265592).toString(),
-              new GetDatacenterResponseTest().expected().toString());
+      assertEquals(api.getDatacenter(265592),
+              new GetDatacenterResponseTest().expected());
    }
 
    public void testGetDatacenterWhenResponseIs4xx() {

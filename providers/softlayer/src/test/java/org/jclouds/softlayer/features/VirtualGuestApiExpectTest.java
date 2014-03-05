@@ -51,8 +51,8 @@ public class VirtualGuestApiExpectTest extends BaseSoftLayerApiExpectTest {
 
       SoftLayerApi api = requestSendsResponse(getVirtualGuest, getVirtualGuestResponse);
 
-      assertEquals(api.getVirtualGuestApi().getObject(3001812).toString(),
-              new GetVirtualGuestResponseTest().expected().toString());
+      assertEquals(api.getVirtualGuestApi().getObject(3001812),
+              new GetVirtualGuestResponseTest().expected());
    }
 
    public void testGetVirtualGuestWhenResponseIs4xx() {
@@ -117,8 +117,8 @@ public class VirtualGuestApiExpectTest extends BaseSoftLayerApiExpectTest {
 
       SoftLayerApi api = requestSendsResponse(listVirtualGuestsRequest, listVirtualGuestsResponse);
 
-      assertEquals(api.getVirtualGuestApi().listVirtualGuests().toString(),
-              new ListVirtualGuestsResponseTest().expected().toString());
+      assertEquals(api.getVirtualGuestApi().listVirtualGuests(),
+              new ListVirtualGuestsResponseTest().expected());
    }
 
    public void testListVirtualGuestsWhenResponseIs4xx() {

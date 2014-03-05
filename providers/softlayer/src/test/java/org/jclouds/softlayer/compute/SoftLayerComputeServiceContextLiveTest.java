@@ -66,27 +66,31 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
                       new SshjSshClientModule()))
               .build(ComputeServiceContext.class);
 
-      TemplateBuilder templateBuilder = context.getComputeService().templateBuilder();
-      //templateBuilder.minDisk(15d);
-      templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=SAN");
-      //templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=LOCAL");
-      templateBuilder.imageId("UBUNTU_12_64");
-      templateBuilder.locationId("dal06");
-      Template template = templateBuilder.build();
-      // test passing custom options
-      template.getOptions().as(SoftLayerTemplateOptions.class).domainName("live.org");
+      for(Image image : context.getComputeService().listImages()) {
+         System.out.println(image);
+      }
 
       for(Hardware hardware : context.getComputeService().listHardwareProfiles()) {
          System.out.println(hardware);
       }
 
-      for(Image image : context.getComputeService().listImages()) {
-         System.out.println(image);
-      }
+      Image image = context.getComputeService().getImage("UBUNTU_8_64");
+      System.out.println(image);
 
       for(ComputeMetadata node : context.getComputeService().listNodes()) {
          System.out.println(node);
       }
+
+      TemplateBuilder templateBuilder = context.getComputeService().templateBuilder();
+      //templateBuilder.minDisk(15d);
+      templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=SAN");
+      //templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=LOCAL");
+      //templateBuilder.imageId("UBUNTU_12_64");
+      templateBuilder.imageId("7bcd78dc-eb11-4e1b-8d93-111c62ed5fd1");
+      templateBuilder.locationId("dal06");
+      Template template = templateBuilder.build();
+      // test passing custom options
+      template.getOptions().as(SoftLayerTemplateOptions.class).domainName("live.org");
 
       Set<? extends NodeMetadata> nodes = context.getComputeService().createNodesInGroup(name, numNodes, template);
       assertEquals(numNodes, nodes.size(), "wrong number of nodes");

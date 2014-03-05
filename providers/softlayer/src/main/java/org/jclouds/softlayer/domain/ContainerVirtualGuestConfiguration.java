@@ -28,10 +28,11 @@ import java.beans.ConstructorProperties;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterables.filter;
 
 /**
  * @author Andrea Turli
+ * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Container_Virtual_Guest_Configuration"/
+ * *
  */
 public class ContainerVirtualGuestConfiguration {
 
@@ -148,12 +149,12 @@ public class ContainerVirtualGuestConfiguration {
                                              Set<ContainerVirtualGuestConfigurationOption> networkComponents,
                                              Set<ContainerVirtualGuestConfigurationOption> operatingSystems,
                                              Set<ContainerVirtualGuestConfigurationOption> processors) {
-      this.blockDevices = blockDevices;
-      this.datacenters = datacenters;
-      this.memory = memory;
-      this.networkComponents = networkComponents;
-      this.operatingSystems = operatingSystems;
-      this.processors = processors;
+      this.blockDevices = checkNotNull(blockDevices, "blockDevices");
+      this.datacenters = checkNotNull(datacenters, "datacenters");
+      this.memory = checkNotNull(memory, "memory");
+      this.networkComponents = checkNotNull(networkComponents, "networkComponents");
+      this.operatingSystems = checkNotNull(operatingSystems, "operatingSystems");
+      this.processors = checkNotNull(processors, "processors");
    }
 
    public Set<ContainerVirtualGuestConfigurationOption> getBlockDevices() {

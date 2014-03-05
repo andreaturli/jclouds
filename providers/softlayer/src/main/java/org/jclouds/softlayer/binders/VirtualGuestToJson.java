@@ -41,17 +41,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class VirtualGuestToJson implements Binder {
 
-   private Json json;
+   private final Json json;
 
    @Inject
    public VirtualGuestToJson(Json json) {
-      this.json = json;
+      this.json = checkNotNull(json, "json");
    }
 
    @Override
    public <R extends HttpRequest> R bindToRequest(R request, Object input) {
-      checkNotNull(input, "parameters");
-      VirtualGuest virtualGuest = VirtualGuest.class.cast(input);
+      VirtualGuest virtualGuest = VirtualGuest.class.cast(checkNotNull(input, "parameters"));
       request.setPayload(buildJson(virtualGuest));
       return request;
    }
@@ -63,11 +62,18 @@ public class VirtualGuestToJson implements Binder {
     * @return String
     */
    String buildJson(VirtualGuest virtualGuest) {
-      ObjectData data = new ObjectData(virtualGuest.getHostname(), virtualGuest.getDomain(), virtualGuest.getStartCpus(),
-              virtualGuest.getMaxMemory(), true, virtualGuest.getOperatingSystem().getId(), true,
-              new Datacenter(virtualGuest.getDatacenter().getName()), null,
-              getBlockDevices(virtualGuest));
-      return json.toJson(ImmutableMap.of("parameters", ImmutableList.<ObjectData> of(data)));
+      TemplateObject templateObject = null;
+      if(virtualGuest.getOperatingSystem() != null) {
+         templateObject = new TemplateObject(virtualGuest.getHostname(), virtualGuest.getDomain(), virtualGuest.getStartCpus(),
+              virtualGuest.getMaxMemory(), true, virtualGuest.getOperatingSystem().getOperatingSystemReferenceCode(),
+              null, true, new Datacenter(virtualGuest.getDatacenter().getName()), null, getBlockDevices(virtualGuest));
+      } else if(virtualGuest.getVirtualGuestBlockDeviceTemplateGroup() != null) {
+         templateObject = new TemplateObject(virtualGuest.getHostname(), virtualGuest.getDomain(), virtualGuest.getStartCpus(),
+                 virtualGuest.getMaxMemory(), true, null, new BlockDeviceTemplateGroup(virtualGuest
+                 .getVirtualGuestBlockDeviceTemplateGroup().getGlobalIdentifier()), true,
+                 new Datacenter(virtualGuest.getDatacenter().getName()), null, null);
+      }
+      return json.toJson(ImmutableMap.of("parameters", ImmutableList.<TemplateObject> of(templateObject)));
    }
 
    private HashSet<BlockDevice> getBlockDevices(VirtualGuest virtualGuest) {
@@ -81,27 +87,30 @@ public class VirtualGuestToJson implements Binder {
               }));
    }
 
-   private static class ObjectData {
+   private static class TemplateObject {
       private String hostname;
       private String domain;
       private int startCpus;
       private int maxMemory;
       private boolean hourlyBillingFlag;
+      private BlockDeviceTemplateGroup blockDeviceTemplateGroup;
       private String operatingSystemReferenceCode;
       private boolean localDiskFlag;
       private Datacenter datacenter;
       private Set<NetworkComponent> networkComponents;
       private Set<BlockDevice> blockDevices;
 
-      private ObjectData(String hostname, String domain, int startCpus, int maxMemory, boolean hourlyBillingFlag,
-                         String operatingSystemReferenceCode, boolean localDiskFlag, Datacenter datacenter,
-                         Set<NetworkComponent> networkComponents, Set<BlockDevice> blockDevices) {
+      private TemplateObject(String hostname, String domain, int startCpus, int maxMemory, boolean hourlyBillingFlag,
+                         String operatingSystemReferenceCode, BlockDeviceTemplateGroup blockDeviceTemplateGroup,
+                         boolean localDiskFlag, Datacenter datacenter, Set<NetworkComponent> networkComponents,
+                         Set<BlockDevice> blockDevices) {
          this.hostname = hostname;
          this.domain = domain;
          this.startCpus = startCpus;
          this.maxMemory = maxMemory;
          this.hourlyBillingFlag = hourlyBillingFlag;
          this.operatingSystemReferenceCode = operatingSystemReferenceCode;
+         this.blockDeviceTemplateGroup = blockDeviceTemplateGroup;
          this.localDiskFlag = localDiskFlag;
          this.datacenter = datacenter;
          this.networkComponents = networkComponents;
@@ -141,6 +150,14 @@ public class VirtualGuestToJson implements Binder {
 
       private DiskImage(float capacity) {
          this.capacity = capacity;
+      }
+   }
+
+   private class BlockDeviceTemplateGroup {
+      private String globalIdentifier;
+
+      private BlockDeviceTemplateGroup(String globalIdentifier) {
+         this.globalIdentifier = globalIdentifier;
       }
    }
 }

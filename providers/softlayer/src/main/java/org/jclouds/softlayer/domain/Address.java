@@ -16,20 +16,19 @@
  */
 package org.jclouds.softlayer.domain;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.emptyToNull;
+import com.google.common.base.Objects;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
 
-import org.jclouds.javax.annotation.Nullable;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Objects.ToStringHelper;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * Class Address
  *
- * @author Jason King, Andrea Turli
+ * @author Jason King
+ * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Account_Address"/>
  */
 public class Address {
@@ -50,7 +49,7 @@ public class Address {
       protected String state;
       protected String description;
       protected int accountId;
-      protected String address1;
+      protected String address;
       protected String city;
       protected String contactName;
       protected int isActive;
@@ -100,8 +99,8 @@ public class Address {
       /**
        * @see org.jclouds.softlayer.domain.Address#getAddress1()
        */
-      public T address1(String address1) {
-         this.address1 = address1;
+      public T address(String address) {
+         this.address = address;
          return self();
       }
 
@@ -146,7 +145,7 @@ public class Address {
       }
 
       public Address build() {
-         return new Address(id, country, state, description, accountId, address1, city, contactName, isActive,
+         return new Address(id, country, state, description, accountId, address, city, contactName, isActive,
                  locationId, postalCode);
       }
 
@@ -157,7 +156,7 @@ public class Address {
                .state(in.getState())
                .description(in.getDescription())
                .accountId(in.getAccountId())
-               .address1(in.getAddress1())
+               .address(in.getAddress1())
                .city(in.getCity())
                .contactName(in.getContactName())
                .isActive(in.isActive())
@@ -178,7 +177,7 @@ public class Address {
    private final String state;
    private final String description;
    private final int accountId;
-   private final String address1;
+   private final String address;
    private final String city;
    private final String contactName;
    private final int isActive;
@@ -190,11 +189,11 @@ public class Address {
            "locationId", "postalCode"
    })
    protected Address(int id, String country, @Nullable String state, @Nullable String description, @Nullable int accountId,
-                     @Nullable String address1, @Nullable String city, @Nullable String contactName,
+                     @Nullable String address, @Nullable String city, @Nullable String contactName,
                      @Nullable int isActive, @Nullable int locationId, @Nullable String postalCode) {
-      this.id = id;
-      this.accountId = accountId;
-      this.address1 = address1;
+      this.id = checkNotNull(id, "id");
+      this.accountId = checkNotNull(accountId, "accountId");
+      this.address = address;
       this.city = city;
       this.contactName = contactName;
       this.isActive = isActive;
@@ -248,7 +247,7 @@ public class Address {
     */
    @Nullable
    public String getAddress1() {
-      return address1;
+      return address;
    }
 
    /**
@@ -312,7 +311,7 @@ public class Address {
               ", state='" + state + '\'' +
               ", description='" + description + '\'' +
               ", accountId=" + accountId +
-              ", address1='" + address1 + '\'' +
+              ", address='" + address + '\'' +
               ", city='" + city + '\'' +
               ", contactName='" + contactName + '\'' +
               ", isActive=" + isActive +

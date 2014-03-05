@@ -18,18 +18,13 @@ package org.jclouds.softlayer.compute.functions;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import org.jclouds.compute.domain.Hardware;
-import org.jclouds.compute.domain.HardwareBuilder;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.ImageBuilder;
 import org.jclouds.compute.domain.OperatingSystem;
 import org.jclouds.compute.domain.OsFamily;
-import org.jclouds.compute.domain.Processor;
 import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.logging.Logger;
+import org.jclouds.softlayer.compute.functions.internal.OperatingSystems;
 import org.jclouds.softlayer.domain.SoftwareLicense;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
@@ -37,10 +32,7 @@ import javax.annotation.Resource;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import java.util.regex.Matcher;
-
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Iterables.getLast;
 
 /**
  * @author Andrea Turli
@@ -78,43 +70,6 @@ public class VirtualGuestToImage implements Function<VirtualGuest, Image> {
       };
    }
 
-   public static Function<String, Integer> osBits() {
-      return new Function<String, Integer>() {
-         @Override
-         public Integer apply(String operatingSystemReferenceCode) {
-            if (operatingSystemReferenceCode != null) {
-               return Integer.parseInt(getLast(Splitter.on("_").split(operatingSystemReferenceCode)));
-            }
-            return null;
-         }
-      };
-   }
-
-   public static Function<String, String> osVersion() {
-      return new Function<String, String>() {
-         @Override
-         public String apply(final String version) {
-            return parseVersion(version);
-         }
-      };
-   }
-
-   private static String parseVersion(String version) {
-      if(version.contains("-")) {
-         String rawVersion = version.substring(0,
-                 version.lastIndexOf("-"));
-         if(Iterables.size(Splitter.on(".").split(rawVersion)) == 3) {
-            return rawVersion.substring(0, rawVersion.lastIndexOf("."));
-         } else {
-            return rawVersion;
-         }
-      } else if(version.contains(" ")) {
-         version.substring(0,
-                 version.indexOf(" "));
-      }
-      return null;
-   }
-
    @Override
    public Image apply(VirtualGuest from) {
 
@@ -135,11 +90,11 @@ public class VirtualGuestToImage implements Function<VirtualGuest, Image> {
       if (osFamily == OsFamily.UNRECOGNIZED) {
          logger.debug("Cannot determine os family for item: %s", from);
       }
-      Integer bits = osBits().apply(referenceCode);
+      Integer bits = OperatingSystems.bits().apply(referenceCode);
       if (bits == null) {
          logger.debug("Cannot determine os bits for item: %s", from);
       }
-      String osVersion = osVersion().apply(softwareLicense.getSoftwareDescription().getVersion());
+      String osVersion = OperatingSystems.version().apply(softwareLicense.getSoftwareDescription().getVersion());
       if (osVersion == null) {
          logger.debug("Cannot determine os version for item: %s", from);
       }

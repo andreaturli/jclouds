@@ -24,7 +24,9 @@ import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.softlayer.binders.VirtualGuestToJson;
 import org.jclouds.softlayer.domain.ContainerVirtualGuestConfiguration;
+import org.jclouds.softlayer.domain.ProvisioningVersion1Transaction;
 import org.jclouds.softlayer.domain.VirtualGuest;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
 
 import javax.inject.Named;
 import javax.ws.rs.Consumes;
@@ -150,4 +152,18 @@ public interface VirtualGuestApi {
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.VoidOnNotFoundOr404.class)
    Void resumeVirtualGuest(@PathParam("id") long id);
+
+   /**
+    * create archive transaction.
+    *
+    * @param id
+    *           id of the virtual guest
+    * @param blockDevices
+    */
+   @GET
+   @Path("/SoftLayer_Virtual_Guest/{id}/createArchiveTransaction")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(Fallbacks.VoidOnNotFoundOr404.class)
+   ProvisioningVersion1Transaction createArchiveTransaction(@PathParam("id") String id,
+                                                            @PathParam("blockDevices") Set<VirtualGuestBlockDevice> blockDevices);
 }

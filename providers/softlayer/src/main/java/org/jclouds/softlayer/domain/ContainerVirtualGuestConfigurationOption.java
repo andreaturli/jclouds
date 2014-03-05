@@ -17,15 +17,12 @@
 package org.jclouds.softlayer.domain;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
 
 import java.beans.ConstructorProperties;
-import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Andrea Turli
+ * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Container_Virtual_Guest_Configuration_Option"/>
  */
 public class ContainerVirtualGuestConfigurationOption {
 
@@ -74,9 +71,7 @@ public class ContainerVirtualGuestConfigurationOption {
    private final ProductItemPrice productItemPrice;
    private final VirtualGuest template;
 
-   @ConstructorProperties({
-           "itemPrice", "template"
-   })
+   @ConstructorProperties({"itemPrice", "template"})
    public ContainerVirtualGuestConfigurationOption(ProductItemPrice productItemPrice, VirtualGuest template) {
       this.productItemPrice = productItemPrice;
       this.template = template;

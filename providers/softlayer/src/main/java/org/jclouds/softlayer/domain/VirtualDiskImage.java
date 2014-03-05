@@ -17,8 +17,13 @@
 package org.jclouds.softlayer.domain;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Class VirtualDiskImage
@@ -47,6 +52,7 @@ public class VirtualDiskImage {
       protected String description;
       protected String name;
       protected int storageRepositoryId;
+      protected Set<VirtualDiskImageSoftware> softwareReferences = ImmutableSet.of();;
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getId()
@@ -112,10 +118,18 @@ public class VirtualDiskImage {
          return self();
       }
 
+      public T softwareReferences(Set<VirtualDiskImageSoftware> softwareReferences) {
+         this.softwareReferences = ImmutableSet.copyOf(checkNotNull(softwareReferences, "softwareReferences"));
+         return self();
+      }
+
+      public T softwareReferences(VirtualDiskImageSoftware... in) {
+         return softwareReferences(ImmutableSet.copyOf(in));
+      }
 
       public VirtualDiskImage build() {
          return new VirtualDiskImage(id, uuid, capacity, units, typeId, description, name,
-                 storageRepositoryId);
+                 storageRepositoryId, softwareReferences);
       }
 
       public T fromVirtualDiskImage(VirtualDiskImage in) {
@@ -127,7 +141,8 @@ public class VirtualDiskImage {
                  .typeId(in.getTypeId())
                  .description(in.getDescription())
                  .name(in.getName())
-                 .storageRepositoryId(in.getStorageRepositoryId());
+                 .storageRepositoryId(in.getStorageRepositoryId())
+                 .softwareReferences(in.getSoftwareReferences());
       }
    }
 
@@ -146,11 +161,13 @@ public class VirtualDiskImage {
    private final String description;
    private final String name;
    private final int storageRepositoryId;
+   private final Set<VirtualDiskImageSoftware> softwareReferences;
 
    @ConstructorProperties({
-           "id", "uuid", "capacity", "units", "typeId", "description", "name", "storageRepositoryId"
+           "id", "uuid", "capacity", "units", "typeId", "description", "name", "storageRepositoryId", "softwareReferences"
    })
-   public VirtualDiskImage(int id, String uuid, float capacity, String units, int typeId, String description, String name, int storageRepositoryId) {
+   public VirtualDiskImage(int id, String uuid, float capacity, String units, int typeId, String description,
+                           String name, int storageRepositoryId, @Nullable Set<VirtualDiskImageSoftware> softwareReferences) {
       this.id = id;
       this.uuid = uuid;
       this.capacity = capacity;
@@ -159,6 +176,9 @@ public class VirtualDiskImage {
       this.description = description;
       this.name = name;
       this.storageRepositoryId = storageRepositoryId;
+      this.softwareReferences = softwareReferences  == null ? ImmutableSet.<VirtualDiskImageSoftware>of() :
+              ImmutableSet.copyOf(softwareReferences);
+
    }
 
    public int getId() {
@@ -193,6 +213,9 @@ public class VirtualDiskImage {
       return storageRepositoryId;
    }
 
+   public Set<VirtualDiskImageSoftware> getSoftwareReferences() {
+      return softwareReferences;
+   }
 
    @Override
    public boolean equals(Object o) {
@@ -208,13 +231,14 @@ public class VirtualDiskImage {
               Objects.equal(this.typeId, that.typeId) &&
               Objects.equal(this.description, that.description) &&
               Objects.equal(this.name, that.name) &&
-              Objects.equal(this.storageRepositoryId, that.storageRepositoryId);
+              Objects.equal(this.storageRepositoryId, that.storageRepositoryId) &&
+              Objects.equal(this.softwareReferences, that.softwareReferences);
    }
 
    @Override
    public int hashCode() {
       return Objects.hashCode(id, uuid, capacity, units, typeId, description,
-              name, storageRepositoryId);
+              name, storageRepositoryId, softwareReferences);
    }
 
    @Override
@@ -228,6 +252,7 @@ public class VirtualDiskImage {
               ", description='" + description + '\'' +
               ", name='" + name + '\'' +
               ", storageRepositoryId=" + storageRepositoryId +
+              ", softwareReferences=" + softwareReferences +
               '}';
    }
 }

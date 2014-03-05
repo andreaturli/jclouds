@@ -16,15 +16,10 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.FluentIterable.from;
-
-import java.util.Map;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import com.google.common.base.Function;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.jclouds.collect.Memoized;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -35,13 +30,17 @@ import org.jclouds.domain.Location;
 import org.jclouds.location.predicates.LocationPredicates;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
-import com.google.common.base.Function;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.FluentIterable.from;
 
 /**
- * @author Adrian Cole, Andrea Turli
+ * @author Adrian Cole
+ * @author Andrea Turli
  */
 @Singleton
 public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMetadata> {
@@ -80,7 +79,6 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
       }
       builder.status(serverStateToNodeStatus.get(from.getPowerState().getKeyName()));
 
-      // These are null for 'bad' guest orders in the HALTED state.
       if (from.getPrimaryIpAddress() != null)
          builder.publicAddresses(ImmutableSet.<String> of(from.getPrimaryIpAddress()));
       if (from.getPrimaryBackendIpAddress() != null)

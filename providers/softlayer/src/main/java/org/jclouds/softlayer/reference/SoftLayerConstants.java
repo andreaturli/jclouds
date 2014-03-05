@@ -31,4 +31,14 @@ public interface SoftLayerConstants {
    public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY = "jclouds.softlayer.virtualguest" +
            ".login_details_delay";
 
+   /**
+    * number of milliseconds to wait for a virtualguest to be without active transactions
+    */
+   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY = "jclouds.softlayer" +
+           ".virtualguest.active_transactions_delay";
+
+   /**
+    * by default, list images will now consider the public images
+    */
+   public static final String PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES = "jclouds.softlayer.include_public_images";
 }

@@ -16,17 +16,16 @@
  */
 package org.jclouds.softlayer.domain;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
 import java.util.Date;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
-import org.jclouds.javax.annotation.Nullable;
-
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The virtual guest data type presents the structure in which all virtual guests will be presented.
@@ -129,6 +128,7 @@ public class VirtualGuest {
       protected int activeTransactionCount;
       protected Set<VirtualGuestBlockDevice> blockDevices;
       protected boolean localDiskFlag;
+      protected VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
 
       /**
        * @see VirtualGuest#getAccountId()
@@ -364,12 +364,17 @@ public class VirtualGuest {
          return self();
       }
 
+      public T blockDeviceTemplateGroup(VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup) {
+         this.blockDeviceTemplateGroup = blockDeviceTemplateGroup;
+         return self();
+      }
+
       public VirtualGuest build() {
          return new VirtualGuest(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName, hostname,
                id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes, privateNetworkOnly,
                startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress, new BillingItem(billingItemId),
                operatingSystem, operatingSystemReferenceCode, datacenter, powerState, softwareLicense,
-                 activeTransactionCount, blockDevices, localDiskFlag);
+               activeTransactionCount, blockDevices, localDiskFlag, blockDeviceTemplateGroup);
       }
 
       public T fromVirtualGuest(VirtualGuest in) {
@@ -400,7 +405,8 @@ public class VirtualGuest {
                .datacenter(in.getDatacenter())
                .powerState(in.getPowerState())
                .activeTransactionCount(in.getActiveTransactionCount())
-               .localDiskFlag(in.isLocalDiskFlag());
+               .localDiskFlag(in.isLocalDiskFlag())
+               .blockDeviceTemplateGroup(in.getVirtualGuestBlockDeviceTemplateGroup());
       }
    }
 
@@ -440,13 +446,14 @@ public class VirtualGuest {
    private final int activeTransactionCount;
    private final Set<VirtualGuestBlockDevice> blockDevices;
    private final boolean localDiskFlag;
+   private final VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
 
    @ConstructorProperties({
          "accountId", "createDate", "dedicatedAccountHostOnlyFlag", "domain", "fullyQualifiedDomainName", "hostname",
            "id", "lastVerifiedDate", "maxCpu", "maxCpuUnits", "maxMemory", "metricPollDate", "modifyDate", "notes",
            "privateNetworkOnlyFlag", "startCpus", "statusId", "uuid", "primaryBackendIpAddress", "primaryIpAddress",
            "billingItem", "operatingSystem", "operatingSystemReferenceCode", "datacenter", "powerState",
-           "softwareLicense", "activeTransactionCount", "blockDevices", "localDiskFlag"
+           "softwareLicense", "activeTransactionCount", "blockDevices", "localDiskFlag", "blockDeviceTemplateGroup"
    })
    protected VirtualGuest(int accountId, @Nullable Date createDate, boolean dedicatedAccountHostOnly, @Nullable String domain,
                           @Nullable String fullyQualifiedDomainName, @Nullable String hostname, int id, @Nullable Date lastVerifiedDate,
@@ -455,7 +462,8 @@ public class VirtualGuest {
                           @Nullable String primaryBackendIpAddress, @Nullable String primaryIpAddress, @Nullable BillingItem billingItem,
                           @Nullable OperatingSystem operatingSystem, @Nullable String operatingSystemReferenceCode,
                           @Nullable Datacenter datacenter, @Nullable PowerState powerState, @Nullable SoftwareLicense softwareLicense,
-                          @Nullable int activeTransactionCount, Set<VirtualGuestBlockDevice> blockDevices, boolean localDiskFlag) {
+                          @Nullable int activeTransactionCount, Set<VirtualGuestBlockDevice> blockDevices,
+                          boolean localDiskFlag, @Nullable VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup) {
       this.accountId = accountId;
       this.createDate = createDate;
       this.dedicatedAccountHostOnly = dedicatedAccountHostOnly;
@@ -485,6 +493,7 @@ public class VirtualGuest {
       this.softwareLicense = softwareLicense;
       this.activeTransactionCount = activeTransactionCount;
       this.localDiskFlag = localDiskFlag;
+      this.blockDeviceTemplateGroup = blockDeviceTemplateGroup;
    }
 
    /**
@@ -698,12 +707,17 @@ public class VirtualGuest {
       return localDiskFlag;
    }
 
+   public VirtualGuestBlockDeviceTemplateGroup getVirtualGuestBlockDeviceTemplateGroup() {
+      return blockDeviceTemplateGroup;
+   }
+
    @Override
    public int hashCode() {
       return Objects.hashCode(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName,
               hostname, id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes,
               privateNetworkOnly, startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress,
-              billingItemId, operatingSystem, datacenter, powerState, softwareLicense, blockDevices, localDiskFlag);
+              billingItemId, operatingSystem, datacenter, powerState, softwareLicense, blockDevices, localDiskFlag,
+              blockDeviceTemplateGroup);
    }
 
    @Override
@@ -733,12 +747,13 @@ public class VirtualGuest {
             && Objects.equal(this.primaryIpAddress, that.primaryIpAddress)
             && Objects.equal(this.billingItemId, that.billingItemId)
             && Objects.equal(this.operatingSystem, that.operatingSystem)
-              && Objects.equal(this.operatingSystemReferenceCode, that.operatingSystemReferenceCode)
+            && Objects.equal(this.operatingSystemReferenceCode, that.operatingSystemReferenceCode)
             && Objects.equal(this.datacenter, that.datacenter)
             && Objects.equal(this.powerState, that.powerState)
             && Objects.equal(this.softwareLicense, that.softwareLicense)
             && Objects.equal(this.blockDevices, that.blockDevices)
-            && Objects.equal(this.localDiskFlag, that.localDiskFlag);
+            && Objects.equal(this.localDiskFlag, that.localDiskFlag)
+            && Objects.equal(this.blockDeviceTemplateGroup, that.blockDeviceTemplateGroup);
    }
 
    @Override
@@ -773,6 +788,7 @@ public class VirtualGuest {
               ", activeTransactionCount=" + activeTransactionCount +
               ", blockDevices=" + blockDevices +
               ", localDiskFlag=" + localDiskFlag +
+              ", blockDeviceTemplateGroup=" + blockDeviceTemplateGroup +
               '}';
    }
 }

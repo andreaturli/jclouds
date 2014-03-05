@@ -22,7 +22,8 @@ import org.jclouds.softlayer.SoftLayerApi;
 import org.jclouds.softlayer.SoftLayerProviderMetadata;
 
 /**
- * @author Adrian Cole, Andrea Turli
+ * @author Adrian Cole
+ * @author Andrea Turli
  */
 public abstract class BaseSoftLayerApiExpectTest extends BaseRestApiExpectTest<SoftLayerApi> {
 

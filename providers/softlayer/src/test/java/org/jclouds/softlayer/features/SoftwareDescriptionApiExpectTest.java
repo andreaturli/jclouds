@@ -20,14 +20,10 @@ import com.google.common.collect.Iterables;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpResponse;
 import org.jclouds.softlayer.parse.GetAllObjectsResponseTest;
-import org.jclouds.softlayer.parse.GetDatacenterResponseTest;
-import org.jclouds.softlayer.parse.ListDatacentersResponseTest;
 import org.testng.annotations.Test;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 /**
  * Tests annotation parsing of {@code DatacenterAsyncClient}
@@ -46,8 +42,8 @@ public class SoftwareDescriptionApiExpectTest extends BaseSoftLayerApiExpectTest
       HttpResponse getAllObjectsResponse = HttpResponse.builder().statusCode(200)
               .payload(payloadFromResource("/software_description_list.json")).build();
       SoftwareDescriptionApi api = requestSendsResponse(getAllObjectsRequest, getAllObjectsResponse).getSoftwareDescriptionApi();
-      assertEquals(api.getAllObjects().toString(),
-              new GetAllObjectsResponseTest().expected().toString());
+      assertEquals(api.getAllObjects(),
+              new GetAllObjectsResponseTest().expected());
    }
 
    public void testGetAllObjectsWhenResponseIs4xx() {
