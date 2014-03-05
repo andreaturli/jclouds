@@ -16,18 +16,17 @@
  */
 package org.jclouds;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.String.format;
+import com.google.common.annotations.VisibleForTesting;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.io.IOException;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jclouds.javax.annotation.Nullable;
-
-import com.google.common.annotations.VisibleForTesting;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.String.format;
 
 /**
  * @author Andrew Phillips
@@ -35,7 +34,7 @@ import com.google.common.annotations.VisibleForTesting;
  */
 public class JcloudsVersion {
     @VisibleForTesting
-    static final String VERSION_RESOURCE_FILE = "META-INF/maven/org.apache.jclouds/jclouds-core/pom.properties";
+    static final String VERSION_RESOURCE_FILE = "META-INF/maven/io.cloudsoft.jclouds/jclouds-core/pom.properties";
     private static final String VERSION_PROPERTY_NAME = "version";
 
     /*
@@ -43,7 +42,7 @@ public class JcloudsVersion {
      * see http://semver.org.
      */
     private static final Pattern SEMANTIC_VERSION_PATTERN =
-        Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(?:-(alpha|beta|rc)\\.(\\d+)|-SNAPSHOT)?");
+        Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(?:-(alpha|beta|rc-|ea-[a-z]*)\\.(\\d+)|-SNAPSHOT)?");
     private static final String ALPHA_VERSION_IDENTIFIER = "alpha";
     private static final String BETA_VERSION_IDENTIFIER = "beta";
 
