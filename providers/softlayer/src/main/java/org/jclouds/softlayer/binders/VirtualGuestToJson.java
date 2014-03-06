@@ -88,6 +88,7 @@ public class VirtualGuestToJson implements Binder {
       private int maxMemory;
       private boolean hourlyBillingFlag;
       private String operatingSystemReferenceCode;
+      private String blockDeviceTemplateGroupGlobalIdentifier;
       private boolean localDiskFlag;
       private Datacenter datacenter;
       private Set<NetworkComponent> networkComponents;

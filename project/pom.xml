@@ -20,11 +20,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache</groupId>
-    <artifactId>apache</artifactId>
-    <version>13</version>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
   </parent>
-  <groupId>org.apache.jclouds</groupId>
+  <groupId>io.cloudsoft.jclouds</groupId>
   <artifactId>jclouds-project</artifactId>
   <version>1.7.2-ea-brooklyn.1</version>
   <packaging>pom</packaging>
@@ -102,11 +102,6 @@
       <id>jclouds-github-pages-site</id>
       <url>${maven.site.url.base}/${project.version}</url>
     </site>
-    <repository>
-      <id>cloudsoft-releases</id>
-      <name>cloudsoft-releases</name>
-      <url>scpexe://maven@releng2.cloudsoftcorp.com/var/www/developer/maven/releases/</url>
-    </repository>
   </distributionManagement>
 
   <developers>
@@ -322,13 +317,6 @@
   </dependencies>
 
   <build>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh-external</artifactId>
-        <version>2.4</version>
-      </extension>
-    </extensions>
     <resources>
       <resource>
         <directory>src/main/clojure</directory>
@@ -355,23 +343,6 @@
           <goals>deploy</goals>
           <arguments>-Pdoc -Papache-release ${arguments}</arguments>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.4</version>
-        <executions>
-          <execution>
-            <id>process-remote-resources</id>
-            <goals>
-              <goal>process</goal>
-            </goals>
-            <configuration>
-              <resourceBundles>
-                <resourceBundle>org.apache.jclouds:jclouds-resources:1.7.2-ea-brooklyn.1</resourceBundle>
-              </resourceBundles>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
       
       <plugin>
@@ -460,17 +431,17 @@
               <!-- CloudSigma bundles conflict between api and providers-->
               <conflictingDependencies>
                 <dependency>
-                  <groupId>org.apache.jclouds.api</groupId>
+                  <groupId>io.cloudsoft.jclouds.api</groupId>
                   <artifactId>cloudsigma</artifactId>
                   <version>${project.version}</version>
                 </dependency>
                 <dependency>
-                  <groupId>org.apache.jclouds.provider</groupId>
+                  <groupId>io.cloudsoft.jclouds.provider</groupId>
                   <artifactId>cloudsigma-lvs</artifactId>
                   <version>${project.version}</version>
                 </dependency>
                 <dependency>
-                  <groupId>org.apache.jclouds.provider</groupId>
+                  <groupId>io.cloudsoft.jclouds.provider</groupId>
                   <artifactId>cloudsigma-zrh</artifactId>
                   <version>${project.version}</version>
                 </dependency>
@@ -950,7 +921,7 @@
             </executions>
             <dependencies>
               <dependency>
-                <groupId>org.apache.jclouds</groupId>
+                <groupId>io.cloudsoft.jclouds</groupId>
                 <artifactId>jclouds-assemblies</artifactId>
                 <version>${project.version}</version>
               </dependency>
@@ -1033,7 +1004,7 @@
             <artifactId>maven-checkstyle-plugin</artifactId>
             <dependencies>
               <dependency>
-                <groupId>org.apache.jclouds</groupId>
+                <groupId>io.cloudsoft.jclouds</groupId>
                 <artifactId>jclouds-resources</artifactId>
                 <version>${project.version}</version>
               </dependency>

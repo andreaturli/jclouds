@@ -21,13 +21,11 @@ import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
-import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.SoftwareDescription;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
@@ -36,7 +34,7 @@ import java.util.Set;
  * <p/>
  *
  * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Software_Description" />
- * @author Adrian Cole, Andrea Turli
+ * @author Andrea Turli
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
