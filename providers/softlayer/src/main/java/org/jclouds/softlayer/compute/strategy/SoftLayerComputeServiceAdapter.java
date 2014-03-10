@@ -17,9 +17,10 @@
 package org.jclouds.softlayer.compute.strategy;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.base.Supplier;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
@@ -62,10 +63,12 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.FluentIterable.from;
 import static com.google.common.collect.Iterables.contains;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.find;
 import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.tryFind;
 import static java.lang.Math.round;
 import static java.lang.String.format;
 import static org.jclouds.compute.domain.Volume.Type;
@@ -123,23 +126,20 @@ public class SoftLayerComputeServiceAdapter implements
 
       String domainName = template.getOptions().as(SoftLayerTemplateOptions.class).getDomainName();
 
-      String imageId = template.getImage().getId();
+      final String imageId = template.getImage().getId();
       Set<OperatingSystem> operatingSystemsAvailable = createObjectOptionsSupplier.get()
               .getVirtualGuestOperatingSystems();
-      boolean isObjectOption = FluentIterable.from(operatingSystemsAvailable)
-                    .transform(new Function<OperatingSystem, Object>() {
-                       @Override
-                       public Object apply(OperatingSystem input) {
-                          return input.getId();
-                       }
-                    })
-                    .contains(imageId);
+      Optional<OperatingSystem> optionalOS = tryFind(from(operatingSystemsAvailable)
+              .filter(new Predicate<OperatingSystem>() {
+                 @Override
+                 public boolean apply(OperatingSystem input) {
+                    return input.getId().contains(imageId);
+                 }
+              }), Predicates.notNull());
       OperatingSystem operatingSystem = null;
       VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup = null;
-      if(isObjectOption) {
-         operatingSystem = OperatingSystem.builder()
-              .id(imageId)
-              .build();
+      if(optionalOS.isPresent()) {
+         operatingSystem = optionalOS.get();
       } else {
             blockDeviceTemplateGroup = VirtualGuestBlockDeviceTemplateGroup.builder()
                  .globalIdentifier(imageId)
@@ -163,7 +163,6 @@ public class SoftLayerComputeServiceAdapter implements
               .hostname(name)
               .startCpus((int) template.getHardware().getProcessors().get(0).getCores())
               .maxMemory(template.getHardware().getRam())
-              .blockDeviceTemplateGroup(blockDeviceTemplateGroup)
               .datacenter(datacenter)
               .blockDevices(blockDevice)
               .localDiskFlag(isLocalDisk(blockDevice));
@@ -171,7 +170,7 @@ public class SoftLayerComputeServiceAdapter implements
       if(operatingSystem != null) {
          virtualGuest = virtualGuestBuilder.operatingSystem(operatingSystem).build();
       } else if(blockDeviceTemplateGroup != null) {
-         virtualGuest = virtualGuestBuilder.operatingSystem(operatingSystem).build();
+         virtualGuest = virtualGuestBuilder.blockDeviceTemplateGroup(blockDeviceTemplateGroup).build();
       }
 
       logger.debug(">> creating new VirtualGuest(%s)", virtualGuest);
@@ -241,7 +240,7 @@ public class SoftLayerComputeServiceAdapter implements
          final String osReferenceCode = os.getOperatingSystemReferenceCode();
          final String osId = os.getId();
          result.addAll(
-                 FluentIterable.from(unfiltered)
+                 from(unfiltered)
                          .filter(new Predicate<SoftwareDescription>() {
                             @Override
                             public boolean apply(SoftwareDescription input) {
