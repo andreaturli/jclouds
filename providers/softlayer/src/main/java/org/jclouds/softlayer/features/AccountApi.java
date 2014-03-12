@@ -21,6 +21,7 @@ import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
+import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
 import javax.inject.Named;
@@ -31,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
 /**
- * Provides asynchronous access to Account via their REST API.
+ * Provides access to Account via their REST API.
  * <p/>
  *
  * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest_Block_Device_Template_Group" />
@@ -40,7 +41,20 @@ import java.util.Set;
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
 public interface AccountApi {
+
    public static String GUEST_MASK = "children.blockDevices.diskImage.softwareReferences.softwareDescription";
+   public static String LIST_GUEST_MASK = "powerState;operatingSystem.passwords;datacenter;billingItem;blockDevices.diskImage";
+
+   /**
+    * @return an account's associated virtual guest objects.
+    */
+   @Named("Account:listVirtualGuest")
+   @GET
+   @Path("/SoftLayer_Account/VirtualGuests")
+   @QueryParams(keys = "objectMask", values = LIST_GUEST_MASK)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
+   Set<VirtualGuest> listVirtualGuests();
 
    /**
     * @return retrieve block device groups for an account (private images)
@@ -51,7 +65,7 @@ public interface AccountApi {
    @Path("/SoftLayer_Account/getBlockDeviceTemplateGroups")
    @QueryParams(keys = "objectMask", values = GUEST_MASK)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.NullOnNotFoundOr404.class)
+   @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
    Set<VirtualGuestBlockDeviceTemplateGroup> getBlockDeviceTemplateGroups();
 
 }

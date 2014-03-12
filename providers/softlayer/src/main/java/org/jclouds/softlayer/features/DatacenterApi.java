@@ -31,7 +31,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
 /**
- * Provides asynchronous access to LocationDatacenter via their REST API.
+ * Provides access to LocationDatacenter via their REST API.
  * <p/>
  *
  * @see <a href="http://sldn.softlayer.com/article/REST" />

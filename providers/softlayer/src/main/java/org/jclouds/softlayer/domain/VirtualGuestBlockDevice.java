@@ -22,7 +22,6 @@ import org.jclouds.javax.annotation.Nullable;
 import java.beans.ConstructorProperties;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * Class VirtualGuestBlockDevice
@@ -32,16 +31,15 @@ import static com.google.common.base.Strings.emptyToNull;
  */
 public class VirtualGuestBlockDevice {
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromVirtualGuestBlockDevice(this);
+   public Builder toBuilder() {
+      return builder().fromVirtualGuestBlockDevice(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected int id;
       protected String uuid;
@@ -50,84 +48,84 @@ public class VirtualGuestBlockDevice {
       protected String mountMode;
       protected int bootableFlag;
       protected String device;
-      protected VirtualDiskImage virtualDiskImage;
+      protected VirtualDiskImage diskImage;
       protected VirtualGuest guest;
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDevice#getId()
        */
-      public T id(int id) {
+      public Builder id(int id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDevice#getUuid()
        */
-      public T uuid(String uuid) {
+      public Builder uuid(String uuid) {
          this.uuid = uuid;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDevice#getStatusId()
        */
-      public T statusId(int statusId) {
+      public Builder statusId(int statusId) {
          this.statusId = statusId;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDevice#getMountType()
        */
-      public T mountType(String mountType) {
+      public Builder mountType(String mountType) {
          this.mountType = mountType;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDevice#getMountMode()
        */
-      public T mountMode(String mountMode) {
+      public Builder mountMode(String mountMode) {
          this.mountMode = mountMode;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDevice#getBootableFlag()
        */
-      public T bootableFlag(int bootableFlag) {
+      public Builder bootableFlag(int bootableFlag) {
          this.bootableFlag = bootableFlag;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDevice#getDevice()
        */
-      public T device(String device) {
+      public Builder device(String device) {
          this.device = device;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDevice#getVirtualDiskImage()
        */
-      public T virtualDiskImage(VirtualDiskImage virtualDiskImage) {
-         this.virtualDiskImage = virtualDiskImage;
-         return self();
+      public Builder diskImage(VirtualDiskImage diskImage) {
+         this.diskImage = diskImage;
+         return this;
       }
 
-      public T guest(VirtualGuest guest) {
+      public Builder guest(VirtualGuest guest) {
          this.guest = guest;
-         return self();
+         return this;
       }
 
       public VirtualGuestBlockDevice build() {
          return new VirtualGuestBlockDevice(id, uuid, statusId, mountType, mountMode, bootableFlag, device,
-                 virtualDiskImage, guest);
+                 diskImage, guest);
       }
 
-      public T fromVirtualGuestBlockDevice(VirtualGuestBlockDevice in) {
+      public Builder fromVirtualGuestBlockDevice(VirtualGuestBlockDevice in) {
          return this
                .id(in.getId())
                .uuid(in.getUuid())
@@ -136,15 +134,8 @@ public class VirtualGuestBlockDevice {
                .mountType(in.getMountType())
                .bootableFlag(in.getBootableFlag())
                .device(in.getDevice())
-               .virtualDiskImage(in.getVirtualDiskImage())
+               .diskImage(in.getVirtualDiskImage())
                .guest(in.getVirtualGuest());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 
@@ -155,23 +146,23 @@ public class VirtualGuestBlockDevice {
    private final String mountMode;
    private final int bootableFlag;
    private final String device;
-   private final VirtualDiskImage virtualDiskImage;
+   private final VirtualDiskImage diskImage;
    private final VirtualGuest guest;
 
    @ConstructorProperties({
            "id", "uuid", "statusId", "mountType", "mountMode", "bootableFlag", "device", "diskImage", "guest"
    })
-   protected VirtualGuestBlockDevice(int id, String uuid, int statusId, String mountType, String mountMode,
-                                     int bootableFlag, String device, VirtualDiskImage virtualDiskImage,
-                                     VirtualGuest guest) {
-      this.id = id;
+   protected VirtualGuestBlockDevice(int id, @Nullable String uuid, int statusId,  @Nullable String mountType,
+                                     @Nullable String mountMode, int bootableFlag, String device,
+                                     @Nullable VirtualDiskImage diskImage, @Nullable VirtualGuest guest) {
+      this.id = checkNotNull(id, "id");
       this.uuid = uuid;
-      this.statusId = statusId;
+      this.statusId = checkNotNull(statusId, "statusId");
       this.mountType = mountType;
       this.mountMode = mountMode;
-      this.bootableFlag = bootableFlag;
-      this.device = device;
-      this.virtualDiskImage = virtualDiskImage;
+      this.bootableFlag = checkNotNull(bootableFlag, "bootableFlag");
+      this.device = checkNotNull(device, "device");
+      this.diskImage = diskImage;
       this.guest = guest;
    }
 
@@ -204,7 +195,7 @@ public class VirtualGuestBlockDevice {
    }
 
    public VirtualDiskImage getVirtualDiskImage() {
-      return virtualDiskImage;
+      return diskImage;
    }
 
    public VirtualGuest getVirtualGuest() {
@@ -225,14 +216,14 @@ public class VirtualGuestBlockDevice {
               Objects.equal(this.mountMode, that.mountMode) &&
               Objects.equal(this.bootableFlag, that.bootableFlag) &&
               Objects.equal(this.device, that.device) &&
-              Objects.equal(this.virtualDiskImage, that.virtualDiskImage) &&
+              Objects.equal(this.diskImage, that.diskImage) &&
               Objects.equal(this.guest, that.guest);
    }
 
    @Override
    public int hashCode() {
       return Objects.hashCode(id, uuid, statusId, mountType, mountMode, bootableFlag,
-              device, virtualDiskImage, guest);
+              device, diskImage, guest);
    }
 
    @Override
@@ -245,7 +236,7 @@ public class VirtualGuestBlockDevice {
               ", mountMode='" + mountMode + '\'' +
               ", bootableFlag=" + bootableFlag +
               ", device=" + device +
-              ", virtualDiskImage=" + virtualDiskImage +
+              ", diskImage=" + diskImage +
               ", guest=" + guest +
               '}';
    }

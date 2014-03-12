@@ -34,16 +34,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class VirtualGuestBlockDeviceTemplateGroup {
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromVirtualGuestBlockDeviceTemplateGroup(this);
+   public Builder toBuilder() {
+      return builder().fromVirtualGuestBlockDeviceTemplateGroup(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected int id;
       protected String name;
@@ -52,95 +51,95 @@ public class VirtualGuestBlockDeviceTemplateGroup {
       protected int accountId;
       protected int parentId;
       protected String summary;
-      protected Set<VirtualGuestBlockDeviceTemplateGroup> children = ImmutableSet.of();
-      protected Set<VirtualGuestBlockDeviceTemplate> blockDevices = ImmutableSet.of();
+      protected ImmutableSet.Builder<VirtualGuestBlockDeviceTemplateGroup> children = ImmutableSet.builder();
+      protected ImmutableSet.Builder<VirtualGuestBlockDeviceTemplate> blockDevices = ImmutableSet.builder();
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup#getId()
        */
-      public T id(int id) {
+      public Builder id(int id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup#getName()
        */
-      public T name(String name) {
+      public Builder name(String name) {
          this.name = name;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup#getGlobalIdentifier()
        */
-      public T globalIdentifier(String globalIdentifier) {
+      public Builder globalIdentifier(String globalIdentifier) {
          this.globalIdentifier = globalIdentifier;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup#getStatusId()
        */
-      public T statusId(int statusId) {
+      public Builder statusId(int statusId) {
          this.statusId = statusId;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup#getAccountId()
        */
-      public T accountId(int accountId) {
+      public Builder accountId(int accountId) {
          this.accountId = accountId;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDeviceTemplateGroup#getParentId()
        */
-      public T parentId(int parentId) {
+      public Builder parentId(int parentId) {
          this.parentId = parentId;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup#getSummary()
        */
-      public T summary(String summary) {
+      public Builder summary(String summary) {
          this.summary = summary;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDeviceTemplateGroup#getChildren()
        */
-      public T children(Set<VirtualGuestBlockDeviceTemplateGroup> children) {
-         this.children = ImmutableSet.copyOf(checkNotNull(children, "children"));
-         return self();
+      public Builder children(Iterable<VirtualGuestBlockDeviceTemplateGroup> children) {
+         this.children.addAll(checkNotNull(children, "children"));
+         return this;
       }
 
-      public T children(VirtualGuestBlockDeviceTemplateGroup... in) {
-         return children(ImmutableSet.copyOf(in));
+      public Builder children(VirtualGuestBlockDeviceTemplateGroup... in) {
+         return children(ImmutableSet.copyOf(checkNotNull(in, "children")));
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup#getBlockDevices()
        */
-      public T blockDevices(Set<VirtualGuestBlockDeviceTemplate> blockDevices) {
-         this.blockDevices = ImmutableSet.copyOf(checkNotNull(blockDevices, "blockDevices"));
-         return self();
+      public Builder blockDevices(Set<VirtualGuestBlockDeviceTemplate> blockDevices) {
+         this.blockDevices.addAll(checkNotNull(blockDevices, "blockDevices"));
+         return this;
       }
 
-      public T blockDevices(VirtualGuestBlockDeviceTemplate... in) {
-         return blockDevices(ImmutableSet.copyOf(in));
+      public Builder blockDevices(VirtualGuestBlockDeviceTemplate... in) {
+         return blockDevices(ImmutableSet.copyOf(checkNotNull(in, "blockDevices")));
       }
 
       public VirtualGuestBlockDeviceTemplateGroup build() {
          return new VirtualGuestBlockDeviceTemplateGroup(id, name, globalIdentifier, statusId, accountId, parentId,
-                 summary, children, blockDevices);
+                 summary, children.build(), blockDevices.build());
       }
 
-      public T fromVirtualGuestBlockDeviceTemplateGroup(VirtualGuestBlockDeviceTemplateGroup in) {
+      public Builder fromVirtualGuestBlockDeviceTemplateGroup(VirtualGuestBlockDeviceTemplateGroup in) {
          return this
                  .id(in.getId())
                  .name(in.getName())
@@ -150,13 +149,6 @@ public class VirtualGuestBlockDeviceTemplateGroup {
                  .summary(in.getSummary())
                  .children(in.getChildren())
                  .blockDevices(in.getBlockDevices());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 
@@ -173,16 +165,16 @@ public class VirtualGuestBlockDeviceTemplateGroup {
    @ConstructorProperties({
            "id", "name", "globalIdentifier", "statusId", "accountId", "parentId", "summary", "children", "blockDevices"
    })
-   protected VirtualGuestBlockDeviceTemplateGroup(int id, String name, String globalIdentifier, int statusId,
-                                                  int accountId,  int parentId, @Nullable String summary,
+   protected VirtualGuestBlockDeviceTemplateGroup(int id, @Nullable String name, @Nullable String globalIdentifier,
+                                                  int statusId, int accountId,  int parentId, @Nullable String summary,
                                                   @Nullable Set<VirtualGuestBlockDeviceTemplateGroup> children,
                                                   @Nullable Set<VirtualGuestBlockDeviceTemplate> blockDevices) {
-      this.id = id;
+      this.id = checkNotNull(id, "id");
       this.name = name;
       this.globalIdentifier = globalIdentifier;
-      this.statusId = statusId;
-      this.accountId = accountId;
-      this.parentId = parentId;
+      this.statusId = checkNotNull(statusId, "statusId");
+      this.accountId = checkNotNull(accountId, "accountId");
+      this.parentId = checkNotNull(parentId, "parentId");
       this.summary = summary;
       this.children = children == null ? ImmutableSet.<VirtualGuestBlockDeviceTemplateGroup>of() :
               ImmutableSet.copyOf(children);

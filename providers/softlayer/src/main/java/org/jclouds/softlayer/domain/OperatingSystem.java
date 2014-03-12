@@ -34,16 +34,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class OperatingSystem {
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromOperatingSystem(this);
+   public Builder toBuilder() {
+      return builder().fromOperatingSystem(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected String id;
       protected SoftwareLicense softwareLicense;
@@ -53,36 +52,36 @@ public class OperatingSystem {
       /**
        * @see OperatingSystem#getId()
        */
-      public T id(String id) {
+      public Builder id(String id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see OperatingSystem#getSoftwareLicense()
        */
-      public T softwareLicense(SoftwareLicense softwareLicense) {
+      public Builder softwareLicense(SoftwareLicense softwareLicense) {
          this.softwareLicense = softwareLicense;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.OperatingSystem#getOperatingSystemReferenceCode()
        */
-      public T operatingSystemReferenceCode(String operatingSystemReferenceCode) {
+      public Builder operatingSystemReferenceCode(String operatingSystemReferenceCode) {
          this.operatingSystemReferenceCode = operatingSystemReferenceCode;
-         return self();
+         return this;
       }
 
       /**
        * @see OperatingSystem#getPasswords()
        */
-      public T passwords(Set<Password> passwords) {
+      public Builder passwords(Set<Password> passwords) {
          this.passwords = ImmutableSet.copyOf(checkNotNull(passwords, "passwords"));
-         return self();
+         return this;
       }
 
-      public T passwords(Password... in) {
+      public Builder passwords(Password... in) {
          return passwords(ImmutableSet.copyOf(in));
       }
 
@@ -90,19 +89,10 @@ public class OperatingSystem {
          return new OperatingSystem(id, softwareLicense, operatingSystemReferenceCode, passwords);
       }
 
-      public T fromOperatingSystem(OperatingSystem in) {
-         return this
-               .id(in.getId())
-               .passwords(in.getPasswords());
+      public Builder fromOperatingSystem(OperatingSystem in) {
+         return this.id(in.getId()).passwords(in.getPasswords());
       }
 
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
-      }
    }
 
    private final String id;

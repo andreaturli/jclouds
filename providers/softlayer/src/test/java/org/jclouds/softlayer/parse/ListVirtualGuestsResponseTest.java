@@ -34,7 +34,7 @@ public class ListVirtualGuestsResponseTest extends BaseSoftLayerParseTest<Set<Vi
 
    @Override
    public String resource() {
-      return "/virtual_guest_list.json";
+      return "/account_list.json";
    }
 
    @Override

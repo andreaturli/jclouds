@@ -18,9 +18,7 @@ package org.jclouds.softlayer.compute.config;
 
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.base.Supplier;
-import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.TypeLiteral;
 import org.jclouds.collect.Memoized;
@@ -28,14 +26,12 @@ import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.config.ComputeServiceAdapterContextModule;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.compute.extensions.ImageExtension;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Location;
 import org.jclouds.functions.IdentityFunction;
 import org.jclouds.rest.AuthorizationException;
 import org.jclouds.rest.suppliers.MemoizedRetryOnTimeOutButNotOnAuthorizationExceptionSupplier;
 import org.jclouds.softlayer.SoftLayerApi;
-import org.jclouds.softlayer.compute.extensions.SoftLayerImageExtension;
 import org.jclouds.softlayer.compute.functions.DatacenterToLocation;
 import org.jclouds.softlayer.compute.functions.OperatingSystemToImage;
 import org.jclouds.softlayer.compute.functions.VirtualGuestToHardware;
@@ -80,8 +76,6 @@ public class SoftLayerComputeServiceContextModule extends
       // to have the compute service adapter override default locations
       install(new LocationsFromComputeServiceAdapterModule<VirtualGuest, Hardware, OperatingSystem, Datacenter>(){});
 
-      bind(new TypeLiteral<ImageExtension>() {
-      }).to(SoftLayerImageExtension.class);
    }
 
    @Provides
@@ -106,8 +100,4 @@ public class SoftLayerComputeServiceContextModule extends
               }, seconds, TimeUnit.SECONDS);
    }
 
-   @Override
-   protected Optional<ImageExtension> provideImageExtension(Injector i) {
-      return Optional.of(i.getInstance(ImageExtension.class));
-   }
 }

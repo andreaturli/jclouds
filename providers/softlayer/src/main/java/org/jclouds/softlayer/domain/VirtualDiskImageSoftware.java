@@ -26,16 +26,15 @@ import java.beans.ConstructorProperties;
  */
 public class VirtualDiskImageSoftware {
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromVirtualDiskImageSoftware(this);
+   public Builder toBuilder() {
+      return builder().fromVirtualDiskImageSoftware(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected int id;
       protected int softwareDescriptionId;
@@ -44,43 +43,36 @@ public class VirtualDiskImageSoftware {
       /**
        * @see VirtualDiskImageSoftware#getId()
        */
-      public T id(int id) {
+      public Builder id(int id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualDiskImageSoftware#getSoftwareDescriptionId()
        */
-      public T softwareDescriptionId(int softwareDescriptionId) {
+      public Builder softwareDescriptionId(int softwareDescriptionId) {
          this.softwareDescriptionId = softwareDescriptionId;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImageSoftware#getSoftwareDescription()
        */
-      public T softwareDescription(SoftwareDescription softwareDescription) {
+      public Builder softwareDescription(SoftwareDescription softwareDescription) {
          this.softwareDescription = softwareDescription;
-         return self();
+         return this;
       }
 
       public VirtualDiskImageSoftware build() {
          return new VirtualDiskImageSoftware(id, softwareDescriptionId, softwareDescription);
       }
 
-      public T fromVirtualDiskImageSoftware(VirtualDiskImageSoftware in) {
+      public Builder fromVirtualDiskImageSoftware(VirtualDiskImageSoftware in) {
          return this
                  .id(in.getId())
                  .softwareDescriptionId(in.getSoftwareDescriptionId())
                  .softwareDescription(in.getSoftwareDescription());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 

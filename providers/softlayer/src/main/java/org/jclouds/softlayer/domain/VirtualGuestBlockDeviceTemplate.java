@@ -203,7 +203,7 @@ public class VirtualGuestBlockDeviceTemplate {
               "id=" + id +
               ", device='" + device + '\'' +
               ", diskImageId=" + diskImageId +
-              ", diskSpace='" + diskSpace + '\'' +
+              ", diskSpace='" + Float.toString(diskSpace) + '\'' +
               ", groupId='" + groupId + '\'' +
               ", units=" + units +
               ", diskImage=" + diskImage +

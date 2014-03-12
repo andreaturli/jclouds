@@ -36,16 +36,6 @@ public class SoftwareLicense {
       this.softwareDescriptionId = softwareDescriptionId;
    }
 
-
-
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
-   }
-
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromSoftwareLicense(this);
-   }
-
    public int getId() {
       return this.id;
    }
@@ -89,53 +79,52 @@ public class SoftwareLicense {
               '}';
    }
 
-   public abstract static class Builder<T extends Builder<T>> {
+   public static Builder builder() {
+      return new Builder();
+   }
+
+   public Builder toBuilder() {
+      return builder().fromSoftwareLicense(this);
+   }
+
+   public static class Builder {
       protected int id;
       protected SoftwareDescription softwareDescription;
       protected int softwareDescriptionId;
 
-      protected abstract T self();
-
       /**
        * @see SoftwareLicense#getId()
        */
-      public T id(int id) {
+      public Builder id(int id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.SoftwareLicense#getSoftwareDescription() ()
        */
-      public T softwareDescription(SoftwareDescription softwareDescription) {
+      public Builder softwareDescription(SoftwareDescription softwareDescription) {
          this.softwareDescription = softwareDescription;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.SoftwareLicense#getSoftwareDescriptionId() ()
        */
-      public T softwareDescriptionId(int softwareDescriptionId) {
+      public Builder softwareDescriptionId(int softwareDescriptionId) {
          this.softwareDescriptionId = softwareDescriptionId;
-         return self();
+         return this;
       }
 
       public SoftwareLicense build() {
          return new SoftwareLicense(id, softwareDescription, softwareDescriptionId);
       }
 
-      public T fromSoftwareLicense(SoftwareLicense in) {
+      public Builder fromSoftwareLicense(SoftwareLicense in) {
          return this
                  .id(in.getId())
                  .softwareDescription(in.getSoftwareDescription())
                  .softwareDescriptionId(in.getSoftwareDescriptionId());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 

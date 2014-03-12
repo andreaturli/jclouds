@@ -63,15 +63,22 @@ public class VirtualGuestToJson implements Binder {
     */
    String buildJson(VirtualGuest virtualGuest) {
       TemplateObject templateObject = null;
+      String hostname = checkNotNull(virtualGuest.getHostname(), "hostname");
+      String domain = checkNotNull(virtualGuest.getDomain(), "domain");
+      int startCpus = checkNotNull(virtualGuest.getStartCpus(), "startCpus");
+      int maxMemory = checkNotNull(virtualGuest.getMaxMemory(), "maxMemory");
+      String datacenterName = virtualGuest.getDatacenter().getName();
       if(virtualGuest.getOperatingSystem() != null) {
-         templateObject = new TemplateObject(virtualGuest.getHostname(), virtualGuest.getDomain(), virtualGuest.getStartCpus(),
-              virtualGuest.getMaxMemory(), true, virtualGuest.getOperatingSystem().getOperatingSystemReferenceCode(),
-              null, true, new Datacenter(virtualGuest.getDatacenter().getName()), null, getBlockDevices(virtualGuest));
+         String operatingSystemReferenceCode = checkNotNull(virtualGuest.getOperatingSystem()
+                 .getOperatingSystemReferenceCode(), "operatingSystemReferenceCode");
+         templateObject = new TemplateObject(hostname, domain, startCpus, maxMemory, true,
+                 operatingSystemReferenceCode, null, true, new Datacenter(datacenterName), null,
+                 getBlockDevices(virtualGuest));
       } else if(virtualGuest.getVirtualGuestBlockDeviceTemplateGroup() != null) {
-         templateObject = new TemplateObject(virtualGuest.getHostname(), virtualGuest.getDomain(), virtualGuest.getStartCpus(),
-                 virtualGuest.getMaxMemory(), true, null, new BlockDeviceTemplateGroup(virtualGuest
-                 .getVirtualGuestBlockDeviceTemplateGroup().getGlobalIdentifier()), true,
-                 new Datacenter(virtualGuest.getDatacenter().getName()), null, null);
+         String globalIdentifier = checkNotNull(virtualGuest.getVirtualGuestBlockDeviceTemplateGroup()
+                 .getGlobalIdentifier(), "blockDeviceTemplateGroup.globalIdentifier");
+         templateObject = new TemplateObject(hostname, domain, startCpus, maxMemory, true, null,
+                 new BlockDeviceTemplateGroup(globalIdentifier), true, new Datacenter(datacenterName), null, null);
       }
       return json.toJson(ImmutableMap.of("parameters", ImmutableList.<TemplateObject> of(templateObject)));
    }

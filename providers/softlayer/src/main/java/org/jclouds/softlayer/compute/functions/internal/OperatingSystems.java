@@ -58,7 +58,7 @@ public class OperatingSystems {
             return rawVersion;
          }
       } else if(version.contains(" ")) {
-         version.substring(0,
+         return version.substring(0,
                  version.indexOf(" "));
       }
       return null;

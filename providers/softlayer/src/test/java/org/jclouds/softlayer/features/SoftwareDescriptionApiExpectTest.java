@@ -36,20 +36,19 @@ public class SoftwareDescriptionApiExpectTest extends BaseSoftLayerApiExpectTest
    public void testGetAllObjectsWhenResponseIs2xx() {
 
       HttpRequest getAllObjectsRequest = HttpRequest.builder().method("GET")
-              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Software_Description/getAllObjects?objectMask=version%3BoperatingSystem%3BlongDescription%3BreferenceCode")
+              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Software_Description/getAllObjects?objectMask=id%3Bname%3Bversion%3BoperatingSystem%3BlongDescription%3BreferenceCode")
               .addHeader("Accept", "application/json")
               .addHeader("Authorization", "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
       HttpResponse getAllObjectsResponse = HttpResponse.builder().statusCode(200)
               .payload(payloadFromResource("/software_description_list.json")).build();
       SoftwareDescriptionApi api = requestSendsResponse(getAllObjectsRequest, getAllObjectsResponse).getSoftwareDescriptionApi();
-      assertEquals(api.getAllObjects(),
-              new GetAllObjectsResponseTest().expected());
+      assertEquals(api.getAllObjects(), new GetAllObjectsResponseTest().expected());
    }
 
    public void testGetAllObjectsWhenResponseIs4xx() {
 
       HttpRequest getAllObjectsRequest = HttpRequest.builder().method("GET")
-              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Software_Description/getAllObjects?objectMask=version%3BoperatingSystem%3BlongDescription%3BreferenceCode")
+              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Software_Description/getAllObjects?objectMask=id%3Bname%3Bversion%3BoperatingSystem%3BlongDescription%3BreferenceCode")
               .addHeader("Accept", "application/json")
               .addHeader("Authorization", "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
       HttpResponse getAllObjectsResponse = HttpResponse.builder().statusCode(404).build();

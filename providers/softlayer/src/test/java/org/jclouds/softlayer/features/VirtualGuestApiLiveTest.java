@@ -24,18 +24,15 @@ import org.jclouds.softlayer.domain.ContainerVirtualGuestConfiguration;
 import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.VirtualGuest;
-import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Properties;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
-import static org.jclouds.softlayer.compute.strategy.SoftLayerComputeServiceAdapter.*;
+import static org.jclouds.softlayer.compute.strategy.SoftLayerComputeServiceAdapter.VirtualGuestHasLoginDetailsPresent;
 import static org.jclouds.util.Predicates2.retry;
-import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
@@ -84,22 +81,13 @@ public class VirtualGuestApiLiveTest extends BaseSoftLayerApiLiveTest {
    }
 
    @Test
-   public void testListVirtualGuests() throws Exception {
-      Set<VirtualGuest> response = api().listVirtualGuests();
-      assertTrue(response.size() >= 0);
-      for (VirtualGuest vg : response) {
-         checkVirtualGuest(vg);
-      }
-   }
-
-   @Test
    public void testCreateVirtualMachine() throws Exception {
       VirtualGuest virtualGuestRequest = VirtualGuest.builder()
               .domain("jclouds.org")
               .hostname("virtualGuestApiLiveTest")
               .startCpus(1)
               .maxMemory(1024)
-              .operatingSystem(OperatingSystem.builder().id("CENTOS_6_64").build())
+              .operatingSystem(OperatingSystem.builder().id("CENTOS_6_64").operatingSystemReferenceCode("CENTOS_6_64").build())
               .datacenter(Datacenter.builder().name("dal01").build())
               .build();
 

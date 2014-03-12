@@ -16,7 +16,6 @@
  */
 package org.jclouds.softlayer.features;
 
-import com.google.common.collect.Iterables;
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpResponse;
 import org.jclouds.softlayer.SoftLayerApi;
@@ -25,13 +24,12 @@ import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.parse.CreateVirtualGuestResponseTest;
 import org.jclouds.softlayer.parse.GetVirtualGuestResponseTest;
-import org.jclouds.softlayer.parse.ListVirtualGuestsResponseTest;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.core.MediaType;
 
-
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 
 /**
  * @author Andrea Turli
@@ -105,36 +103,6 @@ public class VirtualGuestApiExpectTest extends BaseSoftLayerApiExpectTest {
       assertNull(api.getVirtualGuestApi().createObject(virtualGuest));
    }
 
-   public void testListVirtualGuestsWhenResponseIs2xx() {
-
-      HttpRequest listVirtualGuestsRequest = HttpRequest.builder().method("GET")
-              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Account/VirtualGuests?objectMask=powerState%3BoperatingSystem.passwords%3Bdatacenter%3BbillingItem%3BblockDevices.diskImage")
-              .addHeader("Accept", "application/json")
-              .addHeader("Authorization", "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
-
-      HttpResponse listVirtualGuestsResponse = HttpResponse.builder().statusCode(200)
-              .payload(payloadFromResource("/virtual_guest_list.json")).build();
-
-      SoftLayerApi api = requestSendsResponse(listVirtualGuestsRequest, listVirtualGuestsResponse);
-
-      assertEquals(api.getVirtualGuestApi().listVirtualGuests(),
-              new ListVirtualGuestsResponseTest().expected());
-   }
-
-   public void testListVirtualGuestsWhenResponseIs4xx() {
-
-      HttpRequest listVirtualGuestsRequest = HttpRequest.builder().method("GET")
-              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Account/VirtualGuests?objectMask=powerState%3BoperatingSystem.passwords%3Bdatacenter%3BbillingItem%3BblockDevices.diskImage")
-              .addHeader("Accept", "application/json")
-              .addHeader("Authorization", "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
-
-      HttpResponse listVirtualGuestsResponse = HttpResponse.builder().statusCode(404).build();
-
-      SoftLayerApi api = requestSendsResponse(listVirtualGuestsRequest, listVirtualGuestsResponse);
-
-      assertTrue(Iterables.isEmpty(api.getVirtualGuestApi().listVirtualGuests()));
-   }
-
    private VirtualGuest createVirtualGuest() {
       return VirtualGuest.builder()
               .domain("example.com")
@@ -142,7 +110,9 @@ public class VirtualGuestApiExpectTest extends BaseSoftLayerApiExpectTest {
               .id(1301396)
               .maxMemory(1024)
               .startCpus(1)
-              .operatingSystem(OperatingSystem.builder().id("UBUNTU_LATEST").build())
+              .operatingSystem(OperatingSystem.builder().id("UBUNTU_LATEST")
+                                                        .operatingSystemReferenceCode("UBUNTU_LATEST")
+                                                        .build())
               .datacenter(Datacenter.builder().name("test").build())
               .build();
    }

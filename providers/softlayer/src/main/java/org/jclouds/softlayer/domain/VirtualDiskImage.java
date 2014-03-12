@@ -52,7 +52,7 @@ public class VirtualDiskImage {
       protected String description;
       protected String name;
       protected int storageRepositoryId;
-      protected Set<VirtualDiskImageSoftware> softwareReferences = ImmutableSet.of();;
+      protected ImmutableSet.Builder<VirtualDiskImageSoftware> softwareReferences = ImmutableSet.builder();
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getId()
@@ -119,7 +119,7 @@ public class VirtualDiskImage {
       }
 
       public T softwareReferences(Set<VirtualDiskImageSoftware> softwareReferences) {
-         this.softwareReferences = ImmutableSet.copyOf(checkNotNull(softwareReferences, "softwareReferences"));
+         this.softwareReferences.addAll(checkNotNull(softwareReferences, "softwareReferences"));
          return self();
       }
 
@@ -129,7 +129,7 @@ public class VirtualDiskImage {
 
       public VirtualDiskImage build() {
          return new VirtualDiskImage(id, uuid, capacity, units, typeId, description, name,
-                 storageRepositoryId, softwareReferences);
+                 storageRepositoryId, softwareReferences.build());
       }
 
       public T fromVirtualDiskImage(VirtualDiskImage in) {

@@ -39,7 +39,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
 /**
- * Provides asynchronous access to VirtualGuest via their REST API.
+ * Provides access to VirtualGuest via their REST API.
  * <p/>
  *
  * @see <a href="http://sldn.softlayer.com/article/REST" />
@@ -48,22 +48,10 @@ import java.util.Set;
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
 public interface VirtualGuestApi {
-   public static String LIST_GUEST_MASK = "powerState;operatingSystem.passwords;datacenter;billingItem;blockDevices" +
-           ".diskImage";
+
    public static String GUEST_MASK = "id;hostname;domain;fullyQualifiedDomainName;powerState;maxCpu;maxMemory;" +
            "statusId;operatingSystem.passwords;primaryBackendIpAddress;primaryIpAddress;activeTransactionCount;" +
            "blockDevices.diskImage";
-
-   /**
-    * @return an account's associated virtual guest objects.
-    */
-   @Named("VirtualGuests:list")
-   @GET
-   @Path("/SoftLayer_Account/VirtualGuests")
-   @QueryParams(keys = "objectMask", values = LIST_GUEST_MASK)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
-   Set<VirtualGuest> listVirtualGuests();
 
    /**
     * Enables the creation of computing instances on an account.

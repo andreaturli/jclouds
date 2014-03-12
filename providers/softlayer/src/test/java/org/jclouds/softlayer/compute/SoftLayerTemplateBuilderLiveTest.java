@@ -41,7 +41,7 @@ import static org.testng.Assert.assertEquals;
  * 
  * @author Jason King, Andrea Turli
  */
-@Test(groups = "live")
+@Test(groups = "live", alwaysRun = false)
 public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTest {
 
    public static final int MAX_RAM = 48 * 1024;

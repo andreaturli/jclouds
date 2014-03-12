@@ -22,16 +22,15 @@ import org.jclouds.javax.annotation.Nullable;
 import java.beans.ConstructorProperties;
 
 public class SoftwareDescription {
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromSoftwareDescription(this);
+   public Builder toBuilder() {
+      return builder().fromSoftwareDescription(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected int id;
       protected String longDescription;
@@ -50,90 +49,90 @@ public class SoftwareDescription {
       /**
        * @see SoftwareDescription#getId()
        */
-      public T id(int id) {
+      public Builder id(int id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see SoftwareDescription#getLongDescription()
        */
-      public T longDescription(String longDescription) {
+      public Builder longDescription(String longDescription) {
          this.longDescription = longDescription;
-         return self();
+         return this;
       }
 
       /**
        * @see SoftwareDescription#getManufacturer()
        */
-      public T manufacturer(String manufacturer) {
+      public Builder manufacturer(String manufacturer) {
          this.manufacturer = manufacturer;
-         return self();
+         return this;
       }
 
       /**
        * @see SoftwareDescription#getName()
        */
-      public T name(String name) {
+      public Builder name(String name) {
          this.name = name;
-         return self();
+         return this;
       }
 
       /**
        * @see SoftwareDescription#getOperatingSystem()
        */
-      public T operatingSystem(int operatingSystem) {
+      public Builder operatingSystem(int operatingSystem) {
          this.operatingSystem = operatingSystem;
-         return self();
+         return this;
       }
 
       /**
        * @see SoftwareDescription#getReferenceCode()
        */
-      public T referenceCode(String referenceCode) {
+      public Builder referenceCode(String referenceCode) {
          this.referenceCode = referenceCode;
-         return self();
+         return this;
       }
 
       /**
        * @see SoftwareDescription#getRequiredUser()
        */
-      public T requiredUser(String requiredUser) {
+      public Builder requiredUser(String requiredUser) {
          this.requiredUser = requiredUser;
-         return self();
+         return this;
       }
 
       /**
        * @see SoftwareDescription#getVersion()
        */
-      public T version(String version) {
+      public Builder version(String version) {
          this.version = version;
-         return self();
+         return this;
       }
 
-      public T controlPanel(int controlPanel) {
+      public Builder controlPanel(int controlPanel) {
          this.controlPanel = controlPanel;
-         return self();
+         return this;
       }
 
-      public T upgradeSoftwareDescriptionId(String upgradeSoftwareDescriptionId) {
+      public Builder upgradeSoftwareDescriptionId(String upgradeSoftwareDescriptionId) {
          this.upgradeSoftwareDescriptionId = upgradeSoftwareDescriptionId;
-         return self();
+         return this;
       }
 
-      public T upgradeSwDescId(String upgradeSwDescId) {
+      public Builder upgradeSwDescId(String upgradeSwDescId) {
          this.upgradeSwDescId = upgradeSwDescId;
-         return self();
+         return this;
       }
 
-      public T virtualLicense(String virtualLicense) {
+      public Builder virtualLicense(String virtualLicense) {
          this.virtualLicense = virtualLicense;
-         return self();
+         return this;
       }
 
-      public T virtualizationPlatform(String virtualizationPlatform) {
+      public Builder virtualizationPlatform(String virtualizationPlatform) {
          this.virtualizationPlatform = virtualizationPlatform;
-         return self();
+         return this;
       }
 
       public SoftwareDescription build() {
@@ -142,7 +141,7 @@ public class SoftwareDescription {
                  virtualizationPlatform);
       }
 
-      public T fromSoftwareDescription(SoftwareDescription in) {
+      public Builder fromSoftwareDescription(SoftwareDescription in) {
          return this
                  .id(in.getId())
                  .longDescription(in.getLongDescription())
@@ -157,13 +156,6 @@ public class SoftwareDescription {
                  .upgradeSwDescId(in.getUpgradeSwDescId())
                  .virtualLicense(in.getVirtualLicense())
                  .virtualizationPlatform(in.getVirtualizationPlatform());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 

@@ -26,45 +26,37 @@ import java.beans.ConstructorProperties;
  */
 public class ContainerVirtualGuestConfigurationOption {
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromContainerVirtualGuestConfigurationOption(this);
+   public Builder toBuilder() {
+      return builder().fromContainerVirtualGuestConfigurationOption(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected ProductItemPrice productItemPrice;
       protected VirtualGuest template;
 
-      public T productItemPrice(ProductItemPrice productItemPrice) {
+      public Builder productItemPrice(ProductItemPrice productItemPrice) {
          this.productItemPrice = productItemPrice;
-         return self();
+         return this;
       }
 
-      public T template(VirtualGuest template) {
+      public Builder template(VirtualGuest template) {
          this.template = template;
-         return self();
+         return this;
       }
 
       public ContainerVirtualGuestConfigurationOption build() {
          return new ContainerVirtualGuestConfigurationOption(productItemPrice, template);
       }
 
-      public T fromContainerVirtualGuestConfigurationOption(ContainerVirtualGuestConfigurationOption in) {
+      public Builder fromContainerVirtualGuestConfigurationOption(ContainerVirtualGuestConfigurationOption in) {
          return this
                  .productItemPrice(in.getProductItemPrice())
                  .template(in.getTemplate());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 

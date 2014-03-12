@@ -356,7 +356,7 @@ public class VirtualGuest {
       }
 
       public T blockDevices(VirtualGuestBlockDevice... in) {
-         return blockDevices(ImmutableSet.copyOf(in));
+         return blockDevices(ImmutableSet.copyOf(checkNotNull(in, "blockDevices")));
       }
 
       public T localDiskFlag(boolean localDiskFlag) {

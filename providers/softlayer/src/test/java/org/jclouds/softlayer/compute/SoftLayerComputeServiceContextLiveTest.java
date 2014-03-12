@@ -66,28 +66,28 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
                       new SshjSshClientModule()))
               .build(ComputeServiceContext.class);
 
-      for(Image image : context.getComputeService().listImages()) {
-         System.out.println(image);
+      for(Hardware hardware : context.getComputeService().listHardwareProfiles()) {
+         logger.info("hardware: ", hardware);
       }
 
-      for(Hardware hardware : context.getComputeService().listHardwareProfiles()) {
-         System.out.println(hardware);
+      for(Image image : context.getComputeService().listImages()) {
+         logger.info("image: ", image);
       }
 
       Image image = context.getComputeService().getImage("UBUNTU_8_64");
-      System.out.println(image);
+      logger.info("UBUNTU_8_64 image: ", image);
 
       for(ComputeMetadata node : context.getComputeService().listNodes()) {
-         System.out.println(node);
+         logger.info("node: ", node);
       }
 
       TemplateBuilder templateBuilder = context.getComputeService().templateBuilder();
       //templateBuilder.minDisk(15d);
-      templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=SAN");
+      //templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=SAN");
       //templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=LOCAL");
-      //templateBuilder.imageId("UBUNTU_12_64");
-      templateBuilder.imageId("7bcd78dc-eb11-4e1b-8d93-111c62ed5fd1");
-      templateBuilder.locationId("dal06");
+      templateBuilder.imageId("UBUNTU_12_64");
+      //templateBuilder.imageId("7bcd78dc-eb11-4e1b-8d93-111c62ed5fd1");
+      templateBuilder.locationId("dal01");
       Template template = templateBuilder.build();
       // test passing custom options
       template.getOptions().as(SoftLayerTemplateOptions.class).domainName("live.org");

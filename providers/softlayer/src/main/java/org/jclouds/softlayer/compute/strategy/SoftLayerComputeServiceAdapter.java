@@ -21,9 +21,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Supplier;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.jclouds.collect.Memoized;
@@ -57,6 +58,8 @@ import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,6 +75,8 @@ import static com.google.common.collect.Iterables.tryFind;
 import static java.lang.Math.round;
 import static java.lang.String.format;
 import static org.jclouds.compute.domain.Volume.Type;
+import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
+import static org.jclouds.compute.util.ComputeServiceUtils.getSpace;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY;
@@ -141,18 +146,14 @@ public class SoftLayerComputeServiceAdapter implements
       if(optionalOS.isPresent()) {
          operatingSystem = optionalOS.get();
       } else {
-            blockDeviceTemplateGroup = VirtualGuestBlockDeviceTemplateGroup.builder()
-                 .globalIdentifier(imageId)
-                 .build();
+            blockDeviceTemplateGroup = VirtualGuestBlockDeviceTemplateGroup.builder().globalIdentifier(imageId).build();
       }
-      final Datacenter datacenter = Datacenter.builder()
-              .name(template.getLocation().getId())
-              .build();
+      final Datacenter datacenter = Datacenter.builder().name(template.getLocation().getId()).build();
       Float diskCapacity = template.getHardware().getVolumes().get(0).getSize();
       Type type = template.getHardware().getVolumes().get(0).getType();
       VirtualGuestBlockDevice blockDevice = VirtualGuestBlockDevice.builder()
               .device(BOOTABLE_DEVICE)
-              .virtualDiskImage(VirtualDiskImage.builder()
+              .diskImage(VirtualDiskImage.builder()
                       .capacity(diskCapacity)
                       .typeId(type.ordinal())
                       .build())
@@ -202,11 +203,27 @@ public class SoftLayerComputeServiceAdapter implements
    @Override
    public Iterable<Hardware> listHardwareProfiles() {
       ContainerVirtualGuestConfiguration virtualGuestConfiguration = createObjectOptionsSupplier.get();
-      Builder<Hardware> hardware = ImmutableSet.builder();
+      Builder<Hardware> hardware = ImmutableSortedSet.orderedBy(new Comparator<Hardware>() {
+         @Override
+         public int compare(Hardware h1, Hardware h2) {
+            List<? extends Volume> volumes1 = h1.getVolumes();
+            List<? extends Volume> volumes2 = h2.getVolumes();
+            ComparisonChain comparisonChain = ComparisonChain.start().compare(getCores(h1), getCores(h2))
+                    .compare(h1.getRam(), h2.getRam())
+                    .compare(getSpace(h1), getSpace(h2))
+                    .compare(getBootableDeviceType(h1), getBootableDeviceType(h2));
+            if(!volumes1.isEmpty() && !volumes2.isEmpty() && volumes1.size() == volumes2.size()) {
+               for (int i = 0; i < volumes1.size(); i++) {
+                  comparisonChain.compare(volumes1.get(i).getType(), volumes2.get(i).getType());
+               }
+            }
+            return comparisonChain.result();
+         }
+      });
       for (Integer cpus : virtualGuestConfiguration.getCpusOfProcessors()) {
          for (Integer memory : virtualGuestConfiguration.getMemories()) {
             for (VirtualGuestBlockDevice blockDevice : virtualGuestConfiguration.getVirtualGuestBlockDevices()) {
-               if (blockDevice.getDevice().equals("0")) {
+               if (blockDevice.getDevice().equals(BOOTABLE_DEVICE)) {
                   float capacity = blockDevice.getVirtualDiskImage().getCapacity();
                   Type type = blockDevice.getVirtualGuest().isLocalDiskFlag() ? Type.LOCAL : Type.SAN;
                   String id = format("cpu=%s,memory=%s,disk=%s,type=%s", cpus, memory, round(capacity), type);
@@ -228,6 +245,20 @@ public class SoftLayerComputeServiceAdapter implements
          }
       }
       return hardware.build();
+   }
+
+   private int getBootableDeviceType(Hardware hardware) {
+      List<? extends Volume> volumes = hardware.getVolumes();
+      Optional<? extends Volume> optionalBootableVolume = tryFind(volumes, new Predicate<Volume>() {
+         @Override
+         public boolean apply(Volume volume) {
+            return volume.getDevice().equals(BOOTABLE_DEVICE);
+         }
+      });
+      if(!optionalBootableVolume.isPresent()) {
+         return Type.LOCAL.ordinal();
+      }
+      return optionalBootableVolume.get().getType().ordinal();
    }
 
    @Override
@@ -317,7 +348,7 @@ public class SoftLayerComputeServiceAdapter implements
 
    @Override
    public Iterable<VirtualGuest> listNodes() {
-      return api.getVirtualGuestApi().listVirtualGuests();
+      return api.getAccountApi().listVirtualGuests();
    }
 
    @Override
@@ -340,11 +371,11 @@ public class SoftLayerComputeServiceAdapter implements
          final String datacenterName = datacenter.getName();
          result.addAll(Sets.newHashSet(filter(unfiltered,
                  new Predicate<Datacenter>() {
-            @Override
-            public boolean apply(Datacenter input) {
-               return input.getName().equals(datacenterName);
-            }
-         })));
+                    @Override
+                    public boolean apply(Datacenter input) {
+                       return input.getName().equals(datacenterName);
+                    }
+                 })));
       }
       return result;
    }

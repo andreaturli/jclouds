@@ -21,19 +21,17 @@ import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
-import org.jclouds.softlayer.domain.ProvisioningVersion1Transaction;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
 import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import java.util.Set;
 
 /**
- * Provides asynchronous access to VirtualGuestBlockDeviceTemplateGroup via their REST API.
+ * Provides access to VirtualGuestBlockDeviceTemplateGroup via their REST API.
  * <p/>
  *
  * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest_Block_Device_Template_Group" />
@@ -42,9 +40,9 @@ import java.util.Set;
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
 public interface VirtualGuestBlockDeviceTemplateGroupApi {
-   public static String LIST_PUBLIC_IMAGES_MASK = "children.blockDevices.diskImage.softwareReferences" +
-           ".softwareDescription";
-   public static String DELETE_OBJECT_MASK = "pendingTransactionCount";
+
+   public static String LIST_PUBLIC_IMAGES_MASK = "children.blockDevices.diskImage.softwareReferences.softwareDescription";
+
    /**
     * @return public images
     * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest_Block_Device_Template_Group/getPublicImages" />
@@ -54,29 +52,7 @@ public interface VirtualGuestBlockDeviceTemplateGroupApi {
    @Path("/SoftLayer_Virtual_Guest_Block_Device_Template_Group/getPublicImages")
    @QueryParams(keys = "objectMask", values = LIST_PUBLIC_IMAGES_MASK)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.NullOnNotFoundOr404.class)
+   @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
    Set<VirtualGuestBlockDeviceTemplateGroup> getPublicImages();
 
-   /**
-    * @return get image
-    * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest_Block_Device_Template_Group/getObject" />
-    */
-   @Named("VirtualGuestBlockDeviceTemplateGroup:getObject")
-   @GET
-   @Path("/SoftLayer_Virtual_Guest_Block_Device_Template_Group/{id}/getObject")
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.NullOnNotFoundOr404.class)
-   VirtualGuestBlockDeviceTemplateGroup getObject(@PathParam("id") String id);
-
-   /**
-    * @return delete image
-    * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest_Block_Device_Template_Group/deleteObject" />
-    */
-   @Named("VirtualGuestBlockDeviceTemplateGroup:deleteObject")
-   @GET
-   @Path("/SoftLayer_Virtual_Guest_Block_Device_Template_Group/{id}/deleteObject")
-   @QueryParams(keys = "objectMask", values = DELETE_OBJECT_MASK)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.NullOnNotFoundOr404.class)
-   ProvisioningVersion1Transaction deleteObject(@PathParam("id") String id);
 }
