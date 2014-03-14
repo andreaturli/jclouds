@@ -22,7 +22,7 @@
   <parent>
     <artifactId>jclouds-project</artifactId>
     <groupId>io.cloudsoft.jclouds</groupId>
-    <version>1.7.2-ea-brooklyn.1</version>
+    <version>1.7.2-ea-brooklyn.2</version>
     <relativePath>../project/pom.xml</relativePath>
   </parent>    
   <artifactId>jclouds-resources</artifactId>
