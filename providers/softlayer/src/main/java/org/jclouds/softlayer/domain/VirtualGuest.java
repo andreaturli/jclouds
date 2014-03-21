@@ -129,6 +129,7 @@ public class VirtualGuest {
       protected Set<VirtualGuestBlockDevice> blockDevices;
       protected boolean localDiskFlag;
       protected VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
+      protected Set<VirtualGuestNetworkComponent> networkComponents;
 
       /**
        * @see VirtualGuest#getAccountId()
@@ -349,7 +350,6 @@ public class VirtualGuest {
       /**
        * @see VirtualGuest#getVirtualGuestBlockDevices()
        */
-
       public T blockDevices(Set<VirtualGuestBlockDevice> blockDevices) {
          this.blockDevices = ImmutableSet.copyOf(checkNotNull(blockDevices, "blockDevices"));
          return self();
@@ -369,12 +369,21 @@ public class VirtualGuest {
          return self();
       }
 
+      public T networkComponents(Set<VirtualGuestNetworkComponent> networkComponents) {
+         this.networkComponents = ImmutableSet.copyOf(checkNotNull(networkComponents, "networkComponents"));
+         return self();
+      }
+
+      public T networkComponents(VirtualGuestNetworkComponent... in) {
+         return networkComponents(ImmutableSet.copyOf(checkNotNull(in, "networkComponents")));
+      }
+
       public VirtualGuest build() {
          return new VirtualGuest(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName, hostname,
                id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes, privateNetworkOnly,
                startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress, new BillingItem(billingItemId),
                operatingSystem, operatingSystemReferenceCode, datacenter, powerState, softwareLicense,
-               activeTransactionCount, blockDevices, localDiskFlag, blockDeviceTemplateGroup);
+               activeTransactionCount, blockDevices, localDiskFlag, blockDeviceTemplateGroup, networkComponents);
       }
 
       public T fromVirtualGuest(VirtualGuest in) {
@@ -406,7 +415,8 @@ public class VirtualGuest {
                .powerState(in.getPowerState())
                .activeTransactionCount(in.getActiveTransactionCount())
                .localDiskFlag(in.isLocalDiskFlag())
-               .blockDeviceTemplateGroup(in.getVirtualGuestBlockDeviceTemplateGroup());
+               .blockDeviceTemplateGroup(in.getVirtualGuestBlockDeviceTemplateGroup())
+               .networkComponents(in.getVirtualGuestNetworkComponents());
       }
    }
 
@@ -447,13 +457,15 @@ public class VirtualGuest {
    private final Set<VirtualGuestBlockDevice> blockDevices;
    private final boolean localDiskFlag;
    private final VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
+   private final Set<VirtualGuestNetworkComponent> networkComponents;
 
    @ConstructorProperties({
          "accountId", "createDate", "dedicatedAccountHostOnlyFlag", "domain", "fullyQualifiedDomainName", "hostname",
            "id", "lastVerifiedDate", "maxCpu", "maxCpuUnits", "maxMemory", "metricPollDate", "modifyDate", "notes",
            "privateNetworkOnlyFlag", "startCpus", "statusId", "uuid", "primaryBackendIpAddress", "primaryIpAddress",
            "billingItem", "operatingSystem", "operatingSystemReferenceCode", "datacenter", "powerState",
-           "softwareLicense", "activeTransactionCount", "blockDevices", "localDiskFlag", "blockDeviceTemplateGroup"
+           "softwareLicense", "activeTransactionCount", "blockDevices", "localDiskFlag", "blockDeviceTemplateGroup",
+           "networkComponents"
    })
    protected VirtualGuest(int accountId, @Nullable Date createDate, boolean dedicatedAccountHostOnly, @Nullable String domain,
                           @Nullable String fullyQualifiedDomainName, @Nullable String hostname, int id, @Nullable Date lastVerifiedDate,
@@ -463,7 +475,8 @@ public class VirtualGuest {
                           @Nullable OperatingSystem operatingSystem, @Nullable String operatingSystemReferenceCode,
                           @Nullable Datacenter datacenter, @Nullable PowerState powerState, @Nullable SoftwareLicense softwareLicense,
                           @Nullable int activeTransactionCount, Set<VirtualGuestBlockDevice> blockDevices,
-                          boolean localDiskFlag, @Nullable VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup) {
+                          boolean localDiskFlag, @Nullable VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup,
+                          @Nullable Set<VirtualGuestNetworkComponent> networkComponents) {
       this.accountId = accountId;
       this.createDate = createDate;
       this.dedicatedAccountHostOnly = dedicatedAccountHostOnly;
@@ -494,6 +507,7 @@ public class VirtualGuest {
       this.activeTransactionCount = activeTransactionCount;
       this.localDiskFlag = localDiskFlag;
       this.blockDeviceTemplateGroup = blockDeviceTemplateGroup;
+      this.networkComponents = networkComponents;
    }
 
    /**
@@ -711,6 +725,11 @@ public class VirtualGuest {
       return blockDeviceTemplateGroup;
    }
 
+   @Nullable
+   public Set<VirtualGuestNetworkComponent> getVirtualGuestNetworkComponents() {
+      return networkComponents;
+   }
+
    @Override
    public int hashCode() {
       return Objects.hashCode(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName,
@@ -753,7 +772,8 @@ public class VirtualGuest {
             && Objects.equal(this.softwareLicense, that.softwareLicense)
             && Objects.equal(this.blockDevices, that.blockDevices)
             && Objects.equal(this.localDiskFlag, that.localDiskFlag)
-            && Objects.equal(this.blockDeviceTemplateGroup, that.blockDeviceTemplateGroup);
+            && Objects.equal(this.blockDeviceTemplateGroup, that.blockDeviceTemplateGroup)
+            && Objects.equal(this.networkComponents, that.networkComponents);
    }
 
    @Override
@@ -789,6 +809,7 @@ public class VirtualGuest {
               ", blockDevices=" + blockDevices +
               ", localDiskFlag=" + localDiskFlag +
               ", blockDeviceTemplateGroup=" + blockDeviceTemplateGroup +
+              ", networkComponents=" + networkComponents +
               '}';
    }
 }

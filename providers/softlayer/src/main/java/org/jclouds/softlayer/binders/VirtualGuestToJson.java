@@ -17,6 +17,7 @@
 package org.jclouds.softlayer.binders;
 
 import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -26,8 +27,10 @@ import org.jclouds.json.Json;
 import org.jclouds.rest.Binder;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
+import org.jclouds.softlayer.domain.VirtualGuestNetworkComponent;
 
 import javax.inject.Inject;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -67,29 +70,50 @@ public class VirtualGuestToJson implements Binder {
       String domain = checkNotNull(virtualGuest.getDomain(), "domain");
       int startCpus = checkNotNull(virtualGuest.getStartCpus(), "startCpus");
       int maxMemory = checkNotNull(virtualGuest.getMaxMemory(), "maxMemory");
-      String datacenterName = virtualGuest.getDatacenter().getName();
+      boolean localDiskFlag = checkNotNull(virtualGuest.isLocalDiskFlag(), "localDiskFlag");
+      String datacenterName = checkNotNull(virtualGuest.getDatacenter().getName(), "datacenterName");
+      Set<NetworkComponent> networkComponents = getNetworkComponents(virtualGuest);
       if(virtualGuest.getOperatingSystem() != null) {
          String operatingSystemReferenceCode = checkNotNull(virtualGuest.getOperatingSystem()
                  .getOperatingSystemReferenceCode(), "operatingSystemReferenceCode");
          templateObject = new TemplateObject(hostname, domain, startCpus, maxMemory, true,
-                 operatingSystemReferenceCode, null, true, new Datacenter(datacenterName), null,
+                 operatingSystemReferenceCode, null, localDiskFlag, new Datacenter(datacenterName), networkComponents,
                  getBlockDevices(virtualGuest));
       } else if(virtualGuest.getVirtualGuestBlockDeviceTemplateGroup() != null) {
          String globalIdentifier = checkNotNull(virtualGuest.getVirtualGuestBlockDeviceTemplateGroup()
                  .getGlobalIdentifier(), "blockDeviceTemplateGroup.globalIdentifier");
          templateObject = new TemplateObject(hostname, domain, startCpus, maxMemory, true, null,
-                 new BlockDeviceTemplateGroup(globalIdentifier), true, new Datacenter(datacenterName), null, null);
+                 new BlockDeviceTemplateGroup(globalIdentifier), localDiskFlag, new Datacenter(datacenterName),
+                 networkComponents, null);
       }
       return json.toJson(ImmutableMap.of("parameters", ImmutableList.<TemplateObject> of(templateObject)));
    }
 
-   private HashSet<BlockDevice> getBlockDevices(VirtualGuest virtualGuest) {
-      if(virtualGuest.getVirtualGuestBlockDevices() == null) return null;
-      return Sets.newHashSet(Iterables.transform(virtualGuest.getVirtualGuestBlockDevices(),
-              new Function<VirtualGuestBlockDevice, BlockDevice>() {
+   private Set<BlockDevice> getBlockDevices(VirtualGuest virtualGuest) {
+      if (virtualGuest.getVirtualGuestBlockDevices() == null) return null;
+      Set<BlockDevice> set = FluentIterable.from(virtualGuest.getVirtualGuestBlockDevices())
+              .transform(new Function<VirtualGuestBlockDevice, BlockDevice>() {
                  @Override
                  public BlockDevice apply(VirtualGuestBlockDevice input) {
                     return new BlockDevice(input.getDevice(), input.getVirtualDiskImage().getCapacity());
+                 }
+              })
+              .toSortedSet(new Comparator<BlockDevice>() {
+                 @Override
+                 public int compare(BlockDevice b1, BlockDevice b2) {
+                    return Integer.valueOf(b1.getDevice()).compareTo(Integer.valueOf(b2.getDevice()));
+                 }
+              });
+      return set;
+   }
+
+   private HashSet<NetworkComponent> getNetworkComponents(VirtualGuest virtualGuest) {
+      if(virtualGuest.getVirtualGuestNetworkComponents() == null) return null;
+      return Sets.newHashSet(Iterables.transform(virtualGuest.getVirtualGuestNetworkComponents(),
+              new Function<VirtualGuestNetworkComponent, NetworkComponent>() {
+                 @Override
+                 public NetworkComponent apply(VirtualGuestNetworkComponent input) {
+                    return new NetworkComponent(input.getSpeed());
                  }
               }));
    }
@@ -145,6 +169,13 @@ public class VirtualGuestToJson implements Binder {
       private String device;
       private DiskImage diskImage;
 
+      public String getDevice() {
+         return device;
+      }
+
+      public DiskImage getDiskImage() {
+         return diskImage;
+      }
 
       private BlockDevice(String device, float diskImageCapacity) {
          this.device = device;

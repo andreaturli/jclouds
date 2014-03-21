@@ -16,14 +16,18 @@
  */
 package org.jclouds.softlayer.compute.options;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.Map;
-
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.net.InternetDomainName;
 import org.jclouds.compute.options.TemplateOptions;
 
-import com.google.common.net.InternetDomainName;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * Contains options supported by the
@@ -49,6 +53,7 @@ import com.google.common.net.InternetDomainName;
 public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneable {
 
    protected String domainName = "jclouds.org";
+   protected Optional<List<Integer>> blockDevices = Optional.absent();
 
    @Override
    public SoftLayerTemplateOptions clone() {
@@ -70,7 +75,7 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
     * will replace the default domain used when ordering virtual guests. Note
     * this needs to contain a public suffix!
     * 
-    * @see VirtualGuestClient#orderVirtualGuest
+    * @see org.jclouds.softlayer.features.VirtualGuestApi#createObject(org.jclouds.softlayer.domain.VirtualGuest)
     * @see InternetDomainName#hasPublicSuffix
     */
    public TemplateOptions domainName(String domainName) {
@@ -81,8 +86,23 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
       return this;
    }
 
+   public TemplateOptions blockDevices(Iterable<Integer> capacities) {
+      for (Integer capacity : checkNotNull(capacities, "capacities"))
+         checkNotNull(capacity, "all block devices must be non-empty");
+      this.blockDevices = Optional.<List<Integer>> of(ImmutableList.copyOf(capacities));
+      return this;
+   }
+
+   public TemplateOptions blockDevices(Integer... capacities) {
+      return blockDevices(ImmutableList.copyOf(checkNotNull(capacities, "capacities")));
+   }
+
    public String getDomainName() {
       return domainName;
+   }
+
+   public Optional<List<Integer>> getBlockDevices() {
+      return blockDevices;
    }
 
    public static final SoftLayerTemplateOptions NONE = new SoftLayerTemplateOptions();
@@ -95,6 +115,19 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
       public static SoftLayerTemplateOptions domainName(String domainName) {
          SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
          return SoftLayerTemplateOptions.class.cast(options.domainName(domainName));
+      }
+
+      /**
+       * @see #blockDevices
+       */
+      public static SoftLayerTemplateOptions blockDevices(Integer... capacities) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.blockDevices(capacities));
+      }
+
+      public static SoftLayerTemplateOptions blockDevices(Iterable<Integer> capacities) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.blockDevices(capacities));
       }
 
       // methods that only facilitate returning the correct object type

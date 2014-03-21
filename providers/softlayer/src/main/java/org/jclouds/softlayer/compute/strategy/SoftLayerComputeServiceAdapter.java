@@ -53,6 +53,7 @@ import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplate;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
+import org.jclouds.softlayer.domain.VirtualGuestNetworkComponent;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
@@ -79,7 +80,9 @@ import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
 import static org.jclouds.compute.util.ComputeServiceUtils.getSpace;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK_TYPE;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED;
 import static org.jclouds.util.Predicates2.retry;
 
 /**
@@ -91,8 +94,7 @@ import static org.jclouds.util.Predicates2.retry;
 public class SoftLayerComputeServiceAdapter implements
       ComputeServiceAdapter<VirtualGuest, Hardware, OperatingSystem, Datacenter> {
 
-   public static final String BOOTABLE_DEVICE = "0";
-
+   private static final String BOOTABLE_DEVICE = "0";
    @Resource
    @Named(ComputeServiceConstants.COMPUTE_LOGGER)
    protected Logger logger = Logger.NULL;
@@ -103,6 +105,8 @@ public class SoftLayerComputeServiceAdapter implements
    private final long guestLoginDelay;
    private final long activeTransactionsDelay;
    private final boolean includePublicImages;
+   private final int portSpeed;
+   private final String diskType;
 
    @Inject
    public SoftLayerComputeServiceAdapter(SoftLayerApi api,
@@ -110,11 +114,15 @@ public class SoftLayerComputeServiceAdapter implements
          @Memoized Supplier<ContainerVirtualGuestConfiguration> createObjectOptionsSupplier,
          @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY) long guestLoginDelay,
          @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY) long activeTransactionsDelay,
-         @Named(PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES) boolean includePublicImages) {
+         @Named(PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES) boolean includePublicImages,
+         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED) int portSpeed,
+         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK_TYPE) String diskType) {
       this.api = checkNotNull(api, "api");
       this.guestLoginDelay = guestLoginDelay;
       this.activeTransactionsDelay = activeTransactionsDelay;
       this.includePublicImages = includePublicImages;
+      this.portSpeed = portSpeed;
+      this.diskType = diskType;
       this.createObjectOptionsSupplier = checkNotNull(createObjectOptionsSupplier, "createObjectOptionsSupplier");
       checkArgument(guestLoginDelay > 500, "guestOrderDelay must be in milliseconds and greater than 500");
       this.loginDetailsTester = retry(virtualGuestHasLoginDetailsPresent, guestLoginDelay);
@@ -129,51 +137,39 @@ public class SoftLayerComputeServiceAdapter implements
             "options class %s should have been assignable from SoftLayerTemplateOptions", template.getOptions()
                   .getClass());
 
-      String domainName = template.getOptions().as(SoftLayerTemplateOptions.class).getDomainName();
-
-      final String imageId = template.getImage().getId();
-      Set<OperatingSystem> operatingSystemsAvailable = createObjectOptionsSupplier.get()
-              .getVirtualGuestOperatingSystems();
-      Optional<OperatingSystem> optionalOS = tryFind(from(operatingSystemsAvailable)
-              .filter(new Predicate<OperatingSystem>() {
-                 @Override
-                 public boolean apply(OperatingSystem input) {
-                    return input.getId().contains(imageId);
-                 }
-              }), Predicates.notNull());
-      OperatingSystem operatingSystem = null;
-      VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup = null;
-      if(optionalOS.isPresent()) {
-         operatingSystem = optionalOS.get();
-      } else {
-            blockDeviceTemplateGroup = VirtualGuestBlockDeviceTemplateGroup.builder().globalIdentifier(imageId).build();
-      }
+      SoftLayerTemplateOptions templateOptions = template.getOptions().as(SoftLayerTemplateOptions.class);
+      String domainName = templateOptions.getDomainName();
       final Datacenter datacenter = Datacenter.builder().name(template.getLocation().getId()).build();
-      Float diskCapacity = template.getHardware().getVolumes().get(0).getSize();
-      Type type = template.getHardware().getVolumes().get(0).getType();
-      VirtualGuestBlockDevice blockDevice = VirtualGuestBlockDevice.builder()
-              .device(BOOTABLE_DEVICE)
-              .diskImage(VirtualDiskImage.builder()
-                      .capacity(diskCapacity)
-                      .typeId(type.ordinal())
-                      .build())
-              .build();
+      final String imageId = template.getImage().getId();
+      int cores = (int) template.getHardware().getProcessors().get(0).getCores();
 
       VirtualGuest.Builder virtualGuestBuilder = VirtualGuest.builder()
               .domain(domainName)
               .hostname(name)
-              .startCpus((int) template.getHardware().getProcessors().get(0).getCores())
+              .startCpus(cores)
               .maxMemory(template.getHardware().getRam())
               .datacenter(datacenter)
-              .blockDevices(blockDevice)
-              .localDiskFlag(isLocalDisk(blockDevice));
-      VirtualGuest virtualGuest = null;
-      if(operatingSystem != null) {
-         virtualGuest = virtualGuestBuilder.operatingSystem(operatingSystem).build();
-      } else if(blockDeviceTemplateGroup != null) {
-         virtualGuest = virtualGuestBuilder.blockDeviceTemplateGroup(blockDeviceTemplateGroup).build();
+              .networkComponents(VirtualGuestNetworkComponent.builder().speed(portSpeed).build());
+
+      // set operating system or blockDeviceTemplateGroup
+      Optional<OperatingSystem> optionalOperatingSystem = tryGetOperatingSystemFrom(imageId);
+      if (optionalOperatingSystem.isPresent()) {
+         virtualGuestBuilder.operatingSystem(optionalOperatingSystem.get());
+      // the imageId specified is a the id of a public/private/flex image
+      } else {
+         VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup = VirtualGuestBlockDeviceTemplateGroup
+                 .builder().globalIdentifier(imageId).build();
+         virtualGuestBuilder.blockDeviceTemplateGroup(blockDeviceTemplateGroup).build();
       }
 
+      // set multi-disks
+      if (templateOptions.getBlockDevices().isPresent()) {
+         Set<VirtualGuestBlockDevice> blockDevices = getBlockDevices(templateOptions.getBlockDevices().get());
+         virtualGuestBuilder.blockDevices(blockDevices);
+         virtualGuestBuilder.localDiskFlag(isLocalDisk(diskType));
+      }
+
+      VirtualGuest virtualGuest = virtualGuestBuilder.build();
       logger.debug(">> creating new VirtualGuest(%s)", virtualGuest);
       VirtualGuest result = api.getVirtualGuestApi().createObject(virtualGuest);
       logger.trace("<< VirtualGuest(%s)", result.getId());
@@ -196,8 +192,35 @@ public class SoftLayerComputeServiceAdapter implements
             pw.getPassword()).build());
    }
 
-   private boolean isLocalDisk(VirtualGuestBlockDevice guestBlockDevice) {
-      return guestBlockDevice.getVirtualDiskImage().getTypeId() == Type.LOCAL.ordinal();
+   private Set<VirtualGuestBlockDevice> getBlockDevices(List<Integer> blockDeviceCapacities) {
+      Set<VirtualGuestBlockDevice> blockDevices = Sets.newHashSet();
+      int devicePosition = 0;
+      for (int i = 0; i < blockDeviceCapacities.size(); i++) {
+         if (i > 0) { devicePosition = i + 1; }
+         blockDevices.add(VirtualGuestBlockDevice.builder()
+                    .device(devicePosition + "")
+                    .diskImage(VirtualDiskImage.builder()
+                            .capacity(blockDeviceCapacities.get(i))
+                            .typeId(Type.valueOf(diskType).ordinal())
+                            .build())
+                    .build());
+      }
+      return blockDevices;
+   }
+
+   private Optional<OperatingSystem> tryGetOperatingSystemFrom(final String imageId) {
+      Set<OperatingSystem> operatingSystemsAvailable = createObjectOptionsSupplier.get().getVirtualGuestOperatingSystems();
+      return tryFind(from(operatingSystemsAvailable)
+              .filter(new Predicate<OperatingSystem>() {
+                 @Override
+                 public boolean apply(OperatingSystem input) {
+                    return input.getId().contains(imageId);
+                 }
+              }), Predicates.notNull());
+   }
+
+   private boolean isLocalDisk(String diskType) {
+      return diskType.equalsIgnoreCase(Type.LOCAL.name());
    }
 
    @Override
