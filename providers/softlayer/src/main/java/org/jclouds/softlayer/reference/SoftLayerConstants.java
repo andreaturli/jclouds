@@ -41,4 +41,14 @@ public interface SoftLayerConstants {
     * by default, list images will now consider the public images
     */
    public static final String PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES = "jclouds.softlayer.include_public_images";
+
+   /**
+    * Uplink port speed for new guests (10, 100, 1000)
+    */
+   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED = "jclouds.softlayer.virtualguest.port-speed";
+
+   /**
+    * Default Disk type (SAN, LOCAL)
+    */
+   public static final String PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK_TYPE = "jclouds.softlayer.virtualguest.disk-type";
 }

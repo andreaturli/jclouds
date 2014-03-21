@@ -26,6 +26,7 @@ import org.jclouds.json.Json;
 import org.jclouds.rest.Binder;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
+import org.jclouds.softlayer.domain.VirtualGuestNetworkComponent;
 
 import javax.inject.Inject;
 import java.util.HashSet;
@@ -67,18 +68,20 @@ public class VirtualGuestToJson implements Binder {
       String domain = checkNotNull(virtualGuest.getDomain(), "domain");
       int startCpus = checkNotNull(virtualGuest.getStartCpus(), "startCpus");
       int maxMemory = checkNotNull(virtualGuest.getMaxMemory(), "maxMemory");
-      String datacenterName = virtualGuest.getDatacenter().getName();
+      String datacenterName = checkNotNull(virtualGuest.getDatacenter().getName(), "datacenterName");
+      Set<NetworkComponent> networkComponents = getNetworkComponents(virtualGuest);
       if(virtualGuest.getOperatingSystem() != null) {
          String operatingSystemReferenceCode = checkNotNull(virtualGuest.getOperatingSystem()
                  .getOperatingSystemReferenceCode(), "operatingSystemReferenceCode");
          templateObject = new TemplateObject(hostname, domain, startCpus, maxMemory, true,
-                 operatingSystemReferenceCode, null, true, new Datacenter(datacenterName), null,
+                 operatingSystemReferenceCode, null, true, new Datacenter(datacenterName), networkComponents,
                  getBlockDevices(virtualGuest));
       } else if(virtualGuest.getVirtualGuestBlockDeviceTemplateGroup() != null) {
          String globalIdentifier = checkNotNull(virtualGuest.getVirtualGuestBlockDeviceTemplateGroup()
                  .getGlobalIdentifier(), "blockDeviceTemplateGroup.globalIdentifier");
          templateObject = new TemplateObject(hostname, domain, startCpus, maxMemory, true, null,
-                 new BlockDeviceTemplateGroup(globalIdentifier), true, new Datacenter(datacenterName), null, null);
+                 new BlockDeviceTemplateGroup(globalIdentifier), true, new Datacenter(datacenterName),
+                 networkComponents, null);
       }
       return json.toJson(ImmutableMap.of("parameters", ImmutableList.<TemplateObject> of(templateObject)));
    }
@@ -90,6 +93,17 @@ public class VirtualGuestToJson implements Binder {
                  @Override
                  public BlockDevice apply(VirtualGuestBlockDevice input) {
                     return new BlockDevice(input.getDevice(), input.getVirtualDiskImage().getCapacity());
+                 }
+              }));
+   }
+
+   private HashSet<NetworkComponent> getNetworkComponents(VirtualGuest virtualGuest) {
+      if(virtualGuest.getVirtualGuestNetworkComponents() == null) return null;
+      return Sets.newHashSet(Iterables.transform(virtualGuest.getVirtualGuestNetworkComponents(),
+              new Function<VirtualGuestNetworkComponent, NetworkComponent>() {
+                 @Override
+                 public NetworkComponent apply(VirtualGuestNetworkComponent input) {
+                    return new NetworkComponent(input.getSpeed());
                  }
               }));
    }
@@ -144,7 +158,6 @@ public class VirtualGuestToJson implements Binder {
    private class BlockDevice {
       private String device;
       private DiskImage diskImage;
-
 
       private BlockDevice(String device, float diskImageCapacity) {
          this.device = device;
