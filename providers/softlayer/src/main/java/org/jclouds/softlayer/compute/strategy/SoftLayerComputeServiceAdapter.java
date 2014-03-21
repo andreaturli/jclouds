@@ -195,16 +195,15 @@ public class SoftLayerComputeServiceAdapter implements
    private Set<VirtualGuestBlockDevice> getBlockDevices(List<Integer> blockDeviceCapacities) {
       Set<VirtualGuestBlockDevice> blockDevices = Sets.newHashSet();
       int devicePosition = 0;
-      for (Integer diskCapacity : blockDeviceCapacities) {
-         if (devicePosition == 1) devicePosition++; // this is reserved to SWAP
+      for (int i = 0; i < blockDeviceCapacities.size(); i++) {
+         if (i > 0) { devicePosition = i + 1; }
          blockDevices.add(VirtualGuestBlockDevice.builder()
-                 .device(devicePosition + "")
-                 .diskImage(VirtualDiskImage.builder()
-                         .capacity(diskCapacity)
-                         .typeId(Type.valueOf(diskType).ordinal())
-                         .build())
-                 .build());
-         devicePosition++;
+                    .device(devicePosition + "")
+                    .diskImage(VirtualDiskImage.builder()
+                            .capacity(blockDeviceCapacities.get(i))
+                            .typeId(Type.valueOf(diskType).ordinal())
+                            .build())
+                    .build());
       }
       return blockDevices;
    }

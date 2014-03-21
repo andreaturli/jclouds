@@ -21,10 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.RunNodesException;
-import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.ExecResponse;
-import org.jclouds.compute.domain.Hardware;
-import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
@@ -32,7 +29,10 @@ import org.jclouds.compute.internal.BaseComputeServiceContextLiveTest;
 import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.logging.Logger;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
+import org.jclouds.softlayer.SoftLayerApi;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
+import org.jclouds.softlayer.domain.VirtualGuest;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
 import org.jclouds.ssh.SshClient;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.testng.annotations.Test;
@@ -67,6 +67,8 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
                       new SshjSshClientModule()))
               .build(ComputeServiceContext.class);
 
+      /*
+>>>>>>> ebf23d7... add softlayer support for multi-disks and network port speed
       for(ComputeMetadata node : context.getComputeService().listNodes()) {
          logger.info("node: ", node);
       }
@@ -81,20 +83,25 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
 
       Image image = context.getComputeService().getImage("UBUNTU_8_64");
       logger.info("UBUNTU_8_64 image: ", image);
+<<<<<<< HEAD
+=======
+      */
 
       TemplateBuilder templateBuilder = context.getComputeService().templateBuilder();
       //templateBuilder.minDisk(15d);
       //templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=SAN");
       //templateBuilder.hardwareId("cpu=1,memory=4096,disk=100,type=LOCAL");
-      templateBuilder.imageId("UBUNTU_12_64");
+      templateBuilder.imageId("CENTOS_6_64");
+      //templateBuilder.osFamily(OsFamily.CENTOS);
       //templateBuilder.imageId("7bcd78dc-eb11-4e1b-8d93-111c62ed5fd1");
       //templateBuilder.locationId("dal01");
+      //templateBuilder.minRam(8192);
       Template template = templateBuilder.build();
       // test passing custom options
       SoftLayerTemplateOptions options = template.getOptions().as(SoftLayerTemplateOptions.class);
       options.domainName("live.org");
       // multi-disk option
-      // options.blockDevices(ImmutableList.of(25, 100));
+      options.blockDevices(ImmutableList.of(100, 400, 400));
 
       Set<? extends NodeMetadata> nodes = context.getComputeService().createNodesInGroup(name, numNodes, template);
       assertEquals(numNodes, nodes.size(), "wrong number of nodes");
@@ -102,8 +109,14 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
          logger.debug("Created Node: %s", node);
          SshClient client = context.utils().sshForNode().apply(node);
          client.connect();
-         ExecResponse hello = client.exec("echo hello");
-         assertEquals(hello.getOutput().trim(), "hello");
+         ExecResponse hello = client.exec("mount");
+         System.out.println(hello.getOutput().trim());
+
+         VirtualGuest virtualGuest = context.unwrapApi(SoftLayerApi.class).getVirtualGuestApi()
+                 .getObject(Long.parseLong(node.getId()));
+         for (VirtualGuestBlockDevice blockDevice : virtualGuest.getVirtualGuestBlockDevices()) {
+            System.out.println(blockDevice);
+         }
 
          context.getComputeService().destroyNode(node.getId());
       }
