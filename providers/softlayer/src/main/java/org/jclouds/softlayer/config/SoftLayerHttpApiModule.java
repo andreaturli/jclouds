@@ -40,9 +40,6 @@ import org.jclouds.softlayer.handlers.SoftLayerErrorHandler;
 @ConfiguresHttpApi
 public class SoftLayerHttpApiModule extends HttpApiModule<SoftLayerApi> {
 
-   public SoftLayerHttpApiModule() {
-   }
-
    @Override
    protected void configure() {
       install(new SoftLayerParserModule());

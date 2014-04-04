@@ -29,7 +29,7 @@ import static org.testng.Assert.assertTrue;
 /**
  * @author Andrea Turli
  */
-@Test(groups = "unit", testName = "AccountApiExpectTest")
+@Test(groups = "unit", testName = "VirtualGuestBlockDeviceTemplateGroupApiExpectTest")
 public class VirtualGuestBlockDeviceTemplateGroupApiExpectTest extends BaseSoftLayerApiExpectTest {
 
    public void testListPublicImagesWhenResponseIs2xx() {
@@ -56,9 +56,7 @@ public class VirtualGuestBlockDeviceTemplateGroupApiExpectTest extends BaseSoftL
               .addHeader("Authorization", "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
 
       HttpResponse listPublicImagesResponse = HttpResponse.builder().statusCode(404).build();
-
       SoftLayerApi api = requestSendsResponse(listPublicImagesRequest, listPublicImagesResponse);
-
       assertTrue(Iterables.isEmpty(api.getVirtualGuestBlockDeviceTemplateGroupApi().getPublicImages()));
    }
 

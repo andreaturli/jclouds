@@ -17,8 +17,6 @@
 package org.jclouds.softlayer.parse;
 
 import org.jclouds.date.internal.SimpleDateFormatDateService;
-import org.jclouds.softlayer.domain.Datacenter;
-import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
 import org.testng.annotations.Test;
@@ -54,7 +52,7 @@ public class CreateVirtualGuestResponseTest extends BaseSoftLayerParseTest<Virtu
               .startCpus(1)
               .privateNetworkOnly(false)
               .statusId(1001)
-              .billingItemId(-1)
+              .billingItemId(0)
               .operatingSystem(null)
               .datacenter(null)
               .build();

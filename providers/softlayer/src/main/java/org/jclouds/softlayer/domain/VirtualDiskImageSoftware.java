@@ -102,25 +102,27 @@ public class VirtualDiskImageSoftware {
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(id);
+      return Objects.hashCode(id, softwareDescriptionId, softwareDescription);
    }
 
    @Override
-   public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if (obj == null || getClass() != obj.getClass()) return false;
-      VirtualDiskImageSoftware that = VirtualDiskImageSoftware.class.cast(obj);
-      return Objects.equal(this.id, that.id);
-   }
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
 
-   protected Objects.ToStringHelper string() {
-      return Objects.toStringHelper(this)
-              .add("id", id).add("softwareDescriptionId", softwareDescriptionId).add("softwareDescription",
-                      softwareDescription);
+      VirtualDiskImageSoftware that = (VirtualDiskImageSoftware) o;
+
+      return Objects.equal(this.id, that.id) &&
+              Objects.equal(this.softwareDescriptionId, that.softwareDescriptionId) &&
+              Objects.equal(this.softwareDescription, that.softwareDescription);
    }
 
    @Override
    public String toString() {
-      return string().toString();
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("softwareDescriptionId", softwareDescriptionId)
+              .add("softwareDescription", softwareDescription)
+              .toString();
    }
 }

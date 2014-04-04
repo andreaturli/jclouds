@@ -35,7 +35,8 @@ import java.util.Set;
  * <p/>
  *
  * @see <a href="http://sldn.softlayer.com/article/REST" />
- * @author Adrian Cole, Andrea Turli
+ * @author Adrian Cole
+ * @author Andrea Turli
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")

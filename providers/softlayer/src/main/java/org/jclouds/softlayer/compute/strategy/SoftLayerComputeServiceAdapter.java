@@ -22,6 +22,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.ImmutableSortedSet;
@@ -47,6 +48,8 @@ import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.Password;
 import org.jclouds.softlayer.domain.SoftwareDescription;
 import org.jclouds.softlayer.domain.SoftwareLicense;
+import org.jclouds.softlayer.domain.Tag;
+import org.jclouds.softlayer.domain.TagReference;
 import org.jclouds.softlayer.domain.VirtualDiskImage;
 import org.jclouds.softlayer.domain.VirtualDiskImageSoftware;
 import org.jclouds.softlayer.domain.VirtualGuest;
@@ -67,7 +70,6 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.FluentIterable.from;
 import static com.google.common.collect.Iterables.contains;
 import static com.google.common.collect.Iterables.filter;
 import static com.google.common.collect.Iterables.find;
@@ -80,9 +82,7 @@ import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
 import static org.jclouds.compute.util.ComputeServiceUtils.getSpace;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK_TYPE;
 import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED;
 import static org.jclouds.util.Predicates2.retry;
 
 /**
@@ -95,6 +95,10 @@ public class SoftLayerComputeServiceAdapter implements
       ComputeServiceAdapter<VirtualGuest, Hardware, OperatingSystem, Datacenter> {
 
    private static final String BOOTABLE_DEVICE = "0";
+   public static final String DEFAULT_DISK_TYPE = "LOCAL";
+   public static final int DEFAULT_PORT_SPEED = 100;
+   private static final boolean INCLUDE_PUBLIC_IMAGE = false;
+
    @Resource
    @Named(ComputeServiceConstants.COMPUTE_LOGGER)
    protected Logger logger = Logger.NULL;
@@ -105,8 +109,6 @@ public class SoftLayerComputeServiceAdapter implements
    private final long guestLoginDelay;
    private final long activeTransactionsDelay;
    private final boolean includePublicImages;
-   private final int portSpeed;
-   private final String diskType;
 
    @Inject
    public SoftLayerComputeServiceAdapter(SoftLayerApi api,
@@ -114,15 +116,11 @@ public class SoftLayerComputeServiceAdapter implements
          @Memoized Supplier<ContainerVirtualGuestConfiguration> createObjectOptionsSupplier,
          @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY) long guestLoginDelay,
          @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY) long activeTransactionsDelay,
-         @Named(PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES) boolean includePublicImages,
-         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED) int portSpeed,
-         @Named(PROPERTY_SOFTLAYER_VIRTUALGUEST_DISK_TYPE) String diskType) {
+         @Named(PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES) boolean includePublicImages) {
       this.api = checkNotNull(api, "api");
       this.guestLoginDelay = guestLoginDelay;
       this.activeTransactionsDelay = activeTransactionsDelay;
       this.includePublicImages = includePublicImages;
-      this.portSpeed = portSpeed;
-      this.diskType = diskType;
       this.createObjectOptionsSupplier = checkNotNull(createObjectOptionsSupplier, "createObjectOptionsSupplier");
       checkArgument(guestLoginDelay > 500, "guestOrderDelay must be in milliseconds and greater than 500");
       this.loginDetailsTester = retry(virtualGuestHasLoginDetailsPresent, guestLoginDelay);
@@ -139,6 +137,9 @@ public class SoftLayerComputeServiceAdapter implements
 
       SoftLayerTemplateOptions templateOptions = template.getOptions().as(SoftLayerTemplateOptions.class);
       String domainName = templateOptions.getDomainName();
+      String diskType = templateOptions.getDiskType().or(DEFAULT_DISK_TYPE);
+      int portSpeed = templateOptions.getPortSpeed().or(DEFAULT_PORT_SPEED);
+
       final Datacenter datacenter = Datacenter.builder().name(template.getLocation().getId()).build();
       final String imageId = template.getImage().getId();
       int cores = (int) template.getHardware().getProcessors().get(0).getCores();
@@ -161,18 +162,22 @@ public class SoftLayerComputeServiceAdapter implements
                  .builder().globalIdentifier(imageId).build();
          virtualGuestBuilder.blockDeviceTemplateGroup(blockDeviceTemplateGroup).build();
       }
-
       // set multi-disks
       if (templateOptions.getBlockDevices().isPresent()) {
-         Set<VirtualGuestBlockDevice> blockDevices = getBlockDevices(templateOptions.getBlockDevices().get());
+         Set<VirtualGuestBlockDevice> blockDevices = getBlockDevices(templateOptions.getBlockDevices().get(), diskType);
          virtualGuestBuilder.blockDevices(blockDevices);
          virtualGuestBuilder.localDiskFlag(isLocalDisk(diskType));
       }
 
       VirtualGuest virtualGuest = virtualGuestBuilder.build();
       logger.debug(">> creating new VirtualGuest(%s)", virtualGuest);
-      VirtualGuest result = api.getVirtualGuestApi().createObject(virtualGuest);
+      VirtualGuest result = api.getVirtualGuestApi().createVirtualGuest(virtualGuest);
       logger.trace("<< VirtualGuest(%s)", result.getId());
+
+      // tags
+      if (templateOptions.getTags() != null) {
+         api.getVirtualGuestApi().setTags(result.getId(), templateOptions.getTags());
+      }
 
       logger.debug(">> awaiting login details for virtualGuest(%s)", result.getId());
       boolean orderInSystem = loginDetailsTester.apply(result);
@@ -181,18 +186,36 @@ public class SoftLayerComputeServiceAdapter implements
       if(!orderInSystem) {
          logger.warn("VirtualGuest(%s) doesn't have login details within %sms so it will be destroyed.", result,
               Long.toString(guestLoginDelay));
-         api.getVirtualGuestApi().deleteObject(result.getId());
+         api.getVirtualGuestApi().deleteVirtualGuest(result.getId());
          throw new IllegalStateException(format("VirtualGuest(%s) is being destroyed as it doesn't have login details" +
                  " after %sms. Please, try by increasing `jclouds.softlayer.virtualguest.login_details_delay` and " +
                  " try again", result, Long.toString(guestLoginDelay)));
       }
-      result = api.getVirtualGuestApi().getObject(result.getId());
-      Password pw = get(result.getOperatingSystem().getPasswords(), 0);
-      return new NodeAndInitialCredentials<VirtualGuest>(result, result.getId() + "", LoginCredentials.builder().user(pw.getUsername()).password(
-            pw.getPassword()).build());
+      result = api.getVirtualGuestApi().getVirtualGuest(result.getId());
+      Password pwd = get(result.getOperatingSystem().getPasswords(), 0);
+      return new NodeAndInitialCredentials<VirtualGuest>(result, result.getId() + "",
+              LoginCredentials.builder().user(pwd.getUsername()).password(pwd.getPassword()).build());
    }
 
-   private Set<VirtualGuestBlockDevice> getBlockDevices(List<Integer> blockDeviceCapacities) {
+   private Set<TagReference> getTagReferences(Set<String> tags) {
+      Set<TagReference> tagReferences = Sets.newHashSet();
+      for (String tagName : tags) {
+         tagReferences.add(TagReference.builder()
+                 .tag(Tag.builder()
+                         .name(tagName)
+                         .build())
+                 .build());
+      }
+      return tagReferences;
+   }
+
+   /**
+    * This method will deliberately skip device position 1 as it is reserved to SWAP
+    * @param blockDeviceCapacities list of blockDevices to be attached
+    * @param diskType disks can be LOCAL or SAN
+    * @return
+    */
+   private Set<VirtualGuestBlockDevice> getBlockDevices(List<Integer> blockDeviceCapacities, String diskType) {
       Set<VirtualGuestBlockDevice> blockDevices = Sets.newHashSet();
       int devicePosition = 0;
       for (int i = 0; i < blockDeviceCapacities.size(); i++) {
@@ -210,7 +233,7 @@ public class SoftLayerComputeServiceAdapter implements
 
    private Optional<OperatingSystem> tryGetOperatingSystemFrom(final String imageId) {
       Set<OperatingSystem> operatingSystemsAvailable = createObjectOptionsSupplier.get().getVirtualGuestOperatingSystems();
-      return tryFind(from(operatingSystemsAvailable)
+      return tryFind(FluentIterable.from(operatingSystemsAvailable)
               .filter(new Predicate<OperatingSystem>() {
                  @Override
                  public boolean apply(OperatingSystem input) {
@@ -243,10 +266,10 @@ public class SoftLayerComputeServiceAdapter implements
             return comparisonChain.result();
          }
       });
-      for (Integer cpus : virtualGuestConfiguration.getCpusOfProcessors()) {
-         for (Integer memory : virtualGuestConfiguration.getMemories()) {
-            for (VirtualGuestBlockDevice blockDevice : virtualGuestConfiguration.getVirtualGuestBlockDevices()) {
-               if (blockDevice.getDevice().equals(BOOTABLE_DEVICE)) {
+      for (VirtualGuestBlockDevice blockDevice : virtualGuestConfiguration.getVirtualGuestBlockDevices()) {
+         if (blockDevice.getDevice().equals(BOOTABLE_DEVICE)) {
+            for (Integer cpus : virtualGuestConfiguration.getCpusOfProcessors()) {
+               for (Integer memory : virtualGuestConfiguration.getMemories()) {
                   float capacity = blockDevice.getVirtualDiskImage().getCapacity();
                   Type type = blockDevice.getVirtualGuest().isLocalDiskFlag() ? Type.LOCAL : Type.SAN;
                   String id = format("cpu=%s,memory=%s,disk=%s,type=%s", cpus, memory, round(capacity), type);
@@ -293,8 +316,7 @@ public class SoftLayerComputeServiceAdapter implements
       for (OperatingSystem os : operatingSystemsAvailable) {
          final String osReferenceCode = os.getOperatingSystemReferenceCode();
          final String osId = os.getId();
-         result.addAll(
-                 from(unfiltered)
+         result.addAll(FluentIterable.from(unfiltered)
                          .filter(new Predicate<SoftwareDescription>() {
                             @Override
                             public boolean apply(SoftwareDescription input) {
@@ -316,13 +338,12 @@ public class SoftLayerComputeServiceAdapter implements
          }
       }
       // list public images and transform them to OperatingSystem
-      if(includePublicImages) {
+      if (includePublicImages) {
          Set<VirtualGuestBlockDeviceTemplateGroup> publicImages = api.getVirtualGuestBlockDeviceTemplateGroupApi().getPublicImages();
          Map<String, SoftwareDescription> publicImagesSoftwareDescriptions = extractSoftwareDescriptions(publicImages);
-         for (Map.Entry<String, SoftwareDescription> entry :
-                 publicImagesSoftwareDescriptions.entrySet()) {
+         for (Map.Entry<String, SoftwareDescription> entry : publicImagesSoftwareDescriptions.entrySet()) {
             OperatingSystem os = getOperatingSystem(entry);
-            if(os != null) {
+            if (os != null) {
                result.add(os);
             }
          }
@@ -406,23 +427,21 @@ public class SoftLayerComputeServiceAdapter implements
    @Override
    public VirtualGuest getNode(String id) {
       long serverId = Long.parseLong(id);
-      return api.getVirtualGuestApi().getObject(serverId);
+      return api.getVirtualGuestApi().getVirtualGuest(serverId);
    }
 
    @Override
    public void destroyNode(String id) {
       VirtualGuest guest = getNode(id);
-      if (guest == null)
-         return;
+      if (guest == null) return;
       logger.debug(">> awaiting virtualGuest(%s) without active transactions", guest.getId());
       checkState(retry(new Predicate<VirtualGuest>() {
          public boolean apply(VirtualGuest guest) {
-               guest = getNode(guest.getId() + "");
-               return guest.getActiveTransactionCount() == 0;
+               return getNode(guest.getId() + "").getActiveTransactionCount() == 0;
          }
       }, activeTransactionsDelay).apply(guest), "%s still has active transactions!", guest);
       logger.debug(">> canceling virtualGuest with globalIdentifier(%s)", id);
-      checkState(api.getVirtualGuestApi().deleteObject(guest.getId()), "server(%s) still there after deleting!?", id);
+      checkState(api.getVirtualGuestApi().deleteVirtualGuest(guest.getId()), "server(%s) still there after deleting!?", id);
    }
 
    @Override
@@ -456,7 +475,7 @@ public class SoftLayerComputeServiceAdapter implements
       public boolean apply(VirtualGuest guest) {
          checkNotNull(guest, "virtual guest was null");
 
-         VirtualGuest newGuest = client.getVirtualGuestApi().getObject(guest.getId());
+         VirtualGuest newGuest = client.getVirtualGuestApi().getVirtualGuest(guest.getId());
          boolean hasBackendIp = newGuest.getPrimaryBackendIpAddress() != null;
          boolean hasPrimaryIp = newGuest.getPrimaryIpAddress() != null;
          boolean hasPasswords = newGuest.getOperatingSystem() != null

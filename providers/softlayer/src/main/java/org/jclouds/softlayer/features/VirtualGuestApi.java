@@ -22,11 +22,10 @@ import org.jclouds.rest.annotations.BinderParam;
 import org.jclouds.rest.annotations.Fallback;
 import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
+import org.jclouds.softlayer.binders.TagToJson;
 import org.jclouds.softlayer.binders.VirtualGuestToJson;
 import org.jclouds.softlayer.domain.ContainerVirtualGuestConfiguration;
-import org.jclouds.softlayer.domain.ProvisioningVersion1Transaction;
 import org.jclouds.softlayer.domain.VirtualGuest;
-import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
 
 import javax.inject.Named;
 import javax.ws.rs.Consumes;
@@ -42,8 +41,9 @@ import java.util.Set;
  * Provides access to VirtualGuest via their REST API.
  * <p/>
  *
- * @see <a href="http://sldn.softlayer.com/article/REST" />
- * @author Adrian Cole, Andrea Turli
+ * @see <a http://sldn.softlayer.com/reference/services/SoftLayer_Virtual_Guest" />
+ * @author Adrian Cole
+ * @author Andrea Turli
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
@@ -51,7 +51,7 @@ public interface VirtualGuestApi {
 
    public static String GUEST_MASK = "id;hostname;domain;fullyQualifiedDomainName;powerState;maxCpu;maxMemory;" +
            "statusId;operatingSystem.passwords;primaryBackendIpAddress;primaryIpAddress;activeTransactionCount;" +
-           "blockDevices.diskImage";
+           "blockDevices.diskImage;datacenter;tagReferences";
 
    /**
     * Enables the creation of computing instances on an account.
@@ -65,7 +65,7 @@ public interface VirtualGuestApi {
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.NullOnNotFoundOr404.class)
-   VirtualGuest createObject(@BinderParam(VirtualGuestToJson.class) VirtualGuest virtualGuest);
+   VirtualGuest createVirtualGuest(@BinderParam(VirtualGuestToJson.class) VirtualGuest virtualGuest);
 
    /**
     * @param id
@@ -79,7 +79,7 @@ public interface VirtualGuestApi {
    @QueryParams(keys = "objectMask", values = GUEST_MASK)
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.NullOnNotFoundOr404.class)
-   VirtualGuest getObject(@PathParam("id") long id);
+   VirtualGuest getVirtualGuest(@PathParam("id") long id);
 
    /**
     * Delete a computing instance
@@ -91,8 +91,8 @@ public interface VirtualGuestApi {
    @GET
    @Path("/SoftLayer_Virtual_Guest/{id}/deleteObject")
    @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.NullOnNotFoundOr404.class)
-   boolean deleteObject(@PathParam("id") long id);
+   @Fallback(Fallbacks.FalseOnNotFoundOr404.class)
+   boolean deleteVirtualGuest(@PathParam("id") long id);
 
    /**
     * Determine options available when creating a computing instance
@@ -106,52 +106,55 @@ public interface VirtualGuestApi {
    ContainerVirtualGuestConfiguration getCreateObjectOptions();
 
    /**
-    * hard reboot the guest.
+    * Hard reboot the guest.
     *
     * @param id
     *           id of the virtual guest
     */
+   @Named("VirtualGuest:rebootHard")
    @GET
    @Path("/SoftLayer_Virtual_Guest/{id}/rebootHard.json")
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.VoidOnNotFoundOr404.class)
-   Void rebootHardVirtualGuest(@PathParam("id") long id);
+   void rebootHardVirtualGuest(@PathParam("id") long id);
 
    /**
-    * pause the guest.
+    * Pause the guest.
     *
     * @param id
     *           id of the virtual guest
     */
+   @Named("VirtualGuest:pause")
    @GET
    @Path("/SoftLayer_Virtual_Guest/{id}/pause.json")
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.VoidOnNotFoundOr404.class)
-   Void pauseVirtualGuest(@PathParam("id") long id);
+   void pauseVirtualGuest(@PathParam("id") long id);
 
    /**
-    * resume the guest.
+    * Resume the guest.
     *
     * @param id
     *           id of the virtual guest
     */
+   @Named("VirtualGuest:resume")
    @GET
    @Path("/SoftLayer_Virtual_Guest/{id}/resume.json")
    @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.VoidOnNotFoundOr404.class)
-   Void resumeVirtualGuest(@PathParam("id") long id);
+   void resumeVirtualGuest(@PathParam("id") long id);
 
    /**
-    * create archive transaction.
+    * Resume the guest.
     *
     * @param id
     *           id of the virtual guest
-    * @param blockDevices
     */
-   @GET
-   @Path("/SoftLayer_Virtual_Guest/{id}/createArchiveTransaction")
+   @Named("VirtualGuest:setTags")
+   @POST
+   @Path("/SoftLayer_Virtual_Guest/{id}/setTags")
    @Consumes(MediaType.APPLICATION_JSON)
-   @Fallback(Fallbacks.VoidOnNotFoundOr404.class)
-   ProvisioningVersion1Transaction createArchiveTransaction(@PathParam("id") String id,
-                                                            @PathParam("blockDevices") Set<VirtualGuestBlockDevice> blockDevices);
+   @Produces(MediaType.APPLICATION_JSON)
+   @Fallback(Fallbacks.FalseOnNotFoundOr404.class)
+   boolean setTags(@PathParam("id") long id, @BinderParam(TagToJson.class) Set<String> tags);
 }

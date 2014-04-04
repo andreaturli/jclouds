@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableSet;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.RunNodesException;
+import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -67,22 +68,9 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
                       new SshjSshClientModule()))
               .build(ComputeServiceContext.class);
 
-      /*
-      for(ComputeMetadata node : context.getComputeService().listNodes()) {
-         logger.info("node: ", node);
+      for (ComputeMetadata compute : context.getComputeService().listNodes()) {
+         System.out.println(compute);
       }
-
-      for(Hardware hardware : context.getComputeService().listHardwareProfiles()) {
-         logger.info("hardware: ", hardware);
-      }
-
-      for(Image image : context.getComputeService().listImages()) {
-         logger.info("image: ", image);
-      }
-
-      Image image = context.getComputeService().getImage("UBUNTU_8_64");
-      logger.info("UBUNTU_8_64 image: ", image);
-      */
 
       TemplateBuilder templateBuilder = context.getComputeService().templateBuilder();
       //templateBuilder.minDisk(15d);
@@ -93,12 +81,17 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
       //templateBuilder.imageId("7bcd78dc-eb11-4e1b-8d93-111c62ed5fd1");
       //templateBuilder.locationId("dal01");
       //templateBuilder.minRam(8192);
+
       Template template = templateBuilder.build();
       // test passing custom options
       SoftLayerTemplateOptions options = template.getOptions().as(SoftLayerTemplateOptions.class);
       options.domainName("live.org");
+      //options.diskType("SAN");
+      //options.portSpeed(10);
       // multi-disk option
-      options.blockDevices(ImmutableList.of(100, 400, 400));
+      options.blockDevices(ImmutableList.of(100));
+      //tags
+      options.tags(ImmutableList.of("jclouds"));
 
       Set<? extends NodeMetadata> nodes = context.getComputeService().createNodesInGroup(name, numNodes, template);
       assertEquals(numNodes, nodes.size(), "wrong number of nodes");
@@ -110,7 +103,7 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
          System.out.println(hello.getOutput().trim());
 
          VirtualGuest virtualGuest = context.unwrapApi(SoftLayerApi.class).getVirtualGuestApi()
-                 .getObject(Long.parseLong(node.getId()));
+                 .getVirtualGuest(Long.parseLong(node.getId()));
          for (VirtualGuestBlockDevice blockDevice : virtualGuest.getVirtualGuestBlockDevices()) {
             System.out.println(blockDevice);
          }

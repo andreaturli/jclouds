@@ -151,10 +151,8 @@ public class VirtualGuestNetworkComponent {
    private final int speed;
    private final String status;
 
-   @ConstructorProperties({
-           "id", "uuid", "guestId", "networkId", "macAddress", "maxSpeed", "name", "port", "speed",
-           "status"
-   })
+   @ConstructorProperties({ "id", "uuid", "guestId", "networkId", "macAddress", "maxSpeed", "name", "port", "speed",
+           "status" })
    protected VirtualGuestNetworkComponent(int id, String uuid, int guestId,  int networkId, @Nullable String macAddress,
                                           int maxSpeed, @Nullable String name, int port, int speed,
                                           @Nullable String status) {
@@ -238,17 +236,16 @@ public class VirtualGuestNetworkComponent {
    @Override
    public String toString() {
       return Objects.toStringHelper(this)
-              .addValue(id)
-              .addValue(uuid)
-              .addValue(guestId)
-              .addValue(networkId)
-              .addValue(macAddress)
-              .addValue(maxSpeed)
-              .addValue(name)
-              .addValue(port)
-              .addValue(speed)
-              .addValue(status)
+              .add("id", id)
+              .add("uuid", uuid)
+              .add("guestId", guestId)
+              .add("networkId", networkId)
+              .add("macAddress", macAddress)
+              .add("maxSpeed", maxSpeed)
+              .add("name", name)
+              .add("port", port)
+              .add("speed", speed)
+              .add("status", status)
               .toString();
    }
-
 }

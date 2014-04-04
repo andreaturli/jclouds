@@ -16,14 +16,13 @@
  */
 package org.jclouds.softlayer.domain;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.emptyToNull;
+import com.google.common.base.Objects;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
 
-import org.jclouds.javax.annotation.Nullable;
-
-import com.google.common.base.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * A region is made up of a keyname and a description of that region.
@@ -116,8 +115,10 @@ public class Region implements Comparable<Region> {
 
    @Override
    public String toString() {
-      return "[keyname=" + keyname + ", description=" + description + "]";
+      return Objects.toStringHelper(this)
+              .add("sortOrder", sortOrder)
+              .add("keyname", keyname)
+              .add("description", description)
+              .toString();
    }
-
-
 }

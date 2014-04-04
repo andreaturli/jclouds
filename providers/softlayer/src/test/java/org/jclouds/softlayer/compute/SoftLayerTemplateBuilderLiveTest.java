@@ -39,7 +39,8 @@ import static org.testng.Assert.assertEquals;
 
 /**
  * 
- * @author Jason King, Andrea Turli
+ * @author Jason King
+ * @author Andrea Turli
  */
 @Test(groups = "live", alwaysRun = false)
 public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTest {
@@ -98,7 +99,6 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
       ComputeServiceContext context = null;
       try {
          Properties overrides = setupProperties();
-         //overrides.setProperty(PROPERTY_SOFTLAYER_VIRTUALGUEST_PORT_SPEED, "1000");
 
          context = createView(overrides, setupModules());
 

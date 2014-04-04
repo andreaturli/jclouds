@@ -36,7 +36,7 @@ public class AccountApiExpectTest extends BaseSoftLayerApiExpectTest {
    public void testListVirtualGuestsWhenResponseIs2xx() {
 
       HttpRequest listVirtualGuestsRequest = HttpRequest.builder().method("GET")
-              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Account/VirtualGuests?objectMask=powerState%3BoperatingSystem.passwords%3Bdatacenter%3BbillingItem%3BblockDevices.diskImage")
+              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Account/VirtualGuests?objectMask=powerState%3BoperatingSystem.passwords%3Bdatacenter%3BbillingItem%3BblockDevices.diskImage%3BtagReferences")
               .addHeader("Accept", "application/json")
               .addHeader("Authorization", "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
 
@@ -52,7 +52,7 @@ public class AccountApiExpectTest extends BaseSoftLayerApiExpectTest {
    public void testListVirtualGuestsWhenResponseIs4xx() {
 
       HttpRequest listVirtualGuestsRequest = HttpRequest.builder().method("GET")
-              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Account/VirtualGuests?objectMask=powerState%3BoperatingSystem.passwords%3Bdatacenter%3BbillingItem%3BblockDevices.diskImage")
+              .endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Account/VirtualGuests?objectMask=powerState%3BoperatingSystem.passwords%3Bdatacenter%3BbillingItem%3BblockDevices.diskImage%3BtagReferences")
               .addHeader("Accept", "application/json")
               .addHeader("Authorization", "Basic aWRlbnRpdHk6Y3JlZGVudGlhbA==").build();
 

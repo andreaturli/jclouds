@@ -217,8 +217,7 @@ public class ContainerVirtualGuestConfiguration {
    public Set<OperatingSystem> getVirtualGuestOperatingSystems() {
       if(operatingSystems.isEmpty()) return ImmutableSet.of();
       return Sets.newHashSet(Iterables.transform(operatingSystems,
-              new Function<ContainerVirtualGuestConfigurationOption,
-              OperatingSystem>() {
+              new Function<ContainerVirtualGuestConfigurationOption, OperatingSystem>() {
          @Override
          public OperatingSystem apply(ContainerVirtualGuestConfigurationOption input) {
             return OperatingSystem.builder()
@@ -233,7 +232,6 @@ public class ContainerVirtualGuestConfiguration {
       if(blockDevices.isEmpty()) return ImmutableSet.of();
       Set<VirtualGuestBlockDevice> virtualGuestBlockDevices = Sets.newHashSet();
       for (final ContainerVirtualGuestConfigurationOption configurationOption : blockDevices) {
-
          virtualGuestBlockDevices.addAll(FluentIterable.from(configurationOption.getTemplate().getVirtualGuestBlockDevices())
                  .filter(new Predicate<VirtualGuestBlockDevice>() {
                     @Override
@@ -275,13 +273,13 @@ public class ContainerVirtualGuestConfiguration {
 
    @Override
    public String toString() {
-      return "ContainerVirtualGuestConfiguration{" +
-              "blockDevices=" + blockDevices +
-              ", datacenters=" + datacenters +
-              ", memory=" + memory +
-              ", networkComponents=" + networkComponents +
-              ", operatingSystems=" + operatingSystems +
-              ", processors=" + processors +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("blockDevices", blockDevices)
+              .add("datacenters", datacenters)
+              .add("memory", memory)
+              .add("networkComponents", networkComponents)
+              .add("operatingSystems", operatingSystems)
+              .add("processors", processors)
+              .toString();
    }
 }

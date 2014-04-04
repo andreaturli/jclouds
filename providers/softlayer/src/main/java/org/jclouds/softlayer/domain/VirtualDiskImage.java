@@ -166,19 +166,19 @@ public class VirtualDiskImage {
    @ConstructorProperties({
            "id", "uuid", "capacity", "units", "typeId", "description", "name", "storageRepositoryId", "softwareReferences"
    })
-   public VirtualDiskImage(int id, String uuid, float capacity, String units, int typeId, String description,
-                           String name, int storageRepositoryId, @Nullable Set<VirtualDiskImageSoftware> softwareReferences) {
+   public VirtualDiskImage(int id, @Nullable String uuid, float capacity, @Nullable String units, int typeId,
+                           @Nullable String description, @Nullable String name, int storageRepositoryId,
+                           @Nullable Set<VirtualDiskImageSoftware> softwareReferences) {
       this.id = id;
       this.uuid = uuid;
       this.capacity = capacity;
       this.units = units;
-      this.typeId = typeId;
+      this.typeId = checkNotNull(typeId, "typeId");
       this.description = description;
       this.name = name;
-      this.storageRepositoryId = storageRepositoryId;
+      this.storageRepositoryId = checkNotNull(storageRepositoryId, "storageRepositoryId");
       this.softwareReferences = softwareReferences  == null ? ImmutableSet.<VirtualDiskImageSoftware>of() :
               ImmutableSet.copyOf(softwareReferences);
-
    }
 
    public int getId() {
@@ -243,16 +243,16 @@ public class VirtualDiskImage {
 
    @Override
    public String toString() {
-      return "VirtualDiskImage{" +
-              "id=" + id +
-              ", uuid='" + uuid + '\'' +
-              ", capacity=" + capacity +
-              ", units='" + units + '\'' +
-              ", typeId=" + typeId +
-              ", description='" + description + '\'' +
-              ", name='" + name + '\'' +
-              ", storageRepositoryId=" + storageRepositoryId +
-              ", softwareReferences=" + softwareReferences +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("uuid", uuid)
+              .add("capacity", capacity)
+              .add("units", units)
+              .add("typeId", typeId)
+              .add("description", description)
+              .add("name", name)
+              .add("storageRepositoryId", storageRepositoryId)
+              .add("softwareReferences", softwareReferences)
+              .toString();
    }
 }

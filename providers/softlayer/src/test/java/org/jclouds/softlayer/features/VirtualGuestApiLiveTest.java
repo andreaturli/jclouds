@@ -17,32 +17,40 @@
 package org.jclouds.softlayer.features;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import org.jclouds.softlayer.SoftLayerApi;
 import org.jclouds.softlayer.domain.ContainerVirtualGuestConfiguration;
 import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.OperatingSystem;
+import org.jclouds.softlayer.domain.TagReference;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.util.Properties;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkState;
 import static org.jclouds.softlayer.compute.strategy.SoftLayerComputeServiceAdapter.VirtualGuestHasLoginDetailsPresent;
 import static org.jclouds.util.Predicates2.retry;
+import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertTrue;
 
 /**
  * Tests behavior of {@code VirtualGuestApi}
  *
- * @author Adrian Cole, Andrea Turli
+ * @author Adrian Cole
+ * @author Andrea Turli
  */
 @Test(groups = "live")
 public class VirtualGuestApiLiveTest extends BaseSoftLayerApiLiveTest {
+
+   public static final String DATACENTER = "dal05";
 
    private VirtualGuestApi virtualGuestApi;
    private Predicate<VirtualGuest> loginDetailsTester;
@@ -81,34 +89,52 @@ public class VirtualGuestApiLiveTest extends BaseSoftLayerApiLiveTest {
    }
 
    @Test
-   public void testCreateVirtualMachine() throws Exception {
+   public void testCreateVirtualGuest() throws Exception {
       VirtualGuest virtualGuestRequest = VirtualGuest.builder()
               .domain("jclouds.org")
               .hostname("virtualGuestApiLiveTest")
               .startCpus(1)
               .maxMemory(1024)
               .operatingSystem(OperatingSystem.builder().id("CENTOS_6_64").operatingSystemReferenceCode("CENTOS_6_64").build())
-              .datacenter(Datacenter.builder().name("dal01").build())
+              .datacenter(Datacenter.builder().name(DATACENTER).build())
               .build();
 
-      virtualGuest = virtualGuestApi.createObject(virtualGuestRequest);
+      virtualGuest = virtualGuestApi.createVirtualGuest(virtualGuestRequest);
       boolean orderInSystem = loginDetailsTester.apply(virtualGuest);
       checkState(orderInSystem, "order for guest %s doesn't have login details within %sms", virtualGuest,
               Long.toString(guestLoginDelay));
-      virtualGuest = virtualGuestApi.getObject(virtualGuest.getId());
+      virtualGuest = virtualGuestApi.getVirtualGuest(virtualGuest.getId());
       checkVirtualGuest(virtualGuest);
       assertNotNull(virtualGuest.getPrimaryIpAddress(), "primaryIpAddress must be not null");
       assertNotNull(virtualGuest.getPrimaryBackendIpAddress(), "backendIpAddress must be not null");
    }
 
+   @Test(dependsOnMethods = "testCreateVirtualGuest")
+   public void testGetVirtualGuest() throws Exception {
+      VirtualGuest found = virtualGuestApi.getVirtualGuest(virtualGuest.getId());
+      assertEquals(found, virtualGuest);
+   }
+
+   @Test(dependsOnMethods = "testGetVirtualGuest")
+   public void testSetTagsOnVirtualGuest() throws Exception {
+      ImmutableSet<String> tags = ImmutableSet.of("test", "jclouds");
+      assertTrue(virtualGuestApi.setTags(virtualGuest.getId(), tags));
+      VirtualGuest found = virtualGuestApi.getVirtualGuest(virtualGuest.getId());
+      Set<TagReference> tagReferences = found.getTagReferences();
+      assertNotNull(tagReferences);
+      for (String tag : tags) {
+         Iterables.contains(tagReferences, tag);
+      }
+   }
+
    private void destroyMachine(final VirtualGuest virtualGuest) {
       checkState(retry(new Predicate<VirtualGuest>() {
          public boolean apply(VirtualGuest guest) {
-            guest = api().getObject(virtualGuest.getId());
+            guest = api().getVirtualGuest(virtualGuest.getId());
             return guest.getActiveTransactionCount() == 0;
          }
       }, 5*60*1000).apply(virtualGuest), "%s still has active transactions!", virtualGuest);
-      assertTrue(api().deleteObject(virtualGuest.getId()));
+      assertTrue(api().deleteVirtualGuest(virtualGuest.getId()));
    }
 
    private VirtualGuestApi api() {
@@ -122,11 +148,8 @@ public class VirtualGuestApiLiveTest extends BaseSoftLayerApiLiveTest {
          assertNotNull(vg.getHostname(), "hostname must be not null");
          assertTrue(vg.getId() > 0, "id must be greater than 0");
          assertTrue(vg.getMaxCpu() > 0, "maxCpu must be greater than 0");
-         assertNotNull(vg.getMaxCpuUnits(), "maxCpuUnits must be not null");
          assertTrue(vg.getMaxMemory() > 0, "maxMemory must be greater than 0");
-         assertTrue(vg.getStartCpus() > 0, "startCpus must be greater than 0");
          assertTrue(vg.getStatusId() > 0, "statusId must be greater than 0");
-         assertNotNull(vg.getUuid(), "uuid must be not null");
       }
    }
 

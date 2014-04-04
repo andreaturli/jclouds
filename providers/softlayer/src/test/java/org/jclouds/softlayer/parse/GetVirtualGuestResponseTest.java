@@ -58,7 +58,7 @@ public class GetVirtualGuestResponseTest extends BaseSoftLayerParseTest<VirtualG
                               .uuid("92102aff-93c9-05f1-b3f2-50787e865344")
                               .primaryBackendIpAddress("10.32.23.74")
                               .primaryIpAddress("174.37.252.118")
-                              .billingItemId(-1)
+                              .billingItemId(0)
                               .operatingSystem(null)
                               .datacenter(null)
                               .powerState(null)

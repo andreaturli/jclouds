@@ -20,6 +20,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.jclouds.collect.Memoized;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -28,10 +29,12 @@ import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.functions.GroupNamingConvention;
 import org.jclouds.domain.Location;
 import org.jclouds.location.predicates.LocationPredicates;
+import org.jclouds.softlayer.domain.TagReference;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -52,12 +55,14 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
 
    private final Supplier<Set<? extends Location>> locations;
    private final GroupNamingConvention nodeNamingConvention;
+   private final VirtualGuestToImage virtualGuestToImage;
 
    @Inject
    VirtualGuestToNodeMetadata(@Memoized Supplier<Set<? extends Location>> locations,
-         GroupNamingConvention.Factory namingConvention) {
+         GroupNamingConvention.Factory namingConvention, VirtualGuestToImage virtualGuestToImage) {
       this.nodeNamingConvention = checkNotNull(namingConvention, "namingConvention").createWithoutPrefix();
       this.locations = checkNotNull(locations, "locations");
+      this.virtualGuestToImage = checkNotNull(virtualGuestToImage, "virtualGuestToImage");
    }
 
    @Override
@@ -65,24 +70,34 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
       NodeMetadataBuilder builder = new NodeMetadataBuilder();
       builder.ids(from.getId() + "");
       builder.name(from.getHostname());
-      builder.hostname(from.getHostname());
-      if (from.getDatacenter() != null)
+      builder.hostname(from.getHostname() + from.getDomain());
+      if (from.getDatacenter() != null) {
          builder.location(from(locations.get()).firstMatch(
-               LocationPredicates.idEquals(from.getDatacenter().getId() + "")).orNull());
+                 LocationPredicates.idEquals(from.getDatacenter().getId() + "")).orNull());
+      }
       builder.group(nodeNamingConvention.groupInUniqueNameOrNull(from.getHostname()));
-
-      Image image = new VirtualGuestToImage().apply(from);
+      builder.hardware(new VirtualGuestToHardware().apply(from));
+      Image image = virtualGuestToImage.apply(from);
       if (image != null) {
          builder.imageId(image.getId());
          builder.operatingSystem(image.getOperatingSystem());
-         builder.hardware(new VirtualGuestToHardware().apply(from));
       }
-      builder.status(serverStateToNodeStatus.get(from.getPowerState().getKeyName()));
-
+      if(from.getPowerState() != null) {
+         builder.status(serverStateToNodeStatus.get(from.getPowerState().getKeyName()));
+      }
       if (from.getPrimaryIpAddress() != null)
-         builder.publicAddresses(ImmutableSet.<String> of(from.getPrimaryIpAddress()));
+         builder.publicAddresses(ImmutableSet.of(from.getPrimaryIpAddress()));
       if (from.getPrimaryBackendIpAddress() != null)
-         builder.privateAddresses(ImmutableSet.<String> of(from.getPrimaryBackendIpAddress()));
+         builder.privateAddresses(ImmutableSet.of(from.getPrimaryBackendIpAddress()));
+      if(from.getTagReferences() != null && !from.getTagReferences().isEmpty()) {
+         List<String> tags = Lists.newArrayList();
+         for (TagReference tagReference : from.getTagReferences()) {
+            if (tagReference != null) {
+               tags.add(tagReference.getTag().getName());
+            }
+         }
+         builder.tags(tags);
+      }
       return builder.build();
    }
 

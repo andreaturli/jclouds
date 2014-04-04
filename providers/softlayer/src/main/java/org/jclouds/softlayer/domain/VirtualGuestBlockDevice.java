@@ -149,9 +149,8 @@ public class VirtualGuestBlockDevice {
    private final VirtualDiskImage diskImage;
    private final VirtualGuest guest;
 
-   @ConstructorProperties({
-           "id", "uuid", "statusId", "mountType", "mountMode", "bootableFlag", "device", "diskImage", "guest"
-   })
+   @ConstructorProperties({ "id", "uuid", "statusId", "mountType", "mountMode", "bootableFlag", "device",
+           "diskImage", "guest" })
    protected VirtualGuestBlockDevice(int id, @Nullable String uuid, int statusId,  @Nullable String mountType,
                                      @Nullable String mountMode, int bootableFlag, String device,
                                      @Nullable VirtualDiskImage diskImage, @Nullable VirtualGuest guest) {
@@ -228,16 +227,16 @@ public class VirtualGuestBlockDevice {
 
    @Override
    public String toString() {
-      return "VirtualGuestBlockDevice{" +
-              "id=" + id +
-              ", uuid='" + uuid + '\'' +
-              ", statusId=" + statusId +
-              ", mountType='" + mountType + '\'' +
-              ", mountMode='" + mountMode + '\'' +
-              ", bootableFlag=" + bootableFlag +
-              ", device=" + device +
-              ", diskImage=" + diskImage +
-              ", guest=" + guest +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("uuid", uuid)
+              .add("statusId", statusId)
+              .add("mountType", mountType)
+              .add("mountMode", mountMode)
+              .add("bootableFlag", bootableFlag)
+              .add("device", device)
+              .add("diskImage", diskImage)
+              .add("guest", guest)
+              .toString();
    }
 }

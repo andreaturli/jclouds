@@ -17,8 +17,12 @@
 package org.jclouds.softlayer.domain;
 
 import com.google.common.base.Objects;
+import com.google.inject.name.Named;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * @author Andrea Turli
@@ -60,13 +64,15 @@ public class ContainerVirtualGuestConfigurationOption {
       }
    }
 
+   @Named("itemPrice")
    private final ProductItemPrice productItemPrice;
    private final VirtualGuest template;
 
    @ConstructorProperties({"itemPrice", "template"})
-   public ContainerVirtualGuestConfigurationOption(ProductItemPrice productItemPrice, VirtualGuest template) {
+   public ContainerVirtualGuestConfigurationOption(@Nullable ProductItemPrice productItemPrice,
+                                                   VirtualGuest template) {
       this.productItemPrice = productItemPrice;
-      this.template = template;
+      this.template = checkNotNull(template, "template");
    }
 
    public ProductItemPrice getProductItemPrice() {
@@ -96,9 +102,9 @@ public class ContainerVirtualGuestConfigurationOption {
 
    @Override
    public String toString() {
-      return "ContainerVirtualGuestConfigurationOption{" +
-              "productItemPrice=" + productItemPrice +
-              ", template=" + template +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("productItemPrice", productItemPrice)
+              .add("template", template)
+              .toString();
    }
 }

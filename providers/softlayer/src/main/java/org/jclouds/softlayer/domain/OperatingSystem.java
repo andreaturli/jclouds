@@ -105,7 +105,7 @@ public class OperatingSystem {
    })
    protected OperatingSystem(String id, @Nullable SoftwareLicense softwareLicense,
                              @Nullable String operatingSystemReferenceCode, @Nullable Set<Password> passwords) {
-      this.id = id;
+      this.id = checkNotNull(id, "id");
       this.softwareLicense = softwareLicense;
       this.operatingSystemReferenceCode = operatingSystemReferenceCode;
       this.passwords = passwords == null ? ImmutableSet.<Password>of() : ImmutableSet.copyOf(passwords);
@@ -153,11 +153,11 @@ public class OperatingSystem {
 
    @Override
    public String toString() {
-      return "OperatingSystem{" +
-              "id='" + id + '\'' +
-              ", softwareLicense=" + softwareLicense +
-              ", operatingSystemReferenceCode=" + operatingSystemReferenceCode +
-              ", passwords=" + passwords +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("softwareLicense", softwareLicense)
+              .add("operatingSystemReferenceCode", operatingSystemReferenceCode)
+              .add("passwords", passwords)
+              .toString();
    }
 }

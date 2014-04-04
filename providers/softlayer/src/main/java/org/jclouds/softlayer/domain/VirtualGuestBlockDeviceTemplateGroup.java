@@ -18,7 +18,6 @@ package org.jclouds.softlayer.domain;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
@@ -162,9 +161,8 @@ public class VirtualGuestBlockDeviceTemplateGroup {
    private final Set<VirtualGuestBlockDeviceTemplateGroup> children;
    private final Set<VirtualGuestBlockDeviceTemplate> blockDevices;
 
-   @ConstructorProperties({
-           "id", "name", "globalIdentifier", "statusId", "accountId", "parentId", "summary", "children", "blockDevices"
-   })
+   @ConstructorProperties({ "id", "name", "globalIdentifier", "statusId", "accountId", "parentId", "summary",
+           "children", "blockDevices" })
    protected VirtualGuestBlockDeviceTemplateGroup(int id, @Nullable String name, @Nullable String globalIdentifier,
                                                   int statusId, int accountId,  int parentId, @Nullable String summary,
                                                   @Nullable Set<VirtualGuestBlockDeviceTemplateGroup> children,
@@ -244,16 +242,16 @@ public class VirtualGuestBlockDeviceTemplateGroup {
 
    @Override
    public String toString() {
-      return "VirtualGuestBlockDeviceTemplateGroup{" +
-              "id=" + id +
-              ", name='" + name + '\'' +
-              ", globalIdentifier='" + globalIdentifier + '\'' +
-              ", statusId=" + statusId +
-              ", accountId='" + accountId + '\'' +
-              ", parentId='" + parentId + '\'' +
-              ", summary=" + summary +
-              ", children=" + Iterables.toString(children) +
-              ", blockDevices=" + Iterables.toString(blockDevices) +
-              "}";
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("name", name)
+              .add("globalIdentifier", globalIdentifier)
+              .add("statusId", statusId)
+              .add("accountId", accountId)
+              .add("parentId", parentId)
+              .add("summary", summary)
+              .add("children", children)
+              .add("blockDevices", blockDevices)
+              .toString();
    }
 }

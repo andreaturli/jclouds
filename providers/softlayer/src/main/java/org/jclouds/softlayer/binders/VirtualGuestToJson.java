@@ -86,7 +86,7 @@ public class VirtualGuestToJson implements Binder {
                  new BlockDeviceTemplateGroup(globalIdentifier), localDiskFlag, new Datacenter(datacenterName),
                  networkComponents, null);
       }
-      return json.toJson(ImmutableMap.of("parameters", ImmutableList.<TemplateObject> of(templateObject)));
+      return json.toJson(ImmutableMap.of("parameters", ImmutableList.of(templateObject)));
    }
 
    private Set<BlockDevice> getBlockDevices(VirtualGuest virtualGuest) {
@@ -119,17 +119,17 @@ public class VirtualGuestToJson implements Binder {
    }
 
    private static class TemplateObject {
-      private String hostname;
-      private String domain;
-      private int startCpus;
-      private int maxMemory;
-      private boolean hourlyBillingFlag;
-      private BlockDeviceTemplateGroup blockDeviceTemplateGroup;
-      private String operatingSystemReferenceCode;
-      private boolean localDiskFlag;
-      private Datacenter datacenter;
-      private Set<NetworkComponent> networkComponents;
-      private Set<BlockDevice> blockDevices;
+      private final String hostname;
+      private final String domain;
+      private final int startCpus;
+      private final int maxMemory;
+      private final boolean hourlyBillingFlag;
+      private final BlockDeviceTemplateGroup blockDeviceTemplateGroup;
+      private final String operatingSystemReferenceCode;
+      private final boolean localDiskFlag;
+      private final Datacenter datacenter;
+      private final Set<NetworkComponent> networkComponents;
+      private final Set<BlockDevice> blockDevices;
 
       private TemplateObject(String hostname, String domain, int startCpus, int maxMemory, boolean hourlyBillingFlag,
                          String operatingSystemReferenceCode, BlockDeviceTemplateGroup blockDeviceTemplateGroup,

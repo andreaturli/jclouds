@@ -72,11 +72,11 @@ public class SoftwareLicense {
 
    @Override
    public String toString() {
-      return "SoftwareLicense{" +
-              "id=" + id +
-              ", softwareDescription=" + softwareDescription +
-              ", softwareDescriptionId=" + softwareDescriptionId +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("softwareDescription", softwareDescription)
+              .add("softwareDescriptionId", softwareDescriptionId)
+              .toString();
    }
 
    public static Builder builder() {

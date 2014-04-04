@@ -130,6 +130,7 @@ public class VirtualGuest {
       protected boolean localDiskFlag;
       protected VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
       protected Set<VirtualGuestNetworkComponent> networkComponents;
+      protected Set<TagReference> tagReferences;
 
       /**
        * @see VirtualGuest#getAccountId()
@@ -378,12 +379,22 @@ public class VirtualGuest {
          return networkComponents(ImmutableSet.copyOf(checkNotNull(in, "networkComponents")));
       }
 
+      public T tagReferences(Set<TagReference> tagReferences) {
+         this.tagReferences = ImmutableSet.copyOf(checkNotNull(tagReferences, "tagReferences"));
+         return self();
+      }
+
+      public T tagReferences(TagReference... in) {
+         return tagReferences(ImmutableSet.copyOf(checkNotNull(in, "tagReferences")));
+      }
+
       public VirtualGuest build() {
          return new VirtualGuest(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName, hostname,
                id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes, privateNetworkOnly,
                startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress, new BillingItem(billingItemId),
                operatingSystem, operatingSystemReferenceCode, datacenter, powerState, softwareLicense,
-               activeTransactionCount, blockDevices, localDiskFlag, blockDeviceTemplateGroup, networkComponents);
+               activeTransactionCount, blockDevices, localDiskFlag, blockDeviceTemplateGroup, networkComponents,
+               tagReferences );
       }
 
       public T fromVirtualGuest(VirtualGuest in) {
@@ -416,7 +427,8 @@ public class VirtualGuest {
                .activeTransactionCount(in.getActiveTransactionCount())
                .localDiskFlag(in.isLocalDiskFlag())
                .blockDeviceTemplateGroup(in.getVirtualGuestBlockDeviceTemplateGroup())
-               .networkComponents(in.getVirtualGuestNetworkComponents());
+               .networkComponents(in.getVirtualGuestNetworkComponents())
+               .tagReferences(in.getTagReferences());
       }
    }
 
@@ -458,15 +470,15 @@ public class VirtualGuest {
    private final boolean localDiskFlag;
    private final VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
    private final Set<VirtualGuestNetworkComponent> networkComponents;
+   private final Set<TagReference> tagReferences;
 
-   @ConstructorProperties({
-         "accountId", "createDate", "dedicatedAccountHostOnlyFlag", "domain", "fullyQualifiedDomainName", "hostname",
-           "id", "lastVerifiedDate", "maxCpu", "maxCpuUnits", "maxMemory", "metricPollDate", "modifyDate", "notes",
-           "privateNetworkOnlyFlag", "startCpus", "statusId", "uuid", "primaryBackendIpAddress", "primaryIpAddress",
-           "billingItem", "operatingSystem", "operatingSystemReferenceCode", "datacenter", "powerState",
-           "softwareLicense", "activeTransactionCount", "blockDevices", "localDiskFlag", "blockDeviceTemplateGroup",
-           "networkComponents"
-   })
+   @ConstructorProperties({ "accountId", "createDate", "dedicatedAccountHostOnlyFlag", "domain",
+           "fullyQualifiedDomainName", "hostname", "id", "lastVerifiedDate", "maxCpu", "maxCpuUnits", "maxMemory",
+           "metricPollDate", "modifyDate", "notes", "privateNetworkOnlyFlag", "startCpus", "statusId", "uuid",
+           "primaryBackendIpAddress", "primaryIpAddress", "billingItem", "operatingSystem",
+           "operatingSystemReferenceCode", "datacenter", "powerState", "softwareLicense", "activeTransactionCount",
+           "blockDevices", "localDiskFlag", "blockDeviceTemplateGroup", "networkComponents", "tagReferences"
+})
    protected VirtualGuest(int accountId, @Nullable Date createDate, boolean dedicatedAccountHostOnly, @Nullable String domain,
                           @Nullable String fullyQualifiedDomainName, @Nullable String hostname, int id, @Nullable Date lastVerifiedDate,
                           int maxCpu, @Nullable String maxCpuUnits, int maxMemory, @Nullable Date metricPollDate, @Nullable Date modifyDate,
@@ -474,9 +486,10 @@ public class VirtualGuest {
                           @Nullable String primaryBackendIpAddress, @Nullable String primaryIpAddress, @Nullable BillingItem billingItem,
                           @Nullable OperatingSystem operatingSystem, @Nullable String operatingSystemReferenceCode,
                           @Nullable Datacenter datacenter, @Nullable PowerState powerState, @Nullable SoftwareLicense softwareLicense,
-                          @Nullable int activeTransactionCount, Set<VirtualGuestBlockDevice> blockDevices,
+                          int activeTransactionCount, @Nullable Set<VirtualGuestBlockDevice> blockDevices,
                           boolean localDiskFlag, @Nullable VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup,
-                          @Nullable Set<VirtualGuestNetworkComponent> networkComponents) {
+                          @Nullable Set<VirtualGuestNetworkComponent> networkComponents,
+                          @Nullable Set<TagReference> tagReferences ) {
       this.accountId = accountId;
       this.createDate = createDate;
       this.dedicatedAccountHostOnly = dedicatedAccountHostOnly;
@@ -498,7 +511,7 @@ public class VirtualGuest {
       this.primaryBackendIpAddress = primaryBackendIpAddress;
       this.primaryIpAddress = primaryIpAddress;
       this.blockDevices = blockDevices;
-      this.billingItemId = billingItem == null ? -1 : billingItem.id;
+      this.billingItemId = billingItem == null ? 0 : billingItem.id;
       this.operatingSystem = operatingSystem;
       this.operatingSystemReferenceCode = operatingSystemReferenceCode;
       this.datacenter = datacenter;
@@ -508,6 +521,7 @@ public class VirtualGuest {
       this.localDiskFlag = localDiskFlag;
       this.blockDeviceTemplateGroup = blockDeviceTemplateGroup;
       this.networkComponents = networkComponents;
+      this.tagReferences = tagReferences;
    }
 
    /**
@@ -730,13 +744,18 @@ public class VirtualGuest {
       return networkComponents;
    }
 
+   @Nullable
+   public Set<TagReference> getTagReferences() {
+      return tagReferences;
+   }
+
    @Override
    public int hashCode() {
       return Objects.hashCode(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName,
               hostname, id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes,
               privateNetworkOnly, startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress,
               billingItemId, operatingSystem, datacenter, powerState, softwareLicense, blockDevices, localDiskFlag,
-              blockDeviceTemplateGroup);
+              blockDeviceTemplateGroup, tagReferences);
    }
 
    @Override
@@ -773,43 +792,45 @@ public class VirtualGuest {
             && Objects.equal(this.blockDevices, that.blockDevices)
             && Objects.equal(this.localDiskFlag, that.localDiskFlag)
             && Objects.equal(this.blockDeviceTemplateGroup, that.blockDeviceTemplateGroup)
-            && Objects.equal(this.networkComponents, that.networkComponents);
+            && Objects.equal(this.networkComponents, that.networkComponents)
+            && Objects.equal(this.tagReferences, that.tagReferences);
    }
 
    @Override
    public String toString() {
-      return "VirtualGuest{" +
-              "accountId=" + accountId +
-              ", createDate=" + createDate +
-              ", dedicatedAccountHostOnly=" + dedicatedAccountHostOnly +
-              ", domain='" + domain + '\'' +
-              ", fullyQualifiedDomainName='" + fullyQualifiedDomainName + '\'' +
-              ", hostname='" + hostname + '\'' +
-              ", id=" + id +
-              ", lastVerifiedDate=" + lastVerifiedDate +
-              ", maxCpu=" + maxCpu +
-              ", maxCpuUnits='" + maxCpuUnits + '\'' +
-              ", maxMemory=" + maxMemory +
-              ", metricPollDate=" + metricPollDate +
-              ", modifyDate=" + modifyDate +
-              ", notes='" + notes + '\'' +
-              ", privateNetworkOnly=" + privateNetworkOnly +
-              ", startCpus=" + startCpus +
-              ", statusId=" + statusId +
-              ", uuid='" + uuid + '\'' +
-              ", primaryBackendIpAddress='" + primaryBackendIpAddress + '\'' +
-              ", primaryIpAddress='" + primaryIpAddress + '\'' +
-              ", billingItemId=" + billingItemId +
-              ", operatingSystem=" + operatingSystem +
-              ", operatingSystemReferenceCode=" + operatingSystemReferenceCode +
-              ", datacenter=" + datacenter +
-              ", powerState=" + powerState +
-              ", softwareLicense=" + softwareLicense +
-              ", activeTransactionCount=" + activeTransactionCount +
-              ", blockDevices=" + blockDevices +
-              ", localDiskFlag=" + localDiskFlag +
-              ", blockDeviceTemplateGroup=" + blockDeviceTemplateGroup +
-              ", networkComponents=" + networkComponents +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("accountId", accountId)
+              .add("createDate", createDate)
+              .add("dedicatedAccountHostOnly", dedicatedAccountHostOnly)
+              .add("domain", domain)
+              .add("fullyQualifiedDomainName", fullyQualifiedDomainName)
+              .add("hostname", hostname)
+              .add("id", id)
+              .add("lastVerifiedDate", lastVerifiedDate)
+              .add("maxCpu", maxCpu)
+              .add("maxCpuUnits", maxCpuUnits)
+              .add("maxMemory", maxMemory)
+              .add("metricPollDate", metricPollDate)
+              .add("modifyDate", modifyDate)
+              .add("notes", notes)
+              .add("privateNetworkOnly", privateNetworkOnly)
+              .add("startCpus", startCpus)
+              .add("statusId", statusId)
+              .add("uuid", uuid)
+              .add("primaryBackendIpAddress", primaryBackendIpAddress)
+              .add("primaryIpAddress", primaryIpAddress)
+              .add("billingItemId", billingItemId)
+              .add("operatingSystem", operatingSystem)
+              .add("operatingSystemReferenceCode", operatingSystemReferenceCode)
+              .add("datacenter", datacenter)
+              .add("powerState", powerState)
+              .add("softwareLicense", softwareLicense)
+              .add("activeTransactionCount", activeTransactionCount)
+              .add("blockDevices", blockDevices)
+              .add("localDiskFlag", localDiskFlag)
+              .add("blockDeviceTemplateGroup", blockDeviceTemplateGroup)
+              .add("networkComponents", networkComponents)
+              .add("tagReferences", tagReferences)
+              .toString();
    }
 }

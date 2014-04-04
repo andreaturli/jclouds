@@ -16,15 +16,13 @@
  */
 package org.jclouds.softlayer.domain;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.emptyToNull;
+import com.google.common.base.Objects;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
 
-import org.jclouds.javax.annotation.Nullable;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Objects.ToStringHelper;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * Contains a password for a specific software component instance
@@ -140,13 +138,12 @@ public class Password {
       return Objects.equal(this.id, that.id);
    }
 
-   protected ToStringHelper string() {
-      return Objects.toStringHelper(this)
-            .add("id", id).add("username", username).add("password", password);
-   }
-
    @Override
    public String toString() {
-      return string().toString();
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("username", username)
+              .add("password", password)
+              .toString();
    }
 }

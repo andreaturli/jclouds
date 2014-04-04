@@ -19,6 +19,8 @@ package org.jclouds.softlayer.compute.functions.internal;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
+import com.google.common.primitives.Ints;
+import org.jclouds.compute.domain.OsFamily;
 
 import static com.google.common.collect.Iterables.getLast;
 
@@ -27,12 +29,38 @@ import static com.google.common.collect.Iterables.getLast;
  */
 public class OperatingSystems {
 
+   private static final String CENTOS = "CENTOS";
+   private static final String DEBIAN = "DEBIAN";
+   private static final String RHEL = "REDHAT";
+   private static final String UBUNTU = "UBUNTU";
+   private static final String WINDOWS = "WIN_";
+   private static final String CLOUD_LINUX = "CLOUDLINUX";
+   private static final String VYATTACE = "VYATTACE";
+
+   public static Function<String, OsFamily> osFamily() {
+      return new Function<String, OsFamily>() {
+         @Override
+         public OsFamily apply(final String description) {
+            if (description != null) {
+               if (description.startsWith(CENTOS)) return OsFamily.CENTOS;
+               else if (description.startsWith(DEBIAN)) return OsFamily.DEBIAN;
+               else if (description.startsWith(RHEL)) return OsFamily.RHEL;
+               else if (description.startsWith(UBUNTU)) return OsFamily.UBUNTU;
+               else if (description.startsWith(WINDOWS)) return OsFamily.WINDOWS;
+               else if (description.startsWith(CLOUD_LINUX)) return OsFamily.CLOUD_LINUX;
+               else if (description.startsWith(VYATTACE)) return OsFamily.LINUX;
+            }
+            return OsFamily.UNRECOGNIZED;
+         }
+      };
+   }
+
    public static Function<String, Integer> bits() {
       return new Function<String, Integer>() {
          @Override
          public Integer apply(String operatingSystemReferenceCode) {
             if (operatingSystemReferenceCode != null) {
-               return Integer.parseInt(getLast(Splitter.on("_").split(operatingSystemReferenceCode)));
+               return Ints.tryParse(getLast(Splitter.on("_").split(operatingSystemReferenceCode)));
             }
             return null;
          }
@@ -49,15 +77,14 @@ public class OperatingSystems {
    }
 
    private static String parseVersion(String version) {
-      if(version.contains("-")) {
-         String rawVersion = version.substring(0,
-                 version.lastIndexOf("-"));
-         if(Iterables.size(Splitter.on(".").split(rawVersion)) == 3) {
+      if (version.contains("-")) {
+         String rawVersion = version.substring(0, version.lastIndexOf("-"));
+         if (Iterables.size(Splitter.on(".").split(rawVersion)) == 3) {
             return rawVersion.substring(0, rawVersion.lastIndexOf("."));
          } else {
             return rawVersion;
          }
-      } else if(version.contains(" ")) {
+      } else if (version.contains(" ")) {
          return version.substring(0,
                  version.indexOf(" "));
       }

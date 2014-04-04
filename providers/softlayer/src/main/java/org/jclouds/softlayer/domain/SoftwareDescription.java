@@ -21,6 +21,8 @@ import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class SoftwareDescription {
    public static Builder builder() {
       return new Builder();
@@ -179,11 +181,11 @@ public class SoftwareDescription {
            "virtualizationPlatform"
    })
    protected SoftwareDescription(int id, @Nullable String longDescription, @Nullable String manufacturer,
-                                 @Nullable String name, @Nullable int operatingSystem, @Nullable String referenceCode,
+                                 @Nullable String name, int operatingSystem, @Nullable String referenceCode,
                                  @Nullable String requiredUser, @Nullable String version, int controlPanel,
-                                 String upgradeSoftwareDescriptionId, String upgradeSwDescId, String virtualLicense,
-                                 String virtualizationPlatform) {
-      this.id = id;
+                                 @Nullable String upgradeSoftwareDescriptionId, @Nullable String upgradeSwDescId,
+                                 @Nullable String virtualLicense, @Nullable String virtualizationPlatform) {
+      this.id = checkNotNull(id, "id");
       this.longDescription = longDescription;
       this.manufacturer = manufacturer;
       this.name = name;
@@ -281,20 +283,20 @@ public class SoftwareDescription {
 
    @Override
    public String toString() {
-      return "SoftwareDescription{" +
-              "id=" + id +
-              ", longDescription='" + longDescription + '\'' +
-              ", manufacturer='" + manufacturer + '\'' +
-              ", name='" + name + '\'' +
-              ", operatingSystem=" + operatingSystem +
-              ", referenceCode='" + referenceCode + '\'' +
-              ", requiredUser='" + requiredUser + '\'' +
-              ", version='" + version + '\'' +
-              ", controlPanel='" + controlPanel + '\'' +
-              ", upgradeSoftwareDescriptionId='" + upgradeSoftwareDescriptionId + '\'' +
-              ", upgradeSwDescId='" + upgradeSwDescId + '\'' +
-              ", virtualLicense='" + virtualLicense + '\'' +
-              ", virtualizationPlatform='" + virtualizationPlatform + '\'' +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("longDescription", longDescription)
+              .add("manufacturer", manufacturer)
+              .add("name", name)
+              .add("operatingSystem", operatingSystem)
+              .add("referenceCode", referenceCode)
+              .add("requiredUser", requiredUser)
+              .add("version", version)
+              .add("controlPanel", controlPanel)
+              .add("upgradeSoftwareDescriptionId", upgradeSoftwareDescriptionId)
+              .add("upgradeSwDescId", upgradeSwDescId)
+              .add("virtualLicense", virtualLicense)
+              .add("virtualizationPlatform", virtualizationPlatform)
+              .toString();
    }
 }

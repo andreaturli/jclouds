@@ -38,30 +38,30 @@ public class VirtualGuestToHardware implements Function<VirtualGuest, Hardware> 
 
    @Override
    public Hardware apply(final VirtualGuest from) {
-       HardwareBuilder builder = new HardwareBuilder().ids(from.getId() + "")
+      HardwareBuilder builder = new HardwareBuilder().ids(from.getId() + "")
               .name(from.getHostname())
               .hypervisor("XenServer")
               .processors(ImmutableList.of(new Processor(from.getStartCpus(), 0)))
               .ram(from.getMaxMemory());
 
-      if(from.getVirtualGuestBlockDevices() != null) {
-              builder.volumes(
-                      FluentIterable.from(from.getVirtualGuestBlockDevices()).filter(new Predicate<VirtualGuestBlockDevice>() {
-                         @Override
-                         public boolean apply(VirtualGuestBlockDevice input) {
-                            return input.getMountType().equals("Disk");
-                         }
-                      })
-                      .transform(new Function<VirtualGuestBlockDevice, Volume>() {
-                         @Override
-                         public Volume apply(VirtualGuestBlockDevice item) {
-                            float volumeSize = item.getVirtualDiskImage().getCapacity();
-                            return new VolumeImpl(
-                                    item.getId() + "",
-                                    from.isLocalDiskFlag() ? Volume.Type.LOCAL : Volume.Type.SAN,
-                                    volumeSize, null, item.getBootableFlag() == 1, false);
-                         }
-                      }).toSet());
+      if (from.getVirtualGuestBlockDevices() != null) {
+         builder.volumes(
+                 FluentIterable.from(from.getVirtualGuestBlockDevices()).filter(new Predicate<VirtualGuestBlockDevice>() {
+                    @Override
+                    public boolean apply(VirtualGuestBlockDevice input) {
+                       return input.getMountType().equals("Disk");
+                    }
+                 })
+                         .transform(new Function<VirtualGuestBlockDevice, Volume>() {
+                            @Override
+                            public Volume apply(VirtualGuestBlockDevice item) {
+                               float volumeSize = item.getVirtualDiskImage().getCapacity();
+                               return new VolumeImpl(
+                                       item.getId() + "",
+                                       from.isLocalDiskFlag() ? Volume.Type.LOCAL : Volume.Type.SAN,
+                                       volumeSize, null, item.getBootableFlag() == 1, false);
+                            }
+                         }).toSet());
       }
       return builder.build();
    }

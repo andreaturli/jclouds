@@ -23,7 +23,9 @@ import org.jclouds.softlayer.parse.GetDatacenterResponseTest;
 import org.jclouds.softlayer.parse.ListDatacentersResponseTest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.*;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
 
 /**
  * Tests annotation parsing of {@code DatacenterAsyncClient}

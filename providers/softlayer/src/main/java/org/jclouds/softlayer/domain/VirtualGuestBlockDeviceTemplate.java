@@ -20,6 +20,8 @@ import com.google.common.base.Objects;
 
 import java.beans.ConstructorProperties;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Class VirtualGuestBlockDeviceTemplate
  *
@@ -134,18 +136,16 @@ public class VirtualGuestBlockDeviceTemplate {
    private final String units;
    private final VirtualDiskImage diskImage;
 
-   @ConstructorProperties({
-           "id", "device", "diskImageId", "diskSpace", "groupId", "units", "diskImage"
-   })
+   @ConstructorProperties({ "id", "device", "diskImageId", "diskSpace", "groupId", "units", "diskImage" })
    protected VirtualGuestBlockDeviceTemplate(int id, String device, int diskImageId, float diskSpace, int groupId,
                                              String units, VirtualDiskImage diskImage) {
       this.id = id;
-      this.device = device;
+      this.device = checkNotNull(device, "device");
       this.diskImageId = diskImageId;
       this.diskSpace = diskSpace;
       this.groupId = groupId;
       this.units = units;
-      this.diskImage = diskImage;
+      this.diskImage = checkNotNull(diskImage, "diskImage");
    }
 
    public int getId() {
@@ -199,14 +199,14 @@ public class VirtualGuestBlockDeviceTemplate {
 
    @Override
    public String toString() {
-      return "VirtualGuestBlockDeviceTemplate{" +
-              "id=" + id +
-              ", device='" + device + '\'' +
-              ", diskImageId=" + diskImageId +
-              ", diskSpace='" + Float.toString(diskSpace) + '\'' +
-              ", groupId='" + groupId + '\'' +
-              ", units=" + units +
-              ", diskImage=" + diskImage +
-              "}";
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("device", device)
+              .add("diskImageId", diskImageId)
+              .add("diskSpace", diskSpace)
+              .add("groupId", groupId)
+              .add("units", units)
+              .add("diskImage", diskImage)
+              .toString();
    }
 }

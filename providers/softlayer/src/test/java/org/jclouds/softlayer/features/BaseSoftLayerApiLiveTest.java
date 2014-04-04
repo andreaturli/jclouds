@@ -21,7 +21,7 @@ import org.jclouds.softlayer.SoftLayerApi;
 import org.testng.annotations.Test;
 
 /**
- * Tests behavior of {@code SoftLayerClient}
+ * Tests behavior of {@code SoftLayerApi}
  * 
  * @author Adrian Cole
  */

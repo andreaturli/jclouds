@@ -16,16 +16,14 @@
  */
 package org.jclouds.softlayer.domain;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
+import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
 import java.util.Set;
 
-import org.jclouds.javax.annotation.Nullable;
-
-import com.google.common.base.Objects;
-import com.google.common.base.Objects.ToStringHelper;
-import com.google.common.collect.ImmutableSet;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Class Datacenter
@@ -197,4 +195,14 @@ public class Datacenter {
       return Objects.hashCode(id, name, longName, locationAddress, regions);
    }
 
+   @Override
+   public String toString() {
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("name", name)
+              .add("longName", longName)
+              .add("locationAddress", locationAddress)
+              .add("regions", regions)
+              .toString();
+   }
 }

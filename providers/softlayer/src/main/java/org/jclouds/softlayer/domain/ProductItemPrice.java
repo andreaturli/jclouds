@@ -18,6 +18,10 @@ package org.jclouds.softlayer.domain;
 
 import com.google.common.base.Objects;
 
+import java.beans.ConstructorProperties;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Product_Item_Price"
  * @author Andrea Turli
@@ -29,12 +33,12 @@ public class ProductItemPrice {
    private final String recurringFee;
    private final ProductItem item;
 
-
-   public ProductItemPrice(int id, int hourlyRecurringFee, String recurringFee, ProductItem item) {
-      this.id = id;
+   @ConstructorProperties({"id", "hourlyRecurringFee", "recurringFee", "item"})
+   public ProductItemPrice(int id, float hourlyRecurringFee, String recurringFee, ProductItem item) {
+      this.id = checkNotNull(id, "id");
       this.hourlyRecurringFee = hourlyRecurringFee;
-      this.recurringFee = recurringFee;
-      this.item = item;
+      this.recurringFee = checkNotNull(recurringFee, "recurringFee");
+      this.item = checkNotNull(item, "item");
    }
 
    public int getId() {
@@ -74,11 +78,70 @@ public class ProductItemPrice {
 
    @Override
    public String toString() {
-      return "ProductItemPrice{" +
-              "id=" + id +
-              ", hourlyRecurringFee=" + hourlyRecurringFee +
-              ", recurringFee='" + recurringFee + '\'' +
-              ", item=" + item +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("hourlyRecurringFee", hourlyRecurringFee)
+              .add("recurringFee", recurringFee)
+              .add("item", item)
+              .toString();
+   }
+
+   public static Builder builder() {
+      return new Builder();
+   }
+
+   public Builder toBuilder() {
+      return builder().fromProductItemPrice(this);
+   }
+
+   public static class Builder {
+      private int id;
+      private float hourlyRecurringFee;
+      private String recurringFee;
+      private ProductItem item;
+
+      /**
+       * @see ProductItemPrice#getId()
+       */
+      public Builder id(int id) {
+         this.id = id;
+         return this;
+      }
+
+      /**
+       * @see ProductItemPrice#getHourlyRecurringFee()
+       */
+      public Builder hourlyRecurringFee(float hourlyRecurringFee) {
+         this.hourlyRecurringFee = hourlyRecurringFee;
+         return this;
+      }
+
+      /**
+       * @see ProductItemPrice#getRecurringFee()
+       */
+      public Builder recurringFee(String recurringFee) {
+         this.recurringFee = recurringFee;
+         return this;
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.ProductItemPrice#getItem()
+       */
+      public Builder item(ProductItem item) {
+         this.item = item;
+         return this;
+      }
+
+      public ProductItemPrice build() {
+         return new ProductItemPrice(id, hourlyRecurringFee, recurringFee, item);
+      }
+
+      public Builder fromProductItemPrice(ProductItemPrice in) {
+         return this
+                 .id(in.getId())
+                 .hourlyRecurringFee(in.getHourlyRecurringFee())
+                 .recurringFee(in.getRecurringFee())
+                 .item(in.getItem());
+      }
    }
 }

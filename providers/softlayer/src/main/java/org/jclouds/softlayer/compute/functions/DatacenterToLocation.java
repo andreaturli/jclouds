@@ -16,11 +16,10 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.nullToEmpty;
-
-import javax.inject.Inject;
-
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
@@ -28,10 +27,10 @@ import org.jclouds.location.suppliers.all.JustProvider;
 import org.jclouds.softlayer.domain.Address;
 import org.jclouds.softlayer.domain.Datacenter;
 
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
+import javax.inject.Inject;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.nullToEmpty;
 
 /**
  * Converts an Datacenter into a Location.
@@ -57,7 +56,7 @@ public class  DatacenterToLocation implements Function<Datacenter,Location> {
    }
 
    private Iterable<String> createIso3166Codes(Address address) {
-      if (address== null) return ImmutableSet.<String> of();
+      if (address == null) return ImmutableSet.<String> of();
 
       final String country = nullToEmpty(address.getCountry()).trim();
       if (country.isEmpty()) return ImmutableSet.<String> of();

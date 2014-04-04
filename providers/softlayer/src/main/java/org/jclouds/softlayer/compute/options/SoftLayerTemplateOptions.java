@@ -18,7 +18,6 @@ package org.jclouds.softlayer.compute.options;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.net.InternetDomainName;
 import org.jclouds.compute.options.TemplateOptions;
 
@@ -27,12 +26,11 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.emptyToNull;
 
 /**
  * Contains options supported by the
- * {@link ComputeService#createNodesInGroup(String, int, TemplateOptions)} and
- * {@link ComputeService#createNodesInGroup(String, int, TemplateOptions)}
+ * {@link org.jclouds.compute.ComputeService#createNodesInGroup(String, int, TemplateOptions)} and
+ * {@link org.jclouds.compute.ComputeService#createNodesInGroup(String, int, TemplateOptions)}
  * operations on the <em>gogrid</em> provider.
  * 
  * <h2>Usage</h2> The recommended way to instantiate a
@@ -54,6 +52,8 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
 
    protected String domainName = "jclouds.org";
    protected Optional<List<Integer>> blockDevices = Optional.absent();
+   protected Optional<String> diskType = Optional.absent();
+   protected Optional<Integer> portSpeed = Optional.absent();
 
    @Override
    public SoftLayerTemplateOptions clone() {
@@ -68,6 +68,15 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
       if (to instanceof SoftLayerTemplateOptions) {
          SoftLayerTemplateOptions eTo = SoftLayerTemplateOptions.class.cast(to);
          eTo.domainName(domainName);
+         if(blockDevices.isPresent()) {
+            eTo.blockDevices(blockDevices.get());
+         }
+         if(diskType.isPresent()) {
+            eTo.diskType(diskType.get());
+         }
+         if(portSpeed.isPresent()) {
+            eTo.portSpeed(portSpeed.get());
+         }
       }
    }
 
@@ -75,7 +84,7 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
     * will replace the default domain used when ordering virtual guests. Note
     * this needs to contain a public suffix!
     * 
-    * @see org.jclouds.softlayer.features.VirtualGuestApi#createObject(org.jclouds.softlayer.domain.VirtualGuest)
+    * @see org.jclouds.softlayer.features.VirtualGuestApi#createVirtualGuest(org.jclouds.softlayer.domain.VirtualGuest)
     * @see InternetDomainName#hasPublicSuffix
     */
    public TemplateOptions domainName(String domainName) {
@@ -97,12 +106,32 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
       return blockDevices(ImmutableList.copyOf(checkNotNull(capacities, "capacities")));
    }
 
+   public TemplateOptions diskType(String diskType) {
+      checkNotNull(diskType, "diskType was null");
+      this.diskType = Optional.of(diskType);
+      return this;
+   }
+
+   public TemplateOptions portSpeed(Integer portSpeed) {
+      checkNotNull(portSpeed, "portSpeed was null");
+      this.portSpeed = Optional.of(portSpeed);
+      return this;
+   }
+
    public String getDomainName() {
       return domainName;
    }
 
    public Optional<List<Integer>> getBlockDevices() {
       return blockDevices;
+   }
+
+   public Optional<String> getDiskType() {
+      return diskType;
+   }
+
+   public Optional<Integer> getPortSpeed() {
+      return portSpeed;
    }
 
    public static final SoftLayerTemplateOptions NONE = new SoftLayerTemplateOptions();
@@ -128,6 +157,22 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
       public static SoftLayerTemplateOptions blockDevices(Iterable<Integer> capacities) {
          SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
          return SoftLayerTemplateOptions.class.cast(options.blockDevices(capacities));
+      }
+
+      /**
+       * @see #diskType
+       */
+      public static SoftLayerTemplateOptions diskType(String diskType) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.diskType(diskType));
+      }
+
+      /**
+       * @see #portSpeed
+       */
+      public static SoftLayerTemplateOptions portSpeed(Integer portSpeed) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.portSpeed(portSpeed));
       }
 
       // methods that only facilitate returning the correct object type

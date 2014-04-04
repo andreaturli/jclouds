@@ -43,7 +43,8 @@ import java.util.Set;
 public interface AccountApi {
 
    public static String GUEST_MASK = "children.blockDevices.diskImage.softwareReferences.softwareDescription";
-   public static String LIST_GUEST_MASK = "powerState;operatingSystem.passwords;datacenter;billingItem;blockDevices.diskImage";
+   public static String LIST_GUEST_MASK = "powerState;operatingSystem.passwords;datacenter;billingItem;blockDevices" +
+           ".diskImage;tagReferences";
 
    /**
     * @return an account's associated virtual guest objects.

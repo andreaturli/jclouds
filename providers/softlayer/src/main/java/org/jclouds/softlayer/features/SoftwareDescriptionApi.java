@@ -33,7 +33,7 @@ import java.util.Set;
  * Provides access to Software_Description via their REST API.
  * <p/>
  *
- * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Software_Description" />
+ * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Software_Description" />
  * @author Adrian Cole
  * @author Andrea Turli
  */

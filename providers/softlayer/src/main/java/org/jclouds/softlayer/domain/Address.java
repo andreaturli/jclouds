@@ -17,6 +17,7 @@
 package org.jclouds.softlayer.domain;
 
 import com.google.common.base.Objects;
+import com.google.inject.name.Named;
 import org.jclouds.javax.annotation.Nullable;
 
 import java.beans.ConstructorProperties;
@@ -49,6 +50,7 @@ public class Address {
       protected String state;
       protected String description;
       protected int accountId;
+      @Named("address1")
       protected String address;
       protected String city;
       protected String contactName;
@@ -188,9 +190,9 @@ public class Address {
          "id", "country", "state", "description", "accountId", "address1", "city", "contactName", "isActive",
            "locationId", "postalCode"
    })
-   protected Address(int id, String country, @Nullable String state, @Nullable String description, @Nullable int accountId,
+   protected Address(int id, String country, @Nullable String state, @Nullable String description, int accountId,
                      @Nullable String address, @Nullable String city, @Nullable String contactName,
-                     @Nullable int isActive, @Nullable int locationId, @Nullable String postalCode) {
+                     int isActive, int locationId, @Nullable String postalCode) {
       this.id = checkNotNull(id, "id");
       this.accountId = checkNotNull(accountId, "accountId");
       this.address = address;
@@ -305,18 +307,18 @@ public class Address {
 
    @Override
    public String toString() {
-      return "Address{" +
-              "id=" + id +
-              ", country='" + country + '\'' +
-              ", state='" + state + '\'' +
-              ", description='" + description + '\'' +
-              ", accountId=" + accountId +
-              ", address='" + address + '\'' +
-              ", city='" + city + '\'' +
-              ", contactName='" + contactName + '\'' +
-              ", isActive=" + isActive +
-              ", locationId=" + locationId +
-              ", postalCode='" + postalCode + '\'' +
-              '}';
+      return Objects.toStringHelper(this)
+              .add("id", id)
+              .add("country", country)
+              .add("state", state)
+              .add("description", description)
+              .add("accountId", accountId)
+              .add("address", address)
+              .add("city", city)
+              .add("contactName", contactName)
+              .add("isActive", isActive)
+              .add("locationId", locationId)
+              .add("postalCode", postalCode)
+              .toString();
    }
 }
