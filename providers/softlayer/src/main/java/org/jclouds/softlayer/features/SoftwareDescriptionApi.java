@@ -16,6 +16,13 @@
  */
 package org.jclouds.softlayer.features;
 
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.MediaType;
+
 import org.jclouds.Fallbacks;
 import org.jclouds.http.filters.BasicAuthentication;
 import org.jclouds.rest.annotations.Fallback;
@@ -23,19 +30,10 @@ import org.jclouds.rest.annotations.QueryParams;
 import org.jclouds.rest.annotations.RequestFilters;
 import org.jclouds.softlayer.domain.SoftwareDescription;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-import java.util.Set;
-
 /**
  * Provides access to Software_Description via their REST API.
  * <p/>
- *
  * @see <a href="http://sldn.softlayer.com/reference/services/SoftLayer_Software_Description" />
- * @author Adrian Cole
- * @author Andrea Turli
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")

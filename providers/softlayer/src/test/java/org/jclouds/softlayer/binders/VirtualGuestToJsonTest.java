@@ -16,7 +16,8 @@
  */
 package org.jclouds.softlayer.binders;
 
-import com.google.gson.Gson;
+import static org.testng.Assert.assertEquals;
+
 import org.jclouds.http.HttpRequest;
 import org.jclouds.json.Json;
 import org.jclouds.json.internal.GsonWrapper;
@@ -27,12 +28,8 @@ import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
+import com.google.gson.Gson;
 
-/**
- * 
- * @author Andrea Turli
- */
 @Test(groups = "unit", testName = "VirtualGuestToJsonTest")
 public class VirtualGuestToJsonTest {
 

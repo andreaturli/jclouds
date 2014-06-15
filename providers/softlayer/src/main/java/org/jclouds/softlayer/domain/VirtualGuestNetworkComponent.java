@@ -16,17 +16,15 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import org.jclouds.javax.annotation.Nullable;
-
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
 
 /**
  * Class VirtualGuestBlockDeviceTemplateGroup
  *
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest_Network_Component"/>
  */
 public class VirtualGuestNetworkComponent {
@@ -151,20 +149,19 @@ public class VirtualGuestNetworkComponent {
    private final int speed;
    private final String status;
 
-   @ConstructorProperties({ "id", "uuid", "guestId", "networkId", "macAddress", "maxSpeed", "name", "port", "speed",
-           "status" })
-   protected VirtualGuestNetworkComponent(int id, String uuid, int guestId,  int networkId, @Nullable String macAddress,
+   @ConstructorProperties({ "id", "uuid", "guestId", "networkId", "macAddress", "maxSpeed", "name", "port", "speed", "status" })
+   protected VirtualGuestNetworkComponent(int id, String uuid, int guestId, int networkId, @Nullable String macAddress,
                                           int maxSpeed, @Nullable String name, int port, int speed,
                                           @Nullable String status) {
-      this.id = checkNotNull(id, "id");
+      this.id = id;
       this.uuid = uuid;
-      this.guestId = checkNotNull(guestId, "guestId");
-      this.networkId = checkNotNull(networkId, "networkId");
+      this.guestId = guestId;
+      this.networkId = networkId;
       this.macAddress = macAddress;
-      this.maxSpeed = checkNotNull(maxSpeed, "maxSpeed");
+      this.maxSpeed = maxSpeed;
       this.name = name;
-      this.port = checkNotNull(port, "port");
-      this.speed = checkNotNull(speed, "speed");
+      this.port = port;
+      this.speed = speed;
       this.status = status;
    }
 

@@ -16,15 +16,11 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Objects;
 
-/**
- * @author Andrea Turli
- */
 public class Tag {
    private final int accountId;
    private final int id;
@@ -33,9 +29,9 @@ public class Tag {
 
    @ConstructorProperties({"accountId", "id", "internal", "name"} )
    public Tag(int accountId, int id, int internal, String name) {
-      this.accountId = checkNotNull(accountId, "accountId");
-      this.id = checkNotNull(id, "id");
-      this.internal = checkNotNull(internal, "internal");
+      this.accountId = accountId;
+      this.id = id;
+      this.internal = internal;
       this.name = checkNotNull(name, "name");
    }
 

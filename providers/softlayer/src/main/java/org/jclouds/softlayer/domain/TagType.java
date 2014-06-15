@@ -16,13 +16,10 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-
 import java.beans.ConstructorProperties;
 
-/**
- * @author Andrea Turli
- */
+import com.google.common.base.Objects;
+
 public class TagType {
    private final String keyName;
    private final String description;

@@ -16,20 +16,19 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import org.jclouds.javax.annotation.Nullable;
-
-import java.beans.ConstructorProperties;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
+import java.beans.ConstructorProperties;
+
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
 
 /**
  * A region is made up of a keyname and a description of that region.
  * A region keyname can be used as part of an order.
  * Check the SoftLayer_Product_Order service for more details.
  *
- * @author Jason King
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Location_Region"
  *      />
  */

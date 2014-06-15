@@ -16,16 +16,16 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.CaseFormat;
-import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
-import org.jclouds.javax.annotation.Nullable;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 import java.util.Date;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.CaseFormat;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The virtual guest data type presents the structure in which all virtual guests will be presented.
@@ -45,7 +45,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Combining the hostname, followed by a period '.', followed by the domain gives the FQDN (fully qualified domain name),
  * which may not exceed 253 characters in total length.
  *
- * @author Adrian Cole
  * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest"/>
  */
 public class VirtualGuest {

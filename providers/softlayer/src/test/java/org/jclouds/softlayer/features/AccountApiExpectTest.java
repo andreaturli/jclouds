@@ -16,7 +16,9 @@
  */
 package org.jclouds.softlayer.features;
 
-import com.google.common.collect.Iterables;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpResponse;
 import org.jclouds.softlayer.SoftLayerApi;
@@ -24,12 +26,8 @@ import org.jclouds.softlayer.parse.GetVirtualGuestBlockDeviceTemplateGroupsRespo
 import org.jclouds.softlayer.parse.ListVirtualGuestsResponseTest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import com.google.common.collect.Iterables;
 
-/**
- * @author Andrea Turli
- */
 @Test(groups = "unit", testName = "AccountApiExpectTest")
 public class AccountApiExpectTest extends BaseSoftLayerApiExpectTest {
 

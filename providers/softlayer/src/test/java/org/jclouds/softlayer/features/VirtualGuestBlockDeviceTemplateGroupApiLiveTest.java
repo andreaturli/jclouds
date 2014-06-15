@@ -16,17 +16,14 @@
  */
 package org.jclouds.softlayer.features;
 
+import static org.testng.Assert.assertNotNull;
+import java.util.Set;
+
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 import org.testng.annotations.Test;
 
-import java.util.Set;
-
-import static org.testng.Assert.assertNotNull;
-
 /**
  * Tests behavior of {@code VirtualGuestBlockDeviceTemplateGroupApi}
- *
- * @author Andrea Turli
  */
 @Test(groups = "live")
 public class VirtualGuestBlockDeviceTemplateGroupApiLiveTest extends BaseSoftLayerApiLiveTest {

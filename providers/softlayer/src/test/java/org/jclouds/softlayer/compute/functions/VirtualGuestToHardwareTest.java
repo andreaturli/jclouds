@@ -16,21 +16,20 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
-import com.google.common.collect.Iterables;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
+import com.google.common.collect.Iterables;
 
 /**
  * Tests the function that transforms SoftLayer VirtualGuest to generic hardware.
- * 
- * @author Andrea Turli
  */
 @Test(testName = "VirtualGuestToHardwareTest")
 public class VirtualGuestToHardwareTest {

@@ -16,19 +16,18 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
-import org.jclouds.javax.annotation.Nullable;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Class VirtualDiskImage
  *
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Disk_Image"/>
  */
 public class VirtualDiskImage {
@@ -173,10 +172,10 @@ public class VirtualDiskImage {
       this.uuid = uuid;
       this.capacity = capacity;
       this.units = units;
-      this.typeId = checkNotNull(typeId, "typeId");
+      this.typeId = typeId;
       this.description = description;
       this.name = name;
-      this.storageRepositoryId = checkNotNull(storageRepositoryId, "storageRepositoryId");
+      this.storageRepositoryId = storageRepositoryId;
       this.softwareReferences = softwareReferences  == null ? ImmutableSet.<VirtualDiskImageSoftware>of() :
               ImmutableSet.copyOf(softwareReferences);
    }

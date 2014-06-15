@@ -16,12 +16,13 @@
  */
 package org.jclouds.softlayer.binders;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
+import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.inject.Inject;
+
 import org.jclouds.http.HttpRequest;
 import org.jclouds.json.Json;
 import org.jclouds.rest.Binder;
@@ -29,18 +30,17 @@ import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
 import org.jclouds.softlayer.domain.VirtualGuestNetworkComponent;
 
-import javax.inject.Inject;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 
 /**
  * Converts a VirtualGuest into a json string valid for creating a CCI via softlayer api
  * The string is set into the payload of the HttpRequest
  * 
- * @author Andrea Turli
  */
 public class VirtualGuestToJson implements Binder {
 

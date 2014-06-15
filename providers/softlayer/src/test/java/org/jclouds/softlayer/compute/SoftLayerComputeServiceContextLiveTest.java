@@ -16,8 +16,12 @@
  */
 package org.jclouds.softlayer.compute;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import static org.testng.Assert.assertEquals;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.inject.Named;
+
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.RunNodesException;
@@ -38,15 +42,9 @@ import org.jclouds.ssh.SshClient;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.testng.annotations.Test;
 
-import javax.annotation.Resource;
-import javax.inject.Named;
-import java.util.Set;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
-import static org.testng.Assert.assertEquals;
-
-/**
- * @author Andrea Turli
- */
 @Test(groups = "live", testName = "SoftLayerComputeServiceContextLiveTest")
 public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceContextLiveTest {
 

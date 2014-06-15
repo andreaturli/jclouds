@@ -16,24 +16,22 @@
  */
 package org.jclouds.softlayer;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Module;
+import static org.jclouds.reflect.Reflection2.typeToken;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.SOFTLAYER_PROVIDER_NAME;
+import java.net.URI;
+import java.util.Properties;
+
 import org.jclouds.apis.ApiMetadata;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.rest.internal.BaseHttpApiMetadata;
 import org.jclouds.softlayer.compute.config.SoftLayerComputeServiceContextModule;
 import org.jclouds.softlayer.config.SoftLayerHttpApiModule;
 
-import java.net.URI;
-import java.util.Properties;
-
-import static org.jclouds.reflect.Reflection2.typeToken;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.SOFTLAYER_PROVIDER_NAME;
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Module;
 
 /**
  * Implementation of {@link ApiMetadata} for API
- * 
- * @author Andrea Turli
  */
 public class SoftLayerApiMetadata extends BaseHttpApiMetadata<SoftLayerApi> {
 

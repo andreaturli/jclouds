@@ -16,20 +16,18 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import com.google.inject.name.Named;
-import org.jclouds.javax.annotation.Nullable;
-
-import java.beans.ConstructorProperties;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
+import java.beans.ConstructorProperties;
+
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
+import com.google.inject.name.Named;
 
 /**
  * Class Address
  *
- * @author Jason King
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Account_Address"/>
  */
 public class Address {
@@ -193,7 +191,7 @@ public class Address {
    protected Address(int id, String country, @Nullable String state, @Nullable String description, int accountId,
                      @Nullable String address, @Nullable String city, @Nullable String contactName,
                      int isActive, int locationId, @Nullable String postalCode) {
-      this.id = checkNotNull(id, "id");
+      this.id = id;
       this.accountId = checkNotNull(accountId, "accountId");
       this.address = address;
       this.city = city;

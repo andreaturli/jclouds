@@ -24,9 +24,6 @@ import org.jclouds.compute.domain.OsFamily;
 
 import static com.google.common.collect.Iterables.getLast;
 
-/**
- * @author Andrea Turli
- */
 public class OperatingSystems {
 
    private static final String CENTOS = "CENTOS";

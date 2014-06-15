@@ -16,7 +16,13 @@
  */
 package org.jclouds.softlayer.features;
 
-import com.google.common.collect.ImmutableSet;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
+import static org.testng.Assert.assertTrue;
+
+import javax.ws.rs.core.MediaType;
+
 import org.jclouds.http.HttpRequest;
 import org.jclouds.http.HttpResponse;
 import org.jclouds.softlayer.SoftLayerApi;
@@ -28,16 +34,8 @@ import org.jclouds.softlayer.parse.GetCreateObjectOptionsResponseTest;
 import org.jclouds.softlayer.parse.GetVirtualGuestResponseTest;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.core.MediaType;
+import com.google.common.collect.ImmutableSet;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNull;
-import static org.testng.Assert.assertTrue;
-
-/**
- * @author Andrea Turli
- */
 @Test(groups = "unit", testName = "VirtualGuestApiExpectTest")
 public class VirtualGuestApiExpectTest extends BaseSoftLayerApiExpectTest {
 

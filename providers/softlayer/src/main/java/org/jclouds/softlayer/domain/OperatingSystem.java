@@ -16,20 +16,18 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
-import org.jclouds.javax.annotation.Nullable;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Extends the SoftLayer_Software_Component data type to include operating system specific properties.
  *
- * @author Jason King
- * @author Andrea Turli
  * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Software_Component_OperatingSystem"/>
  */
 public class OperatingSystem {

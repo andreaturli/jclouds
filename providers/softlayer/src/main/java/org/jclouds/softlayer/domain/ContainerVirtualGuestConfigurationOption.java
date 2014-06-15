@@ -16,16 +16,15 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import com.google.inject.name.Named;
-import org.jclouds.javax.annotation.Nullable;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
+import com.google.inject.name.Named;
 
 /**
- * @author Andrea Turli
  * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Container_Virtual_Guest_Configuration_Option"/>
  */
 public class ContainerVirtualGuestConfigurationOption {

@@ -16,12 +16,11 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import org.jclouds.javax.annotation.Nullable;
-
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
 
 public class SoftwareDescription {
    public static Builder builder() {
@@ -185,7 +184,7 @@ public class SoftwareDescription {
                                  @Nullable String requiredUser, @Nullable String version, int controlPanel,
                                  @Nullable String upgradeSoftwareDescriptionId, @Nullable String upgradeSwDescId,
                                  @Nullable String virtualLicense, @Nullable String virtualizationPlatform) {
-      this.id = checkNotNull(id, "id");
+      this.id = id;
       this.longDescription = longDescription;
       this.manufacturer = manufacturer;
       this.name = name;

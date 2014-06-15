@@ -16,8 +16,12 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
-import com.google.common.base.Function;
-import com.google.inject.Inject;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import javax.annotation.Resource;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.ImageBuilder;
 import org.jclouds.compute.domain.OperatingSystem;
@@ -26,15 +30,9 @@ import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.logging.Logger;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
-import javax.annotation.Resource;
-import javax.inject.Named;
-import javax.inject.Singleton;
+import com.google.common.base.Function;
+import com.google.inject.Inject;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-/**
- * @author Andrea Turli
- */
 @Singleton
 public class VirtualGuestToImage implements Function<VirtualGuest, Image> {
 

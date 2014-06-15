@@ -16,24 +16,24 @@
  */
 package org.jclouds.softlayer.binders;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.jclouds.http.HttpRequest;
 import org.jclouds.json.Json;
 import org.jclouds.rest.Binder;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Converts a Tag into a json string valid for creating a CCI via softlayer api
  * The string is set into the payload of the HttpRequest
  * 
- * @author Andrea Turli
  */
 @Singleton
 public class TagToJson implements Binder {

@@ -16,16 +16,14 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Objects;
 
 /**
  * Class VirtualGuestBlockDeviceTemplate
  *
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest_Block_Device_Template"/>
  */
 public class VirtualGuestBlockDeviceTemplate {

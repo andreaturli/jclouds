@@ -16,6 +16,10 @@
  */
 package org.jclouds.softlayer.domain;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import java.beans.ConstructorProperties;
+import java.util.Set;
+
 import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
@@ -24,13 +28,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
-import java.beans.ConstructorProperties;
-import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Container_Virtual_Guest_Configuration"/
  * *
  */

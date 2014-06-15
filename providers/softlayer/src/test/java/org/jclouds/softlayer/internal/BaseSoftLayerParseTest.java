@@ -16,16 +16,13 @@
  */
 package org.jclouds.softlayer.internal;
 
-        import org.jclouds.json.BaseItemParserTest;
-        import org.jclouds.json.config.GsonModule;
+import org.jclouds.json.BaseItemParserTest;
+import org.jclouds.json.config.GsonModule;
+import org.jclouds.softlayer.config.SoftLayerParserModule;
 
-        import com.google.inject.Guice;
-        import com.google.inject.Injector;
-        import org.jclouds.softlayer.config.SoftLayerParserModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
-/**
- * @author Andrea Turli
- */
 public abstract class BaseSoftLayerParseTest<T> extends BaseItemParserTest<T> {
 
    @Override

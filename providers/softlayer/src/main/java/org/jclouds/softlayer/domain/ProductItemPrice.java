@@ -16,15 +16,13 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Objects;
 
 /**
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Product_Item_Price"
- * @author Andrea Turli
  */
 public class ProductItemPrice {
 
@@ -35,7 +33,7 @@ public class ProductItemPrice {
 
    @ConstructorProperties({"id", "hourlyRecurringFee", "recurringFee", "item"})
    public ProductItemPrice(int id, float hourlyRecurringFee, String recurringFee, ProductItem item) {
-      this.id = checkNotNull(id, "id");
+      this.id = id;
       this.hourlyRecurringFee = hourlyRecurringFee;
       this.recurringFee = checkNotNull(recurringFee, "recurringFee");
       this.item = checkNotNull(item, "item");

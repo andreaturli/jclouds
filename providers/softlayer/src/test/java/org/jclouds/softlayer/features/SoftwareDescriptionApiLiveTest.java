@@ -16,18 +16,15 @@
  */
 package org.jclouds.softlayer.features;
 
+import static org.testng.Assert.assertNotNull;
+import static org.testng.Assert.assertTrue;
+import java.util.Set;
+
 import org.jclouds.softlayer.domain.SoftwareDescription;
 import org.testng.annotations.Test;
 
-import java.util.Set;
-
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-
 /**
  * Tests behavior of {@code SoftwareDescriptionApi}
- *
- * @author Andrea Turli
  */
 @Test(groups = "live")
 public class SoftwareDescriptionApiLiveTest extends BaseSoftLayerApiLiveTest {

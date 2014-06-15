@@ -16,14 +16,12 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import org.jclouds.javax.annotation.Nullable;
-
 import java.beans.ConstructorProperties;
 
-/**
- * @author Andrea Turli
- */
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
+
 public class VirtualDiskImageSoftware {
 
    public static Builder builder() {

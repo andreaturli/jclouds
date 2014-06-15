@@ -16,7 +16,9 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
-import com.google.inject.Guice;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNotNull;
+
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.OsFamily;
 import org.jclouds.softlayer.domain.Datacenter;
@@ -26,13 +28,10 @@ import org.jclouds.softlayer.domain.SoftwareLicense;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import com.google.inject.Guice;
 
 /**
  * Tests the function that transforms SoftLayer VirtualGuest to generic image.
- * 
- * @author Andrea Turli
  */
 @Test(testName = "VirtualGuestToImageTest")
 public class VirtualGuestToImageTest {

@@ -16,15 +16,13 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import org.jclouds.javax.annotation.Nullable;
-
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
 
 /**
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Tag_Reference"/>
  */
 public class TagReference {
@@ -40,11 +38,11 @@ public class TagReference {
    @ConstructorProperties({"id", "usrRecordId", "tagTypeId", "tagId", "resourceTableId", "empRecordId", "tag", "tagType"} )
    public TagReference(int id, int usrRecordId, int tagTypeId, int tagId, int resourceTableId, int empRecordId,
                        @Nullable Tag tag, @Nullable TagType tagType) {
-      this.id = checkNotNull(id, "id");
-      this.usrRecordId = checkNotNull(usrRecordId, "usrRecordId");
-      this.tagTypeId = checkNotNull(tagTypeId, "tagTypeId");
-      this.tagId = checkNotNull(tagId, "tagId");
-      this.resourceTableId = checkNotNull(resourceTableId, "resourceTableId");
+      this.id = id;
+      this.usrRecordId = usrRecordId;
+      this.tagTypeId = tagTypeId;
+      this.tagId = tagId;
+      this.resourceTableId = resourceTableId;
       this.empRecordId = empRecordId;
       this.tag = tag;
       this.tagType = tagType;

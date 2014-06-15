@@ -16,19 +16,18 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
-import org.jclouds.javax.annotation.Nullable;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Class VirtualGuestBlockDeviceTemplateGroup
  *
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest_Block_Device_Template_Group"/>
  */
 public class VirtualGuestBlockDeviceTemplateGroup {
@@ -167,12 +166,12 @@ public class VirtualGuestBlockDeviceTemplateGroup {
                                                   int statusId, int accountId,  int parentId, @Nullable String summary,
                                                   @Nullable Set<VirtualGuestBlockDeviceTemplateGroup> children,
                                                   @Nullable Set<VirtualGuestBlockDeviceTemplate> blockDevices) {
-      this.id = checkNotNull(id, "id");
+      this.id = id;
       this.name = name;
       this.globalIdentifier = globalIdentifier;
-      this.statusId = checkNotNull(statusId, "statusId");
-      this.accountId = checkNotNull(accountId, "accountId");
-      this.parentId = checkNotNull(parentId, "parentId");
+      this.statusId = statusId;
+      this.accountId = accountId;
+      this.parentId = parentId;
       this.summary = summary;
       this.children = children == null ? ImmutableSet.<VirtualGuestBlockDeviceTemplateGroup>of() :
               ImmutableSet.copyOf(children);

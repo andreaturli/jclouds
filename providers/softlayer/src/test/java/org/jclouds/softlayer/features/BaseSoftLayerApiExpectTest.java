@@ -21,10 +21,6 @@ import org.jclouds.rest.internal.BaseRestApiExpectTest;
 import org.jclouds.softlayer.SoftLayerApi;
 import org.jclouds.softlayer.SoftLayerProviderMetadata;
 
-/**
- * @author Adrian Cole
- * @author Andrea Turli
- */
 public abstract class BaseSoftLayerApiExpectTest extends BaseRestApiExpectTest<SoftLayerApi> {
 
    @Override

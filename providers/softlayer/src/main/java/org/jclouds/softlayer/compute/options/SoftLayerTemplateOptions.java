@@ -16,16 +16,16 @@
  */
 package org.jclouds.softlayer.compute.options;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
-import com.google.common.net.InternetDomainName;
-import org.jclouds.compute.options.TemplateOptions;
-
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.compute.options.TemplateOptions;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableList;
+import com.google.common.net.InternetDomainName;
 
 /**
  * Contains options supported by the
@@ -46,7 +46,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Set&lt;? extends NodeMetadata&gt; set = client.createNodesInGroup(tag, 2, templateBuilder.build());
  * </pre>
  * 
- * @author Adrian Cole
  */
 public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneable {
 

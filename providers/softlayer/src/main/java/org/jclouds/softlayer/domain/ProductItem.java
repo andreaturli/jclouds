@@ -16,16 +16,14 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import org.jclouds.javax.annotation.Nullable;
-
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
 
 /**
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Product_Item"
- * @author Andrea Turli
  */
 public class ProductItem {
 
@@ -37,7 +35,7 @@ public class ProductItem {
    @ConstructorProperties({"id", "description", "softwareDescriptionId", "softwareDescription"})
    public ProductItem(int id, @Nullable String description, @Nullable String softwareDescriptionId,
                       @Nullable SoftwareDescription softwareDescription) {
-      this.id = checkNotNull(id, "id");
+      this.id = id;
       this.description = description;
       this.softwareDescriptionId = softwareDescriptionId;
       this.softwareDescription = softwareDescription;

@@ -16,19 +16,17 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import org.jclouds.compute.domain.Image;
 import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.SoftwareDescription;
 import org.jclouds.softlayer.domain.SoftwareLicense;
 import org.testng.annotations.Test;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
-
 /**
  * Tests the function that transforms SoftLayer OperatingSystem to generic image.
- * 
- * @author Andrea Turli
  */
 @Test(testName = "OperatingSystemToImageTest")
 public class OperatingSystemToImageTest {

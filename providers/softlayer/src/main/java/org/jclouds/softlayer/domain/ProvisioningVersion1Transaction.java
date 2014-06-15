@@ -19,7 +19,6 @@ package org.jclouds.softlayer.domain;
 import com.google.common.base.Objects;
 
 /**
- * @author Andrea Turli
  * @see <a href="http://sldn.softlayer.com/reference/datatypes/SoftLayer_Provisioning_Version1_Transaction"/>
  */
 public class ProvisioningVersion1Transaction {

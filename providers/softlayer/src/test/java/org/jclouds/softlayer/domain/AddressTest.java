@@ -18,11 +18,6 @@ package org.jclouds.softlayer.domain;
 
 import org.testng.annotations.Test;
 
-/**
- * Tests {@code Address}
- *
- * @author Jason King
- */
 @Test(singleThreaded = true, groups = "unit")
 public class AddressTest {
 

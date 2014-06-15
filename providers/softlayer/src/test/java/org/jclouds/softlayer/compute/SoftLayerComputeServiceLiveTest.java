@@ -16,20 +16,19 @@
  */
 package org.jclouds.softlayer.compute;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.inject.Module;
+import java.util.Properties;
+
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.internal.BaseComputeServiceLiveTest;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.testng.annotations.Test;
 
-import java.util.Properties;
+import com.google.common.collect.ImmutableMap;
+import com.google.inject.Module;
 
 /**
  *
  * Generally disabled, as it incurs higher fees.
- *
- * @author Adrian Cole
  */
 @Test(groups = "live", enabled = true, singleThreaded = true)
 public class SoftLayerComputeServiceLiveTest extends BaseComputeServiceLiveTest {

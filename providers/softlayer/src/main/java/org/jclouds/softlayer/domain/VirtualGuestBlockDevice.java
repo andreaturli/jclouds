@@ -16,17 +16,16 @@
  */
 package org.jclouds.softlayer.domain;
 
-import com.google.common.base.Objects;
-import org.jclouds.javax.annotation.Nullable;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import java.beans.ConstructorProperties;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import org.jclouds.javax.annotation.Nullable;
+
+import com.google.common.base.Objects;
 
 /**
  * Class VirtualGuestBlockDevice
  *
- * @author Andrea Turli
  * @see <a href= "http://sldn.softlayer.com/reference/datatypes/SoftLayer_Virtual_Guest_Block_Device"/>
  */
 public class VirtualGuestBlockDevice {
@@ -154,12 +153,12 @@ public class VirtualGuestBlockDevice {
    protected VirtualGuestBlockDevice(int id, @Nullable String uuid, int statusId,  @Nullable String mountType,
                                      @Nullable String mountMode, int bootableFlag, String device,
                                      @Nullable VirtualDiskImage diskImage, @Nullable VirtualGuest guest) {
-      this.id = checkNotNull(id, "id");
+      this.id = id;
       this.uuid = uuid;
-      this.statusId = checkNotNull(statusId, "statusId");
+      this.statusId = statusId;
       this.mountType = mountType;
       this.mountMode = mountMode;
-      this.bootableFlag = checkNotNull(bootableFlag, "bootableFlag");
+      this.bootableFlag = bootableFlag;
       this.device = checkNotNull(device, "device");
       this.diskImage = diskImage;
       this.guest = guest;

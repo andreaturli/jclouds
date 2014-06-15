@@ -16,11 +16,13 @@
  */
 package org.jclouds.softlayer.compute.config;
 
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Supplier;
-import com.google.inject.Provides;
-import com.google.inject.TypeLiteral;
+import static org.jclouds.Constants.PROPERTY_SESSION_INTERVAL;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.jclouds.collect.Memoized;
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.config.ComputeServiceAdapterContextModule;
@@ -43,17 +45,12 @@ import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.base.Supplier;
+import com.google.inject.Provides;
+import com.google.inject.TypeLiteral;
 
-import static org.jclouds.Constants.PROPERTY_SESSION_INTERVAL;
-
-/**
- * 
- * @author Adrian Cole
- */
 public class SoftLayerComputeServiceContextModule extends
          ComputeServiceAdapterContextModule<VirtualGuest, Hardware, OperatingSystem, Datacenter> {
 
