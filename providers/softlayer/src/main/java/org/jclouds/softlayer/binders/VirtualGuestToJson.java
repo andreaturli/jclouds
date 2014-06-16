@@ -16,9 +16,9 @@
  */
 package org.jclouds.softlayer.binders;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -30,12 +30,10 @@ import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDevice;
 import org.jclouds.softlayer.domain.VirtualGuestNetworkComponent;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 
 /**
  * Converts a VirtualGuest into a json string valid for creating a CCI via softlayer api
@@ -53,7 +51,8 @@ public class VirtualGuestToJson implements Binder {
 
    @Override
    public <R extends HttpRequest> R bindToRequest(R request, Object input) {
-      VirtualGuest virtualGuest = VirtualGuest.class.cast(checkNotNull(input, "parameters"));
+      checkArgument(input instanceof VirtualGuest);
+      VirtualGuest virtualGuest = VirtualGuest.class.cast(checkNotNull(input, "input"));
       request.setPayload(buildJson(virtualGuest));
       return request;
    }
@@ -90,32 +89,25 @@ public class VirtualGuestToJson implements Binder {
    }
 
    private Set<BlockDevice> getBlockDevices(VirtualGuest virtualGuest) {
-      if (virtualGuest.getVirtualGuestBlockDevices() == null) return null;
-      Set<BlockDevice> set = FluentIterable.from(virtualGuest.getVirtualGuestBlockDevices())
-              .transform(new Function<VirtualGuestBlockDevice, BlockDevice>() {
-                 @Override
-                 public BlockDevice apply(VirtualGuestBlockDevice input) {
-                    return new BlockDevice(input.getDevice(), input.getVirtualDiskImage().getCapacity());
-                 }
-              })
-              .toSortedSet(new Comparator<BlockDevice>() {
-                 @Override
-                 public int compare(BlockDevice b1, BlockDevice b2) {
-                    return Integer.valueOf(b1.getDevice()).compareTo(Integer.valueOf(b2.getDevice()));
-                 }
-              });
-      return set;
+      if (virtualGuest.getVirtualGuestBlockDevices() == null) {
+         return null;
+      }
+      ImmutableSortedSet.Builder<BlockDevice> blockDevices = ImmutableSortedSet.orderedBy(new BlockDevicesComparator());
+      for (VirtualGuestBlockDevice blockDevice : virtualGuest.getVirtualGuestBlockDevices()) {
+         blockDevices.add(new BlockDevice(blockDevice.getDevice(), blockDevice.getVirtualDiskImage().getCapacity()));
+      }
+      return blockDevices.build();
    }
 
-   private HashSet<NetworkComponent> getNetworkComponents(VirtualGuest virtualGuest) {
-      if(virtualGuest.getVirtualGuestNetworkComponents() == null) return null;
-      return Sets.newHashSet(Iterables.transform(virtualGuest.getVirtualGuestNetworkComponents(),
-              new Function<VirtualGuestNetworkComponent, NetworkComponent>() {
-                 @Override
-                 public NetworkComponent apply(VirtualGuestNetworkComponent input) {
-                    return new NetworkComponent(input.getSpeed());
-                 }
-              }));
+   private Set<NetworkComponent> getNetworkComponents(VirtualGuest virtualGuest) {
+      if (virtualGuest.getVirtualGuestNetworkComponents() == null) {
+         return null;
+      }
+      ImmutableSet.Builder networkComponents = ImmutableSet.builder();
+      for (VirtualGuestNetworkComponent networkComponent : virtualGuest.getVirtualGuestNetworkComponents()) {
+         networkComponents.add(new NetworkComponent(networkComponent.getSpeed()));
+      }
+      return networkComponents.build();
    }
 
    private static class TemplateObject {
@@ -198,4 +190,13 @@ public class VirtualGuestToJson implements Binder {
          this.globalIdentifier = globalIdentifier;
       }
    }
+
+   private class BlockDevicesComparator implements Comparator<BlockDevice> {
+
+         @Override
+         public int compare(BlockDevice b1, BlockDevice b2) {
+            return Integer.valueOf(b1.getDevice()).compareTo(Integer.valueOf(b2.getDevice()));
+         }
+   }
+
 }

@@ -124,6 +124,32 @@ public class VirtualGuestApiLiveTest extends BaseSoftLayerApiLiveTest {
       }
    }
 
+   @Test(dependsOnMethods = "testSetTagsOnVirtualGuest")
+   public void testPauseVirtualGuest() throws Exception {
+      virtualGuestApi.pauseVirtualGuest(virtualGuest.getId());
+      checkState(retry(new Predicate<VirtualGuest>() {
+         public boolean apply(VirtualGuest guest) {
+            guest = api().getVirtualGuest(virtualGuest.getId());
+            return guest.getPowerState().getKeyName() == VirtualGuest.State.PAUSED;
+         }
+      }, 5*60*1000).apply(virtualGuest), "%s still not paused!", virtualGuest);
+      VirtualGuest found = virtualGuestApi.getVirtualGuest(virtualGuest.getId());
+      assertTrue(found.getPowerState().getKeyName() == VirtualGuest.State.PAUSED);
+   }
+
+   @Test(dependsOnMethods = "testPauseVirtualGuest")
+   public void testResumeVirtualGuest() throws Exception {
+      virtualGuestApi.resumeVirtualGuest(virtualGuest.getId());
+      checkState(retry(new Predicate<VirtualGuest>() {
+         public boolean apply(VirtualGuest guest) {
+            guest = api().getVirtualGuest(virtualGuest.getId());
+            return guest.getPowerState().getKeyName() == VirtualGuest.State.RUNNING;
+         }
+      }, 5*60*1000).apply(virtualGuest), "%s still not running!", virtualGuest);
+      VirtualGuest found = virtualGuestApi.getVirtualGuest(virtualGuest.getId());
+      assertTrue(found.getPowerState().getKeyName() == VirtualGuest.State.RUNNING);
+   }
+
    private void destroyMachine(final VirtualGuest virtualGuest) {
       checkState(retry(new Predicate<VirtualGuest>() {
          public boolean apply(VirtualGuest guest) {

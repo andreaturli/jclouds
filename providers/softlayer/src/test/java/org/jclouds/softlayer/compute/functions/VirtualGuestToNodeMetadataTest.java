@@ -44,10 +44,11 @@ import com.google.inject.Guice;
 /**
  * Tests the function that transforms SoftLayer VirtualGuest to NodeMetadata.
  */
-@Test(testName = "VirtualGuestToNodeMetadataTest")
+@Test(groups="unit", testName = "VirtualGuestToNodeMetadataTest")
 public class VirtualGuestToNodeMetadataTest {
 
    VirtualGuestToImage virtualGuestToImage = Guice.createInjector().getInstance(VirtualGuestToImage.class);
+   VirtualGuestToHardware virtualGuestToHardware = Guice.createInjector().getInstance(VirtualGuestToHardware.class);
    GroupNamingConvention.Factory namingConvention = Guice.createInjector().getInstance(GroupNamingConvention.Factory.class);
 
    Location location = new LocationBuilder().id("123456789")
@@ -60,7 +61,8 @@ public class VirtualGuestToNodeMetadataTest {
    public void testVirtualGuestToNodeMetadata() {
 
       VirtualGuest virtualGuest = createVirtualGuest();
-      NodeMetadata nodeMetadata = new VirtualGuestToNodeMetadata(locationSupplier, namingConvention, virtualGuestToImage).apply(virtualGuest);
+      NodeMetadata nodeMetadata = new VirtualGuestToNodeMetadata(locationSupplier, namingConvention,
+              virtualGuestToImage, virtualGuestToHardware).apply(virtualGuest);
       assertNotNull(nodeMetadata);
       assertEquals(nodeMetadata.getName(), virtualGuest.getHostname());
       assertEquals(nodeMetadata.getHostname(), virtualGuest.getHostname() + virtualGuest.getDomain());

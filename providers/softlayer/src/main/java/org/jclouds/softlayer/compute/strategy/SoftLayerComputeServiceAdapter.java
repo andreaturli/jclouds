@@ -16,20 +16,34 @@
  */
 package org.jclouds.softlayer.compute.strategy;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.base.Supplier;
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet.Builder;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Iterables.contains;
+import static com.google.common.collect.Iterables.filter;
+import static com.google.common.collect.Iterables.find;
+import static com.google.common.collect.Iterables.get;
+import static com.google.common.collect.Iterables.tryFind;
+import static java.lang.Math.round;
+import static java.lang.String.format;
+import static org.jclouds.compute.domain.Volume.Type;
+import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
+import static org.jclouds.compute.util.ComputeServiceUtils.getSpace;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY;
+import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY;
+import static org.jclouds.util.Predicates2.retry;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.jclouds.collect.Memoized;
-import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.HardwareBuilder;
@@ -48,8 +62,6 @@ import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.Password;
 import org.jclouds.softlayer.domain.SoftwareDescription;
 import org.jclouds.softlayer.domain.SoftwareLicense;
-import org.jclouds.softlayer.domain.Tag;
-import org.jclouds.softlayer.domain.TagReference;
 import org.jclouds.softlayer.domain.VirtualDiskImage;
 import org.jclouds.softlayer.domain.VirtualDiskImageSoftware;
 import org.jclouds.softlayer.domain.VirtualGuest;
@@ -58,36 +70,22 @@ import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplate;
 import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 import org.jclouds.softlayer.domain.VirtualGuestNetworkComponent;
 
-import javax.annotation.Resource;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Iterables.contains;
-import static com.google.common.collect.Iterables.filter;
-import static com.google.common.collect.Iterables.find;
-import static com.google.common.collect.Iterables.get;
-import static com.google.common.collect.Iterables.tryFind;
-import static java.lang.Math.round;
-import static java.lang.String.format;
-import static org.jclouds.compute.domain.Volume.Type;
-import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
-import static org.jclouds.compute.util.ComputeServiceUtils.getSpace;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_INCLUDE_PUBLIC_IMAGES;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_ACTIVE_TRANSACTIONS_DELAY;
-import static org.jclouds.softlayer.reference.SoftLayerConstants.PROPERTY_SOFTLAYER_VIRTUALGUEST_LOGIN_DETAILS_DELAY;
-import static org.jclouds.util.Predicates2.retry;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.base.Supplier;
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet.Builder;
+import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * defines the connection between the {@link SoftLayerApi} implementation and
- * the jclouds {@link ComputeService}
+ * the jclouds {@link org.jclouds.compute.ComputeService}
  *
  */
 @Singleton
@@ -97,7 +95,6 @@ public class SoftLayerComputeServiceAdapter implements
    private static final String BOOTABLE_DEVICE = "0";
    public static final String DEFAULT_DISK_TYPE = "LOCAL";
    public static final int DEFAULT_PORT_SPEED = 100;
-   private static final boolean INCLUDE_PUBLIC_IMAGE = false;
 
    @Resource
    @Named(ComputeServiceConstants.COMPUTE_LOGGER)
@@ -183,7 +180,7 @@ public class SoftLayerComputeServiceAdapter implements
       boolean orderInSystem = loginDetailsTester.apply(result);
       logger.trace("<< VirtualGuest(%s) complete(%s)", result.getId(), orderInSystem);
 
-      if(!orderInSystem) {
+      if (!orderInSystem) {
          logger.warn("VirtualGuest(%s) doesn't have login details within %sms so it will be destroyed.", result,
               Long.toString(guestLoginDelay));
          api.getVirtualGuestApi().deleteVirtualGuest(result.getId());
@@ -195,18 +192,6 @@ public class SoftLayerComputeServiceAdapter implements
       Password pwd = get(result.getOperatingSystem().getPasswords(), 0);
       return new NodeAndInitialCredentials<VirtualGuest>(result, result.getId() + "",
               LoginCredentials.builder().user(pwd.getUsername()).password(pwd.getPassword()).build());
-   }
-
-   private Set<TagReference> getTagReferences(Set<String> tags) {
-      Set<TagReference> tagReferences = Sets.newHashSet();
-      for (String tagName : tags) {
-         tagReferences.add(TagReference.builder()
-                 .tag(Tag.builder()
-                         .name(tagName)
-                         .build())
-                 .build());
-      }
-      return tagReferences;
    }
 
    /**
@@ -267,11 +252,11 @@ public class SoftLayerComputeServiceAdapter implements
          }
       });
       for (VirtualGuestBlockDevice blockDevice : virtualGuestConfiguration.getVirtualGuestBlockDevices()) {
+         float capacity = blockDevice.getVirtualDiskImage().getCapacity();
+         Type type = blockDevice.getVirtualGuest().isLocalDiskFlag() ? Type.LOCAL : Type.SAN;
          if (blockDevice.getDevice().equals(BOOTABLE_DEVICE)) {
             for (Integer cpus : virtualGuestConfiguration.getCpusOfProcessors()) {
                for (Integer memory : virtualGuestConfiguration.getMemories()) {
-                  float capacity = blockDevice.getVirtualDiskImage().getCapacity();
-                  Type type = blockDevice.getVirtualGuest().isLocalDiskFlag() ? Type.LOCAL : Type.SAN;
                   String id = format("cpu=%s,memory=%s,disk=%s,type=%s", cpus, memory, round(capacity), type);
                   hardware.add(new HardwareBuilder()
                           .ids(id)

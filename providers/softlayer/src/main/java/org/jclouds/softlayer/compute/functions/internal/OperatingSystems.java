@@ -16,23 +16,24 @@
  */
 package org.jclouds.softlayer.compute.functions.internal;
 
+import static com.google.common.collect.Iterables.getLast;
+
+import org.jclouds.compute.domain.OsFamily;
+
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.primitives.Ints;
-import org.jclouds.compute.domain.OsFamily;
-
-import static com.google.common.collect.Iterables.getLast;
 
 public class OperatingSystems {
 
-   private static final String CENTOS = "CENTOS";
-   private static final String DEBIAN = "DEBIAN";
-   private static final String RHEL = "REDHAT";
-   private static final String UBUNTU = "UBUNTU";
-   private static final String WINDOWS = "WIN_";
-   private static final String CLOUD_LINUX = "CLOUDLINUX";
-   private static final String VYATTACE = "VYATTACE";
+   protected static final String CENTOS = "CENTOS";
+   protected static final String DEBIAN = "DEBIAN";
+   protected static final String RHEL = "REDHAT";
+   protected static final String UBUNTU = "UBUNTU";
+   protected static final String WINDOWS = "WIN_";
+   protected static final String CLOUD_LINUX = "CLOUDLINUX";
+   protected static final String VYATTACE = "VYATTACE";
 
    public static Function<String, OsFamily> osFamily() {
       return new Function<String, OsFamily>() {
@@ -82,8 +83,7 @@ public class OperatingSystems {
             return rawVersion;
          }
       } else if (version.contains(" ")) {
-         return version.substring(0,
-                 version.indexOf(" "));
+         return version.substring(0, version.indexOf(" "));
       }
       return null;
    }

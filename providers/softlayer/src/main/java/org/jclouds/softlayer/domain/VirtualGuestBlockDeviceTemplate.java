@@ -1,8 +1,8 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements.  See the NOBuilderICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
+ * Builderhe ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
@@ -10,7 +10,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WIBuilderHOUBuilder WARRANBuilderIES OR CONDIBuilderIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -28,16 +28,15 @@ import com.google.common.base.Objects;
  */
 public class VirtualGuestBlockDeviceTemplate {
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromVirtualGuestBlockDeviceTemplate(this);
+   public Builder toBuilder() {
+      return builder().fromVirtualGuestBlockDeviceTemplate(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected int id;
       protected String device;
@@ -50,64 +49,64 @@ public class VirtualGuestBlockDeviceTemplate {
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplate#getId()
        */
-      public T id(int id) {
+      public Builder id(int id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDeviceTemplate#getDevice()
        */
-      public T device(String device) {
+      public Builder device(String device) {
          this.device = device;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDeviceTemplate#getDiskImage()
        */
-      public T diskImageId(int diskImageId) {
+      public Builder diskImageId(int diskImageId) {
          this.diskImageId = diskImageId;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDeviceTemplate#getDiskSpace()
        */
-      public T diskSpace(float diskSpace) {
+      public Builder diskSpace(float diskSpace) {
          this.diskSpace = diskSpace;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDeviceTemplate#getGroupId()
        */
-      public T groupId(int groupId) {
+      public Builder groupId(int groupId) {
          this.groupId = groupId;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplate#getUnits()
        */
-      public T units(String units) {
+      public Builder units(String units) {
          this.units = units;
-         return self();
+         return this;
       }
 
       /**
        * @see VirtualGuestBlockDeviceTemplate#getDiskImage()
        */
-      public T diskImage(VirtualDiskImage diskImage) {
+      public Builder diskImage(VirtualDiskImage diskImage) {
          this.diskImage = diskImage;
-         return self();
+         return this;
       }
 
       public VirtualGuestBlockDeviceTemplate build() {
          return new VirtualGuestBlockDeviceTemplate(id, device, diskImageId, diskSpace, groupId, units, diskImage);
       }
 
-      public T fromVirtualGuestBlockDeviceTemplate(VirtualGuestBlockDeviceTemplate in) {
+      public Builder fromVirtualGuestBlockDeviceTemplate(VirtualGuestBlockDeviceTemplate in) {
          return this
                  .id(in.getId())
                  .device(in.getDevice())
@@ -116,13 +115,6 @@ public class VirtualGuestBlockDeviceTemplate {
                  .groupId(in.getGroupId())
                  .units(in.getUnits())
                  .diskImage(in.getDiskImage());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 

@@ -16,9 +16,13 @@
  */
 package org.jclouds.softlayer.compute.functions;
 
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.base.Optional;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import javax.annotation.Resource;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.ImageBuilder;
 import org.jclouds.compute.domain.OsFamily;
@@ -29,12 +33,9 @@ import org.jclouds.softlayer.domain.OperatingSystem;
 import org.jclouds.softlayer.domain.SoftwareDescription;
 import org.jclouds.softlayer.domain.SoftwareLicense;
 
-import javax.annotation.Resource;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Function;
+import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 
 @Singleton
 public class OperatingSystemToImage implements Function<OperatingSystem, Image> {
@@ -75,7 +76,7 @@ public class OperatingSystemToImage implements Function<OperatingSystem, Image> 
       }
 
       org.jclouds.compute.domain.OperatingSystem os = org.jclouds.compute.domain.OperatingSystem.builder()
-              .description(optLongDescription.isPresent() ? optLongDescription.get() : UNRECOGNIZED)
+              .description(optLongDescription.or(UNRECOGNIZED))
               .family(osFamily)
               .version(osVersion)
               .is64Bit(Objects.equal(bits, 64))
@@ -83,7 +84,7 @@ public class OperatingSystemToImage implements Function<OperatingSystem, Image> 
 
       return new ImageBuilder()
               .ids(operatingSystem.getId())
-              .description(optOSReferenceCode.isPresent() ? optOSReferenceCode.get() : UNRECOGNIZED)
+              .description(optOSReferenceCode.or(UNRECOGNIZED))
               .operatingSystem(os)
               .status(Image.Status.AVAILABLE)
               .build();

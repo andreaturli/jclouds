@@ -16,15 +16,16 @@
  */
 package org.jclouds.softlayer.parse;
 
-import com.google.common.collect.ImmutableSet;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
+
 import org.jclouds.softlayer.domain.Address;
 import org.jclouds.softlayer.domain.Datacenter;
 import org.jclouds.softlayer.domain.Region;
 import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author Andrea Turli
@@ -61,5 +62,4 @@ public class GetDatacenterResponseTest extends BaseSoftLayerParseTest<Datacenter
                               .build()))
               .build();
    }
-
 }

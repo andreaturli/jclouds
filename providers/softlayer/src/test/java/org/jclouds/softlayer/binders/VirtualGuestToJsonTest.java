@@ -118,4 +118,40 @@ public class VirtualGuestToJsonTest {
                "]" +
                "}");
    }
+
+   @Test
+   public void testVirtualGuestWithoutOperatingSystemAndVirtualGuestBlockDeviceTemplateGroup() {
+      HttpRequest request = HttpRequest.builder().method("POST").endpoint("https://api.softlayer.com/rest/v3/SoftLayer_Virtual_Guest").build();
+      VirtualGuestToJson binder = new VirtualGuestToJson(json);
+      VirtualGuest virtualGuestWithOS = VirtualGuest.builder()
+              .hostname("hostname")
+              .domain("domain")
+              .startCpus(1)
+              .maxMemory(1024)
+              .datacenter(Datacenter.builder()
+                      .name("datacenterName")
+                      .build())
+              .localDiskFlag(true)
+              .build();
+
+      request = binder.bindToRequest(request, virtualGuestWithOS);
+
+      assertEquals(request.getPayload().getRawContent(),
+              "{" +
+                      "\"parameters\":[" +
+                      "{" +
+                      "\"hostname\":\"hostname\"," +
+                      "\"domain\":\"domain\"," +
+                      "\"startCpus\":1," +
+                      "\"maxMemory\":1024," +
+                      "\"hourlyBillingFlag\":true," +
+                      "\"operatingSystemReferenceCode\":\"UBUNTU_12_64\"," +
+                      "\"localDiskFlag\":true," +
+                      "\"datacenter\":{" +
+                      "\"name\":\"datacenterName\"" +
+                      "}" +
+                      "}" +
+                      "]" +
+                      "}");
+   }
 }

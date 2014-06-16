@@ -87,7 +87,7 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
       //options.diskType("SAN");
       //options.portSpeed(10);
       // multi-disk option
-      options.blockDevices(ImmutableList.of(100));
+      options.blockDevices(ImmutableSet.of(100));
       //tags
       options.tags(ImmutableList.of("jclouds"));
 
@@ -98,12 +98,12 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
          SshClient client = context.utils().sshForNode().apply(node);
          client.connect();
          ExecResponse hello = client.exec("mount");
-         System.out.println(hello.getOutput().trim());
+         logger.debug(hello.getOutput().trim());
 
          VirtualGuest virtualGuest = context.unwrapApi(SoftLayerApi.class).getVirtualGuestApi()
                  .getVirtualGuest(Long.parseLong(node.getId()));
          for (VirtualGuestBlockDevice blockDevice : virtualGuest.getVirtualGuestBlockDevices()) {
-            System.out.println(blockDevice);
+            logger.debug(blockDevice.toString());
          }
 
          context.getComputeService().destroyNode(node.getId());

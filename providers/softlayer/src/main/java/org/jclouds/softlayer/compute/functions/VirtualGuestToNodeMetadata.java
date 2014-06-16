@@ -53,13 +53,16 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
    private final Supplier<Set<? extends Location>> locations;
    private final GroupNamingConvention nodeNamingConvention;
    private final VirtualGuestToImage virtualGuestToImage;
+   private final VirtualGuestToHardware virtualGuestToHardware;
 
    @Inject
    VirtualGuestToNodeMetadata(@Memoized Supplier<Set<? extends Location>> locations,
-         GroupNamingConvention.Factory namingConvention, VirtualGuestToImage virtualGuestToImage) {
+         GroupNamingConvention.Factory namingConvention, VirtualGuestToImage virtualGuestToImage,
+         VirtualGuestToHardware virtualGuestToHardware) {
       this.nodeNamingConvention = checkNotNull(namingConvention, "namingConvention").createWithoutPrefix();
       this.locations = checkNotNull(locations, "locations");
       this.virtualGuestToImage = checkNotNull(virtualGuestToImage, "virtualGuestToImage");
+      this.virtualGuestToHardware = checkNotNull(virtualGuestToHardware, "virtualGuestToHardware");
    }
 
    @Override
@@ -73,20 +76,20 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
                  LocationPredicates.idEquals(from.getDatacenter().getId() + "")).orNull());
       }
       builder.group(nodeNamingConvention.groupInUniqueNameOrNull(from.getHostname()));
-      builder.hardware(new VirtualGuestToHardware().apply(from));
+      builder.hardware(virtualGuestToHardware.apply(from));
       Image image = virtualGuestToImage.apply(from);
       if (image != null) {
          builder.imageId(image.getId());
          builder.operatingSystem(image.getOperatingSystem());
       }
-      if(from.getPowerState() != null) {
+      if (from.getPowerState() != null) {
          builder.status(serverStateToNodeStatus.get(from.getPowerState().getKeyName()));
       }
       if (from.getPrimaryIpAddress() != null)
          builder.publicAddresses(ImmutableSet.of(from.getPrimaryIpAddress()));
       if (from.getPrimaryBackendIpAddress() != null)
          builder.privateAddresses(ImmutableSet.of(from.getPrimaryBackendIpAddress()));
-      if(from.getTagReferences() != null && !from.getTagReferences().isEmpty()) {
+      if (from.getTagReferences() != null && !from.getTagReferences().isEmpty()) {
          List<String> tags = Lists.newArrayList();
          for (TagReference tagReference : from.getTagReferences()) {
             if (tagReference != null) {

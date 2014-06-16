@@ -16,7 +16,11 @@
  */
 package org.jclouds.softlayer.parse;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
+
 import org.jclouds.softlayer.domain.SoftwareDescription;
 import org.jclouds.softlayer.domain.VirtualDiskImage;
 import org.jclouds.softlayer.domain.VirtualDiskImageSoftware;
@@ -25,15 +29,14 @@ import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author Andrea Turli
  */
 @Test(groups = "unit")
-public class GetVirtualGuestBlockDeviceTemplateGroupsResponseTest extends
+public class
+        GetVirtualGuestBlockDeviceTemplateGroupsResponseTest extends
         BaseSoftLayerParseTest<Set<VirtualGuestBlockDeviceTemplateGroup>> {
 
    @Override
@@ -128,5 +131,4 @@ public class GetVirtualGuestBlockDeviceTemplateGroupsResponseTest extends
                       .build())
               .build());
    }
-
 }

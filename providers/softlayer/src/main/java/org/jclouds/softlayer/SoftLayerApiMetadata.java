@@ -21,7 +21,6 @@ import static org.jclouds.softlayer.reference.SoftLayerConstants.SOFTLAYER_PROVI
 import java.net.URI;
 import java.util.Properties;
 
-import org.jclouds.apis.ApiMetadata;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.rest.internal.BaseHttpApiMetadata;
 import org.jclouds.softlayer.compute.config.SoftLayerComputeServiceContextModule;
@@ -31,7 +30,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Module;
 
 /**
- * Implementation of {@link ApiMetadata} for API
+ * Implementation of {@link org.jclouds.apis.ApiMetadata} for API
  */
 public class SoftLayerApiMetadata extends BaseHttpApiMetadata<SoftLayerApi> {
 

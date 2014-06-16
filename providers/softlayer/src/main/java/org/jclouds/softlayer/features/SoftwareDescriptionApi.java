@@ -37,6 +37,7 @@ import org.jclouds.softlayer.domain.SoftwareDescription;
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
+@Consumes(MediaType.APPLICATION_JSON)
 public interface SoftwareDescriptionApi {
 
    /**
@@ -45,7 +46,6 @@ public interface SoftwareDescriptionApi {
    @GET
    @Path("/SoftLayer_Software_Description/getAllObjects")
    @QueryParams(keys = "objectMask", values = "id;name;version;operatingSystem;longDescription;referenceCode")
-   @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
    Set<SoftwareDescription> getAllObjects();
 

@@ -34,6 +34,11 @@ public class AccountApiLiveTest extends BaseSoftLayerApiLiveTest {
    public void testGetBlockDeviceTemplateGroups() {
       Set<VirtualGuestBlockDeviceTemplateGroup> privateImages = api().getBlockDeviceTemplateGroups();
       assertNotNull(privateImages);
+      for (VirtualGuestBlockDeviceTemplateGroup privateImage : privateImages) {
+         assertTrue(privateImage.getId() > 0, "id must be greater than 0");
+         assertTrue(privateImage.getStatusId() > 0, "status id must be greater than 0");
+         assertTrue(privateImage.getAccountId() > 0, "id must be greater than 0");
+      }
    }
 
    @Test

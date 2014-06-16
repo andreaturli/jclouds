@@ -1,8 +1,8 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements.  See the NOBuilderICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
+ * Builderhe ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
@@ -10,7 +10,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WIBuilderHOUBuilder WARRANBuilderIES OR CONDIBuilderIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -32,16 +32,15 @@ import com.google.common.collect.ImmutableSet;
  */
 public class VirtualDiskImage {
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromVirtualDiskImage(this);
+   public Builder toBuilder() {
+      return builder().fromVirtualDiskImage(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
+   public static class Builder {
 
       protected int id;
       protected String uuid;
@@ -56,73 +55,73 @@ public class VirtualDiskImage {
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getId()
        */
-      public T id(int id) {
+      public Builder id(int id) {
          this.id = id;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getUuid()
        */
-      public T uuid(String uuid) {
+      public Builder uuid(String uuid) {
          this.uuid = uuid;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getCapacity()
        */
-      public T capacity(float capacity) {
+      public Builder capacity(float capacity) {
          this.capacity = capacity;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getUnits()
        */
-      public T units(String units) {
+      public Builder units(String units) {
          this.units = units;
-         return self();
+         return this;
       }
 
       /**
-       * @see org.jclouds.softlayer.domain.VirtualDiskImage#getTypeId()
+       * @see org.jclouds.softlayer.domain.VirtualDiskImage#getBuilderypeId()
        */
-      public T typeId(int typeId) {
+      public Builder typeId(int typeId) {
          this.typeId = typeId;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getDescription()
        */
-      public T description(String description) {
+      public Builder description(String description) {
          this.description = description;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getName()
        */
-      public T name(String name) {
+      public Builder name(String name) {
          this.name = name;
-         return self();
+         return this;
       }
 
       /**
        * @see org.jclouds.softlayer.domain.VirtualDiskImage#getStorageRepositoryId()
        */
-      public T storageRepositoryId(int storageRepositoryId) {
+      public Builder storageRepositoryId(int storageRepositoryId) {
          this.storageRepositoryId = storageRepositoryId;
-         return self();
+         return this;
       }
 
-      public T softwareReferences(Set<VirtualDiskImageSoftware> softwareReferences) {
+      public Builder softwareReferences(Set<VirtualDiskImageSoftware> softwareReferences) {
          this.softwareReferences.addAll(checkNotNull(softwareReferences, "softwareReferences"));
-         return self();
+         return this;
       }
 
-      public T softwareReferences(VirtualDiskImageSoftware... in) {
+      public Builder softwareReferences(VirtualDiskImageSoftware... in) {
          return softwareReferences(ImmutableSet.copyOf(in));
       }
 
@@ -131,24 +130,17 @@ public class VirtualDiskImage {
                  storageRepositoryId, softwareReferences.build());
       }
 
-      public T fromVirtualDiskImage(VirtualDiskImage in) {
+      public Builder fromVirtualDiskImage(VirtualDiskImage in) {
          return this
                  .id(in.getId())
                  .uuid(in.getUuid())
                  .capacity(in.getCapacity())
                  .units(in.getUnits())
-                 .typeId(in.getTypeId())
+                 .typeId(in.getBuilderypeId())
                  .description(in.getDescription())
                  .name(in.getName())
                  .storageRepositoryId(in.getStorageRepositoryId())
                  .softwareReferences(in.getSoftwareReferences());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 
@@ -176,7 +168,7 @@ public class VirtualDiskImage {
       this.description = description;
       this.name = name;
       this.storageRepositoryId = storageRepositoryId;
-      this.softwareReferences = softwareReferences  == null ? ImmutableSet.<VirtualDiskImageSoftware>of() :
+      this.softwareReferences = softwareReferences == null ? ImmutableSet.<VirtualDiskImageSoftware>of() :
               ImmutableSet.copyOf(softwareReferences);
    }
 
@@ -196,7 +188,7 @@ public class VirtualDiskImage {
       return units;
    }
 
-   public int getTypeId() {
+   public int getBuilderypeId() {
       return typeId;
    }
 

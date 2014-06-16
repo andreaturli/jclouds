@@ -16,19 +16,20 @@
  */
 package org.jclouds.softlayer.features;
 
-import org.jclouds.Fallbacks;
-import org.jclouds.http.filters.BasicAuthentication;
-import org.jclouds.rest.annotations.Fallback;
-import org.jclouds.rest.annotations.QueryParams;
-import org.jclouds.rest.annotations.RequestFilters;
-import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
-import java.util.Set;
+
+import org.jclouds.Fallbacks;
+import org.jclouds.http.filters.BasicAuthentication;
+import org.jclouds.rest.annotations.Fallback;
+import org.jclouds.rest.annotations.QueryParams;
+import org.jclouds.rest.annotations.RequestFilters;
+import org.jclouds.softlayer.domain.VirtualGuestBlockDeviceTemplateGroup;
 
 /**
  * Provides access to VirtualGuestBlockDeviceTemplateGroup via their REST API.
@@ -38,6 +39,7 @@ import java.util.Set;
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
+@Consumes(MediaType.APPLICATION_JSON)
 public interface VirtualGuestBlockDeviceTemplateGroupApi {
 
    public static String LIST_PUBLIC_IMAGES_MASK = "children.blockDevices.diskImage.softwareReferences.softwareDescription";
@@ -50,7 +52,6 @@ public interface VirtualGuestBlockDeviceTemplateGroupApi {
    @GET
    @Path("/SoftLayer_Virtual_Guest_Block_Device_Template_Group/getPublicImages")
    @QueryParams(keys = "objectMask", values = LIST_PUBLIC_IMAGES_MASK)
-   @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
    Set<VirtualGuestBlockDeviceTemplateGroup> getPublicImages();
 

@@ -45,8 +45,8 @@ public class VirtualGuestToImage implements Function<VirtualGuest, Image> {
    private final OperatingSystemToImage operatingSystemToImage;
 
    @Inject
-   public VirtualGuestToImage(OperatingSystemToImage operatingSystemToImage) {
-      this.operatingSystemToImage = operatingSystemToImage;
+   protected VirtualGuestToImage(OperatingSystemToImage operatingSystemToImage) {
+      this.operatingSystemToImage = checkNotNull(operatingSystemToImage, "operatingSystemToImage");
    }
 
    @Override

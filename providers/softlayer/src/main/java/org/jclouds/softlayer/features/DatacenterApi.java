@@ -38,6 +38,7 @@ import org.jclouds.softlayer.domain.Datacenter;
  */
 @RequestFilters(BasicAuthentication.class)
 @Path("/v{jclouds.api-version}")
+@Consumes(MediaType.APPLICATION_JSON)
 public interface DatacenterApi {
 
    /**
@@ -46,7 +47,6 @@ public interface DatacenterApi {
    @GET
    @Path("/SoftLayer_Location_Datacenter/Datacenters")
    @QueryParams(keys = "objectMask", values = "locationAddress;regions")
-   @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.EmptySetOnNotFoundOr404.class)
    Set<Datacenter> listDatacenters();
 
@@ -58,7 +58,6 @@ public interface DatacenterApi {
    @GET
    @Path("/SoftLayer_Location_Datacenter/{id}")
    @QueryParams(keys = "objectMask", values = "locationAddress;regions")
-   @Consumes(MediaType.APPLICATION_JSON)
    @Fallback(Fallbacks.NullOnNotFoundOr404.class)
    Datacenter getDatacenter(@PathParam("id") long id);
 }

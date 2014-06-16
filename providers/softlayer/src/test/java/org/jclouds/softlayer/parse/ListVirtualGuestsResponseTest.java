@@ -16,15 +16,17 @@
  */
 package org.jclouds.softlayer.parse;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
+
 import org.jclouds.date.internal.SimpleDateFormatDateService;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
 import org.testng.annotations.Test;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author Andrea Turli
@@ -68,5 +70,4 @@ public class ListVirtualGuestsResponseTest extends BaseSoftLayerParseTest<Set<Vi
                               .softwareLicense(null)
                               .build());
    }
-
 }

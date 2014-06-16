@@ -16,13 +16,13 @@
  */
 package org.jclouds.softlayer.parse;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.core.MediaType;
+
 import org.jclouds.date.internal.SimpleDateFormatDateService;
 import org.jclouds.softlayer.domain.VirtualGuest;
 import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
 import org.testng.annotations.Test;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.core.MediaType;
 
 /**
  * @author Andrea Turli
@@ -57,5 +57,4 @@ public class CreateVirtualGuestResponseTest extends BaseSoftLayerParseTest<Virtu
               .datacenter(null)
               .build();
    }
-
 }

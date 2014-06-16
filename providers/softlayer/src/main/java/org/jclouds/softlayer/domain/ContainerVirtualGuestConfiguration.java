@@ -36,17 +36,15 @@ public class ContainerVirtualGuestConfiguration {
 
    public static final String SWAP_DEVICE = "1";
 
-   public static Builder<?> builder() {
-      return new ConcreteBuilder();
+   public static Builder builder() {
+      return new Builder();
    }
 
-   public Builder<?> toBuilder() {
-      return new ConcreteBuilder().fromContainerVirtualGuestConfiguration(this);
+   public Builder toBuilder() {
+      return builder().fromContainerVirtualGuestConfiguration(this);
    }
 
-   public abstract static class Builder<T extends Builder<T>>  {
-      protected abstract T self();
-
+   public static class Builder {
       protected Set<ContainerVirtualGuestConfigurationOption> blockDevices;
       protected Set<ContainerVirtualGuestConfigurationOption> datacenters;
       protected Set<ContainerVirtualGuestConfigurationOption> memory;
@@ -54,57 +52,57 @@ public class ContainerVirtualGuestConfiguration {
       protected Set<ContainerVirtualGuestConfigurationOption> operatingSystems;
       protected Set<ContainerVirtualGuestConfigurationOption> processors;
 
-      public T blockDevices(Set<ContainerVirtualGuestConfigurationOption> blockDevices) {
+      public Builder blockDevices(Set<ContainerVirtualGuestConfigurationOption> blockDevices) {
          this.blockDevices = ImmutableSet.copyOf(checkNotNull(blockDevices, "blockDevices"));
-         return self();
+         return this;
       }
 
-      public T blockDevices(ContainerVirtualGuestConfigurationOption... in) {
+      public Builder blockDevices(ContainerVirtualGuestConfigurationOption... in) {
          return blockDevices(ImmutableSet.copyOf(in));
       }
 
-      public T datacenters(Set<ContainerVirtualGuestConfigurationOption> datacenters) {
+      public Builder datacenters(Set<ContainerVirtualGuestConfigurationOption> datacenters) {
          this.datacenters = ImmutableSet.copyOf(checkNotNull(datacenters, "datacenters"));
-         return self();
+         return this;
       }
 
-      public T datacenters(ContainerVirtualGuestConfigurationOption... in) {
+      public Builder datacenters(ContainerVirtualGuestConfigurationOption... in) {
          return datacenters(ImmutableSet.copyOf(in));
       }
 
-      public T memory(Set<ContainerVirtualGuestConfigurationOption> memory) {
+      public Builder memory(Set<ContainerVirtualGuestConfigurationOption> memory) {
          this.memory = ImmutableSet.copyOf(checkNotNull(memory, "memory"));
-         return self();
+         return this;
       }
 
-      public T memory(ContainerVirtualGuestConfigurationOption... in) {
+      public Builder memory(ContainerVirtualGuestConfigurationOption... in) {
          return memory(ImmutableSet.copyOf(in));
       }
 
-      public T networkComponents(Set<ContainerVirtualGuestConfigurationOption> networkComponents) {
+      public Builder networkComponents(Set<ContainerVirtualGuestConfigurationOption> networkComponents) {
          this.networkComponents = ImmutableSet.copyOf(checkNotNull(networkComponents, "networkComponents"));
-         return self();
+         return this;
       }
 
-      public T networkComponents(ContainerVirtualGuestConfigurationOption... in) {
+      public Builder networkComponents(ContainerVirtualGuestConfigurationOption... in) {
          return networkComponents(ImmutableSet.copyOf(in));
       }
 
-      public T operatingSystems(Set<ContainerVirtualGuestConfigurationOption> operatingSystems) {
+      public Builder operatingSystems(Set<ContainerVirtualGuestConfigurationOption> operatingSystems) {
          this.operatingSystems = ImmutableSet.copyOf(checkNotNull(operatingSystems, "operatingSystems"));
-         return self();
+         return this;
       }
 
-      public T operatingSystems(ContainerVirtualGuestConfigurationOption... in) {
+      public Builder operatingSystems(ContainerVirtualGuestConfigurationOption... in) {
          return operatingSystems(ImmutableSet.copyOf(in));
       }
 
-      public T processors(Set<ContainerVirtualGuestConfigurationOption> processors) {
+      public Builder processors(Set<ContainerVirtualGuestConfigurationOption> processors) {
          this.processors = ImmutableSet.copyOf(checkNotNull(processors, "processors"));
-         return self();
+         return this;
       }
 
-      public T processors(ContainerVirtualGuestConfigurationOption... in) {
+      public Builder processors(ContainerVirtualGuestConfigurationOption... in) {
          return processors(ImmutableSet.copyOf(in));
       }
 
@@ -113,7 +111,7 @@ public class ContainerVirtualGuestConfiguration {
                  operatingSystems, processors);
       }
 
-      public T fromContainerVirtualGuestConfiguration(ContainerVirtualGuestConfiguration in) {
+      public Builder fromContainerVirtualGuestConfiguration(ContainerVirtualGuestConfiguration in) {
          return this
                  .blockDevices(in.getBlockDevices())
                  .datacenters(in.getDatacenters())
@@ -121,13 +119,6 @@ public class ContainerVirtualGuestConfiguration {
                  .networkComponents(in.getNetworkComponents())
                  .operatingSystems(in.getOperatingSystems())
                  .processors(in.getProcessors());
-      }
-   }
-
-   private static class ConcreteBuilder extends Builder<ConcreteBuilder> {
-      @Override
-      protected ConcreteBuilder self() {
-         return this;
       }
    }
 
@@ -180,7 +171,6 @@ public class ContainerVirtualGuestConfiguration {
    }
 
    public Set<Integer> getCpusOfProcessors() {
-      if(processors.isEmpty()) return ImmutableSet.of();
       return Sets.newHashSet(Iterables.transform(processors, new Function<ContainerVirtualGuestConfigurationOption,
               Integer>() {
          @Override
@@ -191,7 +181,6 @@ public class ContainerVirtualGuestConfiguration {
    }
 
    public Set<Integer> getMemories() {
-      if(memory.isEmpty()) return ImmutableSet.of();
       return Sets.newHashSet(Iterables.transform(memory, new Function<ContainerVirtualGuestConfigurationOption,
               Integer>() {
          @Override
@@ -202,7 +191,6 @@ public class ContainerVirtualGuestConfiguration {
    }
 
    public Set<Datacenter> getVirtualGuestDatacenters() {
-      if(datacenters.isEmpty()) return ImmutableSet.of();
       return Sets.newHashSet(Iterables.transform(datacenters, new Function<ContainerVirtualGuestConfigurationOption,
               Datacenter>() {
          @Override
@@ -213,7 +201,6 @@ public class ContainerVirtualGuestConfiguration {
    }
 
    public Set<OperatingSystem> getVirtualGuestOperatingSystems() {
-      if(operatingSystems.isEmpty()) return ImmutableSet.of();
       return Sets.newHashSet(Iterables.transform(operatingSystems,
               new Function<ContainerVirtualGuestConfigurationOption, OperatingSystem>() {
          @Override

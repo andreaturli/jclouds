@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 /**
  * Tests the function that transforms SoftLayer OperatingSystem to generic image.
  */
-@Test(testName = "OperatingSystemToImageTest")
+@Test(groups="unit", testName = "OperatingSystemToImageTest")
 public class OperatingSystemToImageTest {
 
    @Test

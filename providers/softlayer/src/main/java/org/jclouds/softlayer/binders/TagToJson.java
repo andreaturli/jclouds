@@ -16,6 +16,7 @@
  */
 package org.jclouds.softlayer.binders;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Set;
 
@@ -27,8 +28,8 @@ import org.jclouds.json.Json;
 import org.jclouds.rest.Binder;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Converts a Tag into a json string valid for creating a CCI via softlayer api
@@ -47,12 +48,13 @@ public class TagToJson implements Binder {
 
    @Override
    public <R extends HttpRequest> R bindToRequest(R request, Object input) {
-      Set<String> tags = Set.class.cast(checkNotNull(input, "parameters"));
+      checkArgument(input instanceof Set);
+      Set<String> tags = Set.class.cast(checkNotNull(input, "input"));
       request.setPayload(buildJson(tags));
       return request;
    }
 
    String buildJson(Set<String> tags) {
-      return json.toJson(ImmutableMap.of("parameters", ImmutableList.of(Joiner.on(",").join(tags))));
+      return json.toJson(ImmutableMap.of("parameters", ImmutableSet.of(Joiner.on(",").join(tags))));
    }
 }

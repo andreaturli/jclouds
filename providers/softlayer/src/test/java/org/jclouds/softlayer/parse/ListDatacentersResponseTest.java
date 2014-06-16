@@ -16,16 +16,16 @@
  */
 package org.jclouds.softlayer.parse;
 
-import com.google.common.collect.ImmutableSet;
-import org.jclouds.date.internal.SimpleDateFormatDateService;
-import org.jclouds.softlayer.domain.Datacenter;
-import org.jclouds.softlayer.domain.VirtualGuest;
-import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
-import org.testng.annotations.Test;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.core.MediaType;
-import java.util.Set;
+
+import org.jclouds.softlayer.domain.Datacenter;
+import org.jclouds.softlayer.internal.BaseSoftLayerParseTest;
+import org.testng.annotations.Test;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * @author Andrea Turli
@@ -114,5 +114,4 @@ public class ListDatacentersResponseTest extends BaseSoftLayerParseTest<Set<Data
                       .build()
               );
    }
-
 }
