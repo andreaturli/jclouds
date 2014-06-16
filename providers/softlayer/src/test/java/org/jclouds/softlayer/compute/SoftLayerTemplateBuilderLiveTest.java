@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableSet;
 @Test(groups = "live", alwaysRun = false)
 public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTest {
 
-   public static final int MAX_RAM = 48 * 1024;
+   public static final int MAX_RAM = 64 * 1024;
 
    public SoftLayerTemplateBuilderLiveTest() {
       provider = "softlayer";
@@ -56,15 +56,18 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
             // For each os-type both 32- and 64-bit are supported.
             switch (input.family) {
             case UBUNTU:
-               return input.version.equals("") || input.version.equals("10.04") || input.version.equals("12.04") || input.version.equals("8");
+               return input.version.equals("") || input.version.equals("10.04") || input.version.equals("12.04") ||
+                       input.version.equals("8.04");
             case DEBIAN:
                return input.version.equals("") || input.version.matches("[56].0");
             case FEDORA:
                return input.version.equals("") || input.version.equals("13") || input.version.equals("15");
             case RHEL:
-               return input.version.equals("") || input.version.equals("5") || input.version.equals("6");
+               return input.version.equals("") || input.version.equals("5") || input.version.equals("6") ||
+                       input.version.equals("6.1") || input.version.equals("5.4") || input.version.equals("5.7");
             case CENTOS:
-               return input.version.equals("") || input.version.equals("5") || input.version.equals("6.0");
+               return input.version.equals("") || input.version.equals("5") || input.version.equals("6.0") ||
+                       input.version.equals("6.1") || input.version.equals("6.2") || input.version.equals("6");
             case WINDOWS:
                return input.version.equals("") || input.version.equals("2003") || input.version.equals("2008");
             default:

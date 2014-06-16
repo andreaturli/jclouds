@@ -261,7 +261,7 @@ public class SoftLayerComputeServiceAdapter implements
                   hardware.add(new HardwareBuilder()
                           .ids(id)
                           .ram(memory)
-                          .processors(ImmutableList.of(new Processor(cpus, 0)))
+                          .processors(ImmutableList.of(new Processor(cpus, 2)))
                           .hypervisor("XenServer")
                           .volumes(ImmutableList.<Volume>of(
                                   new VolumeImpl(blockDevice.getId() + "",

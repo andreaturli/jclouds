@@ -39,7 +39,7 @@ public class VirtualGuestToHardware implements Function<VirtualGuest, Hardware> 
       HardwareBuilder builder = new HardwareBuilder().ids(from.getId() + "")
               .name(from.getHostname())
               .hypervisor("XenServer")
-              .processors(ImmutableList.of(new Processor(from.getStartCpus(), 0)))
+              .processors(ImmutableList.of(new Processor(from.getStartCpus(), 2)))
               .ram(from.getMaxMemory());
 
       if (from.getVirtualGuestBlockDevices() != null) {
