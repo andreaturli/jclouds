@@ -53,6 +53,13 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
    protected Optional<List<Integer>> blockDevices = Optional.absent();
    protected Optional<String> diskType = Optional.absent();
    protected Optional<Integer> portSpeed = Optional.absent();
+   protected Optional<String> userData = Optional.absent();
+   protected Optional<Integer> primaryNetworkComponentNetworkVlanId = Optional.absent();
+   protected Optional<Integer> primaryBackendNetworkComponentNetworkVlanId = Optional.absent();
+   protected Optional<Boolean> hourlyBillingFlag = Optional.absent();
+   protected Optional<Boolean> dedicatedAccountHostOnlyFlag = Optional.absent();
+   protected Optional<Boolean> privateNetworkOnlyFlag = Optional.absent();
+   protected Optional<String> postInstallScriptUri = Optional.absent();
 
    @Override
    public SoftLayerTemplateOptions clone() {
@@ -75,6 +82,24 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
          }
          if (portSpeed.isPresent()) {
             eTo.portSpeed(portSpeed.get());
+         }
+         if (userData.isPresent()) {
+            eTo.userData(userData.get());
+         }
+         if (primaryNetworkComponentNetworkVlanId.isPresent()) {
+            eTo.primaryNetworkComponentNetworkVlanId(primaryNetworkComponentNetworkVlanId.get());
+         }
+         if (primaryBackendNetworkComponentNetworkVlanId.isPresent()) {
+            eTo.primaryBackendNetworkComponentNetworkVlanId(primaryBackendNetworkComponentNetworkVlanId.get());
+         }
+         if (hourlyBillingFlag.isPresent()) {
+            eTo.hourlyBillingFlag(hourlyBillingFlag.get());
+         }
+         if (dedicatedAccountHostOnlyFlag.isPresent()) {
+            eTo.dedicatedAccountHostOnlyFlag(dedicatedAccountHostOnlyFlag.get());
+         }
+         if (privateNetworkOnlyFlag.isPresent()) {
+            eTo.privateNetworkOnlyFlag(privateNetworkOnlyFlag.get());
          }
       }
    }
@@ -117,6 +142,48 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
       return this;
    }
 
+   public TemplateOptions userData(String userData) {
+      checkNotNull(userData, "userData was null");
+      this.userData = Optional.of(userData);
+      return this;
+   }
+
+   public TemplateOptions primaryNetworkComponentNetworkVlanId(Integer primaryNetworkComponentNetworkVlanId) {
+      checkNotNull(primaryNetworkComponentNetworkVlanId, "primaryNetworkComponentNetworkVlanId was null");
+      this.primaryNetworkComponentNetworkVlanId = Optional.of(primaryNetworkComponentNetworkVlanId);
+      return this;
+   }
+
+   public TemplateOptions primaryBackendNetworkComponentNetworkVlanId(Integer primaryBackendNetworkComponentNetworkVlanId) {
+      checkNotNull(primaryBackendNetworkComponentNetworkVlanId, "primaryBackendNetworkComponentNetworkVlanId was null");
+      this.primaryBackendNetworkComponentNetworkVlanId = Optional.of(primaryBackendNetworkComponentNetworkVlanId);
+      return this;
+   }
+
+   public TemplateOptions hourlyBillingFlag(boolean hourlyBillingFlag) {
+      checkNotNull(hourlyBillingFlag, "hourlyBillingFlag was null");
+      this.hourlyBillingFlag = Optional.of(hourlyBillingFlag);
+      return this;
+   }
+
+   public TemplateOptions dedicatedAccountHostOnlyFlag(boolean dedicatedAccountHostOnlyFlag) {
+      checkNotNull(dedicatedAccountHostOnlyFlag, "dedicatedAccountHostOnlyFlag was null");
+      this.dedicatedAccountHostOnlyFlag = Optional.of(dedicatedAccountHostOnlyFlag);
+      return this;
+   }
+
+   public TemplateOptions privateNetworkOnlyFlag(boolean privateNetworkOnlyFlag) {
+      checkNotNull(privateNetworkOnlyFlag, "privateNetworkOnlyFlag was null");
+      this.privateNetworkOnlyFlag = Optional.of(privateNetworkOnlyFlag);
+      return this;
+   }
+
+   public TemplateOptions postInstallScriptUri(String postInstallScriptUri) {
+      checkNotNull(postInstallScriptUri, "postInstallScriptUri was null");
+      this.postInstallScriptUri = Optional.of(postInstallScriptUri);
+      return this;
+   }
+
    public String getDomainName() {
       return domainName;
    }
@@ -132,6 +199,20 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
    public Optional<Integer> getPortSpeed() {
       return portSpeed;
    }
+
+   public Optional<String> getUserData() { return userData; }
+
+   public Optional<Integer> getPrimaryNetworkComponentNetworkVlanId() { return primaryNetworkComponentNetworkVlanId; }
+
+   public Optional<Integer> getPrimaryBackendNetworkComponentNetworkVlanId() { return primaryBackendNetworkComponentNetworkVlanId; }
+
+   public Optional<Boolean> isHourlyBillingFlag() { return hourlyBillingFlag; }
+
+   public Optional<Boolean> isDedicatedAccountHostOnlyFlag() { return dedicatedAccountHostOnlyFlag; }
+
+   public Optional<Boolean> isPrivateNetworkOnlyFlag() { return privateNetworkOnlyFlag; }
+
+   public Optional<String> getPostInstallScriptUri() { return postInstallScriptUri; }
 
    public static final SoftLayerTemplateOptions NONE = new SoftLayerTemplateOptions();
 
@@ -172,6 +253,62 @@ public class SoftLayerTemplateOptions extends TemplateOptions implements Cloneab
       public static SoftLayerTemplateOptions portSpeed(Integer portSpeed) {
          SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
          return SoftLayerTemplateOptions.class.cast(options.portSpeed(portSpeed));
+      }
+
+      /**
+       * @see #userData
+       */
+      public static SoftLayerTemplateOptions userData(String userData) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.userData(userData));
+      }
+
+      /**
+       * @see #primaryNetworkComponentNetworkVlanId
+       */
+      public static SoftLayerTemplateOptions primaryNetworkComponentNetworkVlanId(Integer primaryNetworkComponentNetworkVlanId) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.primaryNetworkComponentNetworkVlanId(primaryNetworkComponentNetworkVlanId));
+      }
+
+      /**
+       * @see #primaryBackendNetworkComponentNetworkVlanId
+       */
+      public static SoftLayerTemplateOptions primaryBackendNetworkComponentNetworkVlanId(Integer primaryBackendNetworkComponentNetworkVlanId) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.primaryBackendNetworkComponentNetworkVlanId(primaryBackendNetworkComponentNetworkVlanId));
+      }
+
+      /**
+       * @see #hourlyBillingFlag
+       */
+      public static SoftLayerTemplateOptions hourlyBillingFlag(boolean hourlyBillingFlag) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.hourlyBillingFlag(hourlyBillingFlag));
+      }
+
+      /**
+       * @see #dedicatedAccountHostOnlyFlag
+       */
+      public static SoftLayerTemplateOptions dedicatedAccountHostOnlyFlag(boolean dedicatedAccountHostOnlyFlag) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.dedicatedAccountHostOnlyFlag(dedicatedAccountHostOnlyFlag));
+      }
+
+      /**
+       * @see #privateNetworkOnlyFlag
+       */
+      public static SoftLayerTemplateOptions privateNetworkOnlyFlag(boolean privateNetworkOnlyFlag) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.privateNetworkOnlyFlag(privateNetworkOnlyFlag));
+      }
+
+      /**
+       * @see #postInstallScriptUri(String)
+       */
+      public static SoftLayerTemplateOptions postInstallScriptUri(String postInstallScriptUri) {
+         SoftLayerTemplateOptions options = new SoftLayerTemplateOptions();
+         return SoftLayerTemplateOptions.class.cast(options.postInstallScriptUri(postInstallScriptUri));
       }
 
       // methods that only facilitate returning the correct object type

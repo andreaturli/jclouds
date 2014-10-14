@@ -171,7 +171,7 @@ public abstract class BaseTemplateBuilderLiveTest extends BaseComputeServiceCont
 
    @Test(groups = { "integration", "live" })
    public void testGetAssignableLocations() throws Exception {
-      assertProvider(view.unwrap());
+      SoftLayerTemplateBuilderLiveTest      assertProvider(view.unwrap());
       for (Location location : view.getComputeService().listAssignableLocations()) {
          System.err.printf("location %s%n", location);
          assert location.getId() != null : location;
