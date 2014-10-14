@@ -103,7 +103,6 @@ public class VirtualGuest {
 
       protected int accountId;
       protected Date createDate;
-      protected boolean dedicatedAccountHostOnly;
       protected String domain;
       protected String fullyQualifiedDomainName;
       protected String hostname;
@@ -115,7 +114,6 @@ public class VirtualGuest {
       protected Date metricPollDate;
       protected Date modifyDate;
       protected String notes;
-      protected boolean privateNetworkOnly;
       protected int startCpus;
       protected int statusId;
       protected String uuid;
@@ -129,10 +127,16 @@ public class VirtualGuest {
       protected SoftwareLicense softwareLicense;
       protected int activeTransactionCount;
       protected List<VirtualGuestBlockDevice> blockDevices;
+      protected boolean hourlyBillingFlag;
       protected boolean localDiskFlag;
+      protected boolean dedicatedAccountHostOnlyFlag;
+      protected boolean privateNetworkOnlyFlag;
       protected VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
-      protected Set<VirtualGuestNetworkComponent> networkComponents;
       protected Set<TagReference> tagReferences;
+      protected VirtualGuestNetworkComponent primaryNetworkComponent;
+      protected VirtualGuestNetworkComponent primaryBackendNetworkComponent;
+      protected String postInstallScriptUri;
+      protected VirtualGuestAttribute virtualGuestAttribute;
 
       /**
        * @see VirtualGuest#getAccountId()
@@ -153,8 +157,8 @@ public class VirtualGuest {
       /**
        * @see VirtualGuest#isDedicatedAccountHostOnly()
        */
-      public T dedicatedAccountHostOnly(boolean dedicatedAccountHostOnly) {
-         this.dedicatedAccountHostOnly = dedicatedAccountHostOnly;
+      public T dedicatedAccountHostOnly(boolean dedicatedAccountHostOnlyFlag) {
+         this.dedicatedAccountHostOnlyFlag = dedicatedAccountHostOnlyFlag;
          return self();
       }
 
@@ -243,14 +247,6 @@ public class VirtualGuest {
        */
       public T notes(String notes) {
          this.notes = notes;
-         return self();
-      }
-
-      /**
-       * @see VirtualGuest#isPrivateNetworkOnly()
-       */
-      public T privateNetworkOnly(boolean privateNetworkOnly) {
-         this.privateNetworkOnly = privateNetworkOnly;
          return self();
       }
 
@@ -362,8 +358,23 @@ public class VirtualGuest {
          return blockDevices(ImmutableList.copyOf(checkNotNull(in, "blockDevices")));
       }
 
+      public T hourlyBillingFlag(boolean hourlyBillingFlag) {
+         this.hourlyBillingFlag = hourlyBillingFlag;
+         return self();
+      }
+
       public T localDiskFlag(boolean localDiskFlag) {
          this.localDiskFlag = localDiskFlag;
+         return self();
+      }
+
+      public T dedicatedAccountHostOnlyFlag(boolean dedicatedAccountHostOnlyFlag) {
+         this.dedicatedAccountHostOnlyFlag = dedicatedAccountHostOnlyFlag;
+         return self();
+      }
+
+      public T privateNetworkOnlyFlag(boolean privateNetworkOnlyFlag) {
+         this.privateNetworkOnlyFlag = privateNetworkOnlyFlag;
          return self();
       }
 
@@ -372,13 +383,20 @@ public class VirtualGuest {
          return self();
       }
 
-      public T networkComponents(Set<VirtualGuestNetworkComponent> networkComponents) {
-         this.networkComponents = ImmutableSet.copyOf(checkNotNull(networkComponents, "networkComponents"));
+      /**
+       * @see org.jclouds.softlayer.domain.VirtualGuest#getPrimaryBackendNetworkComponent() ()
+       */
+      public T primaryNetworkComponent(VirtualGuestNetworkComponent primaryNetworkComponent) {
+         this.primaryNetworkComponent = primaryNetworkComponent;
          return self();
       }
 
-      public T networkComponents(VirtualGuestNetworkComponent... in) {
-         return networkComponents(ImmutableSet.copyOf(checkNotNull(in, "networkComponents")));
+      /**
+       * @see org.jclouds.softlayer.domain.VirtualGuest#getPrimaryBackendNetworkComponent() ()
+       */
+      public T primaryBackendNetworkComponent(VirtualGuestNetworkComponent primaryBackendNetworkComponent) {
+         this.primaryBackendNetworkComponent = primaryBackendNetworkComponent;
+         return self();
       }
 
       public T tagReferences(Set<TagReference> tagReferences) {
@@ -390,13 +408,30 @@ public class VirtualGuest {
          return tagReferences(ImmutableSet.copyOf(checkNotNull(in, "tagReferences")));
       }
 
+      /**
+       * @see org.jclouds.softlayer.domain.VirtualGuest#getPostInstallScriptUri() ()
+       */
+      public T postInstallScriptUri(String postInstallScriptUri) {
+         this.postInstallScriptUri = postInstallScriptUri;
+         return self();
+      }
+
+      /**
+       * @see org.jclouds.softlayer.domain.VirtualGuest#getVirtualGuestAttribute() ()
+       */
+      public T virtualGuestAttribute(VirtualGuestAttribute virtualGuestAttribute) {
+         this.virtualGuestAttribute = virtualGuestAttribute;
+         return self();
+      }
+
       public VirtualGuest build() {
-         return new VirtualGuest(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName, hostname,
-               id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes, privateNetworkOnly,
+         return new VirtualGuest(accountId, createDate, domain, fullyQualifiedDomainName, hostname,
+               id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes,
                startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress, new BillingItem(billingItemId),
                operatingSystem, operatingSystemReferenceCode, datacenter, powerState, softwareLicense,
-               activeTransactionCount, blockDevices, localDiskFlag, blockDeviceTemplateGroup, networkComponents,
-               tagReferences );
+               activeTransactionCount, blockDevices, hourlyBillingFlag, localDiskFlag, dedicatedAccountHostOnlyFlag,
+               privateNetworkOnlyFlag, blockDeviceTemplateGroup, tagReferences, primaryNetworkComponent,
+               primaryBackendNetworkComponent, postInstallScriptUri, virtualGuestAttribute);
       }
 
       public T fromVirtualGuest(VirtualGuest in) {
@@ -415,7 +450,6 @@ public class VirtualGuest {
                .metricPollDate(in.getMetricPollDate())
                .modifyDate(in.getModifyDate())
                .notes(in.getNotes())
-               .privateNetworkOnly(in.isPrivateNetworkOnly())
                .startCpus(in.getStartCpus())
                .statusId(in.getStatusId())
                .uuid(in.getUuid())
@@ -427,10 +461,14 @@ public class VirtualGuest {
                .datacenter(in.getDatacenter())
                .powerState(in.getPowerState())
                .activeTransactionCount(in.getActiveTransactionCount())
+               .hourlyBillingFlag(in.isHourlyBillingFlag())
                .localDiskFlag(in.isLocalDiskFlag())
+               .dedicatedAccountHostOnlyFlag(in.isDedicatedAccountHostOnly())
+               .privateNetworkOnlyFlag(in.isPrivateNetworkOnly())
                .blockDeviceTemplateGroup(in.getVirtualGuestBlockDeviceTemplateGroup())
-               .networkComponents(in.getVirtualGuestNetworkComponents())
-               .tagReferences(in.getTagReferences());
+               .tagReferences(in.getTagReferences())
+               .postInstallScriptUri(in.getPostInstallScriptUri())
+               .virtualGuestAttribute(in.getVirtualGuestAttribute());
       }
    }
 
@@ -443,7 +481,6 @@ public class VirtualGuest {
 
    private final int accountId;
    private final Date createDate;
-   private final boolean dedicatedAccountHostOnly;
    private final String domain;
    private final String fullyQualifiedDomainName;
    private final String hostname;
@@ -455,7 +492,6 @@ public class VirtualGuest {
    private final Date metricPollDate;
    private final Date modifyDate;
    private final String notes;
-   private final boolean privateNetworkOnly;
    private final int startCpus;
    private final int statusId;
    private final String uuid;
@@ -469,32 +505,40 @@ public class VirtualGuest {
    private final SoftwareLicense softwareLicense;
    private final int activeTransactionCount;
    private final List<VirtualGuestBlockDevice> blockDevices;
+   private final boolean hourlyBillingFlag;
    private final boolean localDiskFlag;
+   private final boolean dedicatedAccountHostOnlyFlag;
+   private final boolean privateNetworkOnlyFlag;
    private final VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup;
-   private final Set<VirtualGuestNetworkComponent> networkComponents;
    private final Set<TagReference> tagReferences;
+   private final VirtualGuestNetworkComponent primaryNetworkComponent;
+   private final VirtualGuestNetworkComponent primaryBackendNetworkComponent;
+   private final String postInstallScriptUri;
+   private final VirtualGuestAttribute virtualGuestAttribute;
 
-   @ConstructorProperties({ "accountId", "createDate", "dedicatedAccountHostOnlyFlag", "domain",
+   @ConstructorProperties({"accountId", "createDate", "domain",
            "fullyQualifiedDomainName", "hostname", "id", "lastVerifiedDate", "maxCpu", "maxCpuUnits", "maxMemory",
-           "metricPollDate", "modifyDate", "notes", "privateNetworkOnlyFlag", "startCpus", "statusId", "uuid",
+           "metricPollDate", "modifyDate", "notes", "startCpus", "statusId", "uuid",
            "primaryBackendIpAddress", "primaryIpAddress", "billingItem", "operatingSystem",
            "operatingSystemReferenceCode", "datacenter", "powerState", "softwareLicense", "activeTransactionCount",
-           "blockDevices", "localDiskFlag", "blockDeviceTemplateGroup", "networkComponents", "tagReferences"
-})
-   protected VirtualGuest(int accountId, @Nullable Date createDate, boolean dedicatedAccountHostOnly, @Nullable String domain,
+           "blockDevices", "hourlyBillingFlag", "localDiskFlag", "dedicatedAccountHostOnlyFlag",
+           "privateNetworkOnlyFlag", "blockDeviceTemplateGroup", "tagReferences", "primaryNetworkComponent",
+           "primaryBackendNetworkComponent", "postInstallScriptUri", "virtualGuestAttribute"})
+   protected VirtualGuest(int accountId, @Nullable Date createDate, @Nullable String domain,
                           @Nullable String fullyQualifiedDomainName, @Nullable String hostname, int id, @Nullable Date lastVerifiedDate,
                           int maxCpu, @Nullable String maxCpuUnits, int maxMemory, @Nullable Date metricPollDate, @Nullable Date modifyDate,
-                          @Nullable String notes, boolean privateNetworkOnly, int startCpus, int statusId, @Nullable String uuid,
+                          @Nullable String notes, int startCpus, int statusId, @Nullable String uuid,
                           @Nullable String primaryBackendIpAddress, @Nullable String primaryIpAddress, @Nullable BillingItem billingItem,
                           @Nullable OperatingSystem operatingSystem, @Nullable String operatingSystemReferenceCode,
                           @Nullable Datacenter datacenter, @Nullable PowerState powerState, @Nullable SoftwareLicense softwareLicense,
                           int activeTransactionCount, @Nullable List<VirtualGuestBlockDevice> blockDevices,
-                          boolean localDiskFlag, @Nullable VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup,
-                          @Nullable Set<VirtualGuestNetworkComponent> networkComponents,
-                          @Nullable Set<TagReference> tagReferences ) {
+                          boolean hourlyBillingFlag, boolean localDiskFlag, boolean dedicatedAccountHostOnlyFlag,
+                          boolean privateNetworkOnlyFlag, @Nullable VirtualGuestBlockDeviceTemplateGroup blockDeviceTemplateGroup,
+                          @Nullable Set<TagReference> tagReferences, @Nullable VirtualGuestNetworkComponent primaryNetworkComponent,
+                          @Nullable VirtualGuestNetworkComponent primaryBackendNetworkComponent,
+                          @Nullable String postInstallScriptUri, @Nullable VirtualGuestAttribute virtualGuestAttribute) {
       this.accountId = accountId;
       this.createDate = createDate;
-      this.dedicatedAccountHostOnly = dedicatedAccountHostOnly;
       this.domain = domain;
       this.fullyQualifiedDomainName = fullyQualifiedDomainName;
       this.hostname = hostname;
@@ -506,7 +550,6 @@ public class VirtualGuest {
       this.metricPollDate = metricPollDate;
       this.modifyDate = modifyDate;
       this.notes = notes;
-      this.privateNetworkOnly = privateNetworkOnly;
       this.startCpus = startCpus;
       this.statusId = statusId;
       this.uuid = uuid;
@@ -520,10 +563,16 @@ public class VirtualGuest {
       this.powerState = powerState;
       this.softwareLicense = softwareLicense;
       this.activeTransactionCount = activeTransactionCount;
+      this.hourlyBillingFlag = hourlyBillingFlag;
       this.localDiskFlag = localDiskFlag;
+      this.dedicatedAccountHostOnlyFlag = dedicatedAccountHostOnlyFlag;
+      this.privateNetworkOnlyFlag = privateNetworkOnlyFlag;
       this.blockDeviceTemplateGroup = blockDeviceTemplateGroup;
-      this.networkComponents = networkComponents;
       this.tagReferences = tagReferences;
+      this.primaryNetworkComponent= primaryNetworkComponent;
+      this.primaryBackendNetworkComponent = primaryBackendNetworkComponent;
+      this.postInstallScriptUri = postInstallScriptUri;
+      this.virtualGuestAttribute = virtualGuestAttribute;
    }
 
    /**
@@ -539,14 +588,6 @@ public class VirtualGuest {
    @Nullable
    public Date getCreateDate() {
       return this.createDate;
-   }
-
-   /**
-    * @return When true this flag specifies that a compute instance is to run on hosts that only
-   have guests from the same account.
-    */
-   public boolean isDedicatedAccountHostOnly() {
-      return this.dedicatedAccountHostOnly;
    }
 
    /**
@@ -633,13 +674,6 @@ public class VirtualGuest {
    @Nullable
    public String getNotes() {
       return this.notes;
-   }
-
-   /**
-    * @return Whether the computing instance only has access to the private network.
-    */
-   public boolean isPrivateNetworkOnly() {
-      return this.privateNetworkOnly;
    }
 
    /**
@@ -733,17 +767,32 @@ public class VirtualGuest {
       return blockDevices;
    }
 
+   public boolean isHourlyBillingFlag() {
+      return this.hourlyBillingFlag;
+   }
+
    public boolean isLocalDiskFlag() {
       return localDiskFlag;
    }
 
-   public VirtualGuestBlockDeviceTemplateGroup getVirtualGuestBlockDeviceTemplateGroup() {
-      return blockDeviceTemplateGroup;
+   /**
+    * @return Whether the computing instance only has access to the private network.
+    */
+   public boolean isPrivateNetworkOnly() {
+      return this.privateNetworkOnlyFlag;
    }
 
-   @Nullable
-   public Set<VirtualGuestNetworkComponent> getVirtualGuestNetworkComponents() {
-      return networkComponents;
+   /**
+    * @return When true this flag specifies that a compute instance is to run on hosts that only
+   have guests from the same account.
+    */
+   public boolean isDedicatedAccountHostOnly() {
+      return this.dedicatedAccountHostOnlyFlag;
+   }
+
+
+   public VirtualGuestBlockDeviceTemplateGroup getVirtualGuestBlockDeviceTemplateGroup() {
+      return blockDeviceTemplateGroup;
    }
 
    @Nullable
@@ -751,13 +800,31 @@ public class VirtualGuest {
       return tagReferences;
    }
 
+   public VirtualGuestNetworkComponent getPrimaryNetworkComponent() {
+      return primaryNetworkComponent;
+   }
+
+   public VirtualGuestNetworkComponent getPrimaryBackendNetworkComponent() {
+      return primaryBackendNetworkComponent;
+   }
+
+   public String getPostInstallScriptUri() {
+      return postInstallScriptUri;
+   }
+
+   public VirtualGuestAttribute getVirtualGuestAttribute() {
+      return virtualGuestAttribute;
+   }
+
    @Override
    public int hashCode() {
-      return Objects.hashCode(accountId, createDate, dedicatedAccountHostOnly, domain, fullyQualifiedDomainName,
+      return Objects.hashCode(accountId, createDate, domain, fullyQualifiedDomainName,
               hostname, id, lastVerifiedDate, maxCpu, maxCpuUnits, maxMemory, metricPollDate, modifyDate, notes,
-              privateNetworkOnly, startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress,
-              billingItemId, operatingSystem, datacenter, powerState, softwareLicense, blockDevices, localDiskFlag,
-              blockDeviceTemplateGroup, tagReferences);
+              startCpus, statusId, uuid, primaryBackendIpAddress, primaryIpAddress,
+              billingItemId, operatingSystem, datacenter, powerState, softwareLicense, blockDevices,
+              hourlyBillingFlag, localDiskFlag, dedicatedAccountHostOnlyFlag, privateNetworkOnlyFlag,
+              blockDeviceTemplateGroup, tagReferences, primaryNetworkComponent, primaryBackendNetworkComponent,
+              postInstallScriptUri, virtualGuestAttribute);
    }
 
    @Override
@@ -767,7 +834,6 @@ public class VirtualGuest {
       VirtualGuest that = VirtualGuest.class.cast(obj);
       return Objects.equal(this.accountId, that.accountId)
             && Objects.equal(this.createDate, that.createDate)
-            && Objects.equal(this.dedicatedAccountHostOnly, that.dedicatedAccountHostOnly)
             && Objects.equal(this.domain, that.domain)
             && Objects.equal(this.fullyQualifiedDomainName, that.fullyQualifiedDomainName)
             && Objects.equal(this.hostname, that.hostname)
@@ -779,7 +845,6 @@ public class VirtualGuest {
             && Objects.equal(this.metricPollDate, that.metricPollDate)
             && Objects.equal(this.modifyDate, that.modifyDate)
             && Objects.equal(this.notes, that.notes)
-            && Objects.equal(this.privateNetworkOnly, that.privateNetworkOnly)
             && Objects.equal(this.startCpus, that.startCpus)
             && Objects.equal(this.statusId, that.statusId)
             && Objects.equal(this.uuid, that.uuid)
@@ -792,10 +857,16 @@ public class VirtualGuest {
             && Objects.equal(this.powerState, that.powerState)
             && Objects.equal(this.softwareLicense, that.softwareLicense)
             && Objects.equal(this.blockDevices, that.blockDevices)
+            && Objects.equal(this.hourlyBillingFlag, that.hourlyBillingFlag)
             && Objects.equal(this.localDiskFlag, that.localDiskFlag)
+            && Objects.equal(this.dedicatedAccountHostOnlyFlag, that.dedicatedAccountHostOnlyFlag)
+            && Objects.equal(this.privateNetworkOnlyFlag, that.privateNetworkOnlyFlag)
             && Objects.equal(this.blockDeviceTemplateGroup, that.blockDeviceTemplateGroup)
-            && Objects.equal(this.networkComponents, that.networkComponents)
-            && Objects.equal(this.tagReferences, that.tagReferences);
+            && Objects.equal(this.tagReferences, that.tagReferences)
+            && Objects.equal(this.primaryNetworkComponent, that.primaryNetworkComponent)
+            && Objects.equal(this.primaryBackendNetworkComponent, that.primaryBackendNetworkComponent)
+            && Objects.equal(this.postInstallScriptUri, that.postInstallScriptUri)
+            && Objects.equal(this.virtualGuestAttribute, that.virtualGuestAttribute);
    }
 
    @Override
@@ -803,7 +874,6 @@ public class VirtualGuest {
       return MoreObjects.toStringHelper(this)
               .add("accountId", accountId)
               .add("createDate", createDate)
-              .add("dedicatedAccountHostOnly", dedicatedAccountHostOnly)
               .add("domain", domain)
               .add("fullyQualifiedDomainName", fullyQualifiedDomainName)
               .add("hostname", hostname)
@@ -815,7 +885,6 @@ public class VirtualGuest {
               .add("metricPollDate", metricPollDate)
               .add("modifyDate", modifyDate)
               .add("notes", notes)
-              .add("privateNetworkOnly", privateNetworkOnly)
               .add("startCpus", startCpus)
               .add("statusId", statusId)
               .add("uuid", uuid)
@@ -829,10 +898,15 @@ public class VirtualGuest {
               .add("softwareLicense", softwareLicense)
               .add("activeTransactionCount", activeTransactionCount)
               .add("blockDevices", blockDevices)
+              .add("hourlyBillingFlag", hourlyBillingFlag)
               .add("localDiskFlag", localDiskFlag)
+              .add("dedicatedAccountHostOnlyFlag", dedicatedAccountHostOnlyFlag)
+              .add("privateNetworkOnlyFlag", privateNetworkOnlyFlag)
               .add("blockDeviceTemplateGroup", blockDeviceTemplateGroup)
-              .add("networkComponents", networkComponents)
-              .add("tagReferences", tagReferences)
+              .add("primaryNetworkComponent", primaryNetworkComponent)
+              .add("primaryBackendNetworkComponent", primaryBackendNetworkComponent)
+              .add("postInstallScriptUri", postInstallScriptUri)
+              .add("virtualGuestAttribute", virtualGuestAttribute)
               .toString();
    }
 }

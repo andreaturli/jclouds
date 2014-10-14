@@ -25,6 +25,8 @@ import org.jclouds.compute.domain.OsFamilyVersion64Bit;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.Volume;
 import org.jclouds.compute.internal.BaseTemplateBuilderLiveTest;
+import org.jclouds.providers.internal.BaseProviderMetadata;
+import org.jclouds.softlayer.SoftLayerProviderMetadata;
 import org.jclouds.softlayer.compute.options.SoftLayerTemplateOptions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -163,7 +165,7 @@ public class SoftLayerTemplateBuilderLiveTest extends BaseTemplateBuilderLiveTes
 
    @Override
    protected Set<String> getIso3166Codes() {
-      return ImmutableSet.<String> of("SG", "US-CA", "US-TX", "US-VA", "US-WA", "NL", "HK", "NSFTW-IL");
+      return createProviderMetadata().getIso3166Codes();
    }
 
    @BeforeClass(groups = "live")
