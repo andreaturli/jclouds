@@ -22,11 +22,12 @@
   <parent>
     <groupId>org.apache.jclouds</groupId>
     <artifactId>jclouds-project</artifactId>
-    <version>1.8.1</version>
+    <version>1.8.0</version>
     <relativePath>../../project/pom.xml</relativePath>
   </parent>
-  <groupId>org.apache.jclouds.provider</groupId>
+  <groupId>io.cloudsoft.jclouds.provider</groupId>
   <artifactId>softlayer</artifactId>
+  <version>1.8.2-ea-brooklyn.1</version>
   <name>jclouds SoftLayer core</name>
   <description>jclouds components to access SoftLayer</description>
   <packaging>bundle</packaging>
@@ -64,32 +65,32 @@
     <dependency>
       <groupId>org.apache.jclouds</groupId>
       <artifactId>jclouds-compute</artifactId>
-      <version>${project.version}</version>
+      <version>1.8.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds</groupId>
       <artifactId>jclouds-core</artifactId>
-      <version>${project.version}</version>
+      <version>1.8.0</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds</groupId>
       <artifactId>jclouds-compute</artifactId>
-      <version>${project.version}</version>
+      <version>1.8.0</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.jclouds.driver</groupId>
       <artifactId>jclouds-sshj</artifactId>
-      <version>${project.version}</version>
+      <version>1.8.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>org.apache.jclouds.driver</groupId>
         <artifactId>jclouds-slf4j</artifactId>
-        <version>${project.version}</version>
+        <version>1.8.0</version>
         <scope>test</scope>
     </dependency>
     <dependency>
@@ -128,6 +129,22 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>cloudsoft-artifactory-repo</id>
+      <activation> <property><name>brooklyn.deployTo</name><value>cloudsoftArtifactory</value></property> </activation>
+      <distributionManagement>
+        <repository>
+          <id>cloudsoft-deploy-artifactory-release</id>
+          <name>Cloudsoft Artifactory libs-release-local repo</name>
+          <url>http://ccweb.cloudsoftcorp.com/maven/libs-release-local/</url>
+        </repository>
+        <snapshotRepository>
+          <id>cloudsoft-deploy-artifactory-snapshot</id>
+          <name>Cloudsoft Artifactory libs-snapshot-local repo</name>
+          <url>http://ccweb.cloudsoftcorp.com/maven/libs-snapshot-local/</url>
+        </snapshotRepository>
+      </distributionManagement>
     </profile>
   </profiles>
 

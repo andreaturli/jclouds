@@ -68,7 +68,7 @@ public class VirtualGuestToJsonTest {
                       "\"domain\":\"domain\"," +
                       "\"startCpus\":1," +
                       "\"maxMemory\":1024," +
-                      "\"hourlyBillingFlag\":true," +
+                      "\"hourlyBillingFlag\":false," +
                       "\"operatingSystemReferenceCode\":\"UBUNTU_12_64\"," +
                       "\"localDiskFlag\":true," +
                       "\"datacenter\":{" +
