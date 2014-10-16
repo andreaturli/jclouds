@@ -62,8 +62,8 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
               .build(ComputeServiceContext.class);
 
       TemplateBuilder templateBuilder = context.getComputeService().templateBuilder();
-      templateBuilder.imageId("CENTOS_6_64");
-      templateBuilder.locationId("dal01");
+      templateBuilder.imageId("REDHAT_6_64");
+      templateBuilder.locationId("sjc01");
 
       Template template = templateBuilder.build();
       // test passing custom options
@@ -73,7 +73,14 @@ public class SoftLayerComputeServiceContextLiveTest extends BaseComputeServiceCo
       //options.blockDevices(ImmutableList.of(25, 400, 400));
       //options.diskType("SAN");
       //tags
-      options.tags(ImmutableList.of("jclouds"));
+      //options.tags(ImmutableList.of("jclouds"));
+
+      //options.postInstallScriptUri("https://raw.githubusercontent
+      // .com/tianhw2006/amp/master/configure-csa-vm-gateway.sh");
+      //options.userData("10.54.112.3");
+      //options.primaryBackendNetworkComponentNetworkVlanId(613654);
+      //options.privateNetworkOnlyFlag(true);
+
       Set<? extends NodeMetadata> nodes = context.getComputeService().createNodesInGroup(name, numNodes, template);
       assertEquals(numNodes, nodes.size(), "wrong number of nodes");
       for (NodeMetadata node : nodes) {

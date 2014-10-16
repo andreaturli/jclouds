@@ -469,7 +469,7 @@ public class SoftLayerComputeServiceAdapter implements
          boolean hasPasswords = newGuest.getOperatingSystem() != null
                  && !newGuest.getOperatingSystem().getPasswords().isEmpty();
 
-         return hasBackendIp && hasPrimaryIp && hasPasswords;
+         return (hasBackendIp || hasPrimaryIp) && hasPasswords;
       }
    }
 
