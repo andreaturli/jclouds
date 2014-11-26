@@ -43,6 +43,7 @@ import javax.inject.Singleton;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.jclouds.JcloudsVersion;
 import org.jclouds.http.HttpRequest;
@@ -73,7 +74,7 @@ public class JavaUrlHttpCommandExecutorService extends BaseHttpCommandExecutorSe
    protected final Function<URI, Proxy> proxyForURI;
    protected final HostnameVerifier verifier;
    @Inject(optional = true)
-   protected Supplier<SSLContext> sslContextSupplier;
+   protected Supplier<SSLSocketFactory> sslSocketFactorySupplier;
 
    @Inject
    public JavaUrlHttpCommandExecutorService(HttpUtils utils, ContentMetadataCodec contentMetadataCodec,
@@ -213,13 +214,13 @@ public class JavaUrlHttpCommandExecutorService extends BaseHttpCommandExecutorSe
          HttpsURLConnection sslCon = (HttpsURLConnection) connection;
          if (utils.relaxHostname())
             sslCon.setHostnameVerifier(verifier);
-         if (sslContextSupplier != null) {
-             // used for providers which e.g. use certs for authentication (like FGCP)
-             // Provider provides SSLContext impl (which inits context with key manager)
-             sslCon.setSSLSocketFactory(sslContextSupplier.get().getSocketFactory());
+         if (sslSocketFactorySupplier != null) {
+            // used for providers (like Docker) which requires a custom SSLSocketFactory
+            sslCon.setSSLSocketFactory(sslSocketFactorySupplier.get());
          } else if (utils.trustAllCerts()) {
              sslCon.setSSLSocketFactory(untrustedSSLContextProvider.get().getSocketFactory());
          }
+         return sslCon;
       }
       return connection;
    }

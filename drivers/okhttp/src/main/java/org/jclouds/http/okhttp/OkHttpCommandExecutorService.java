@@ -68,11 +68,9 @@ public class OkHttpCommandExecutorService extends JavaUrlHttpCommandExecutorServ
          if (utils.relaxHostname()) {
             client.setHostnameVerifier(verifier);
          }
-         if (sslContextSupplier != null) {
-            // used for providers which e.g. use certs for authentication (like
-            // FGCP) Provider provides SSLContext impl (which inits context with
-            // key manager)
-            client.setSslSocketFactory(sslContextSupplier.get().getSocketFactory());
+         if (sslSocketFactorySupplier != null) {
+            // used for providers (like Docker) which requires a custom SSLSocketFactory
+            client.setSslSocketFactory(sslSocketFactorySupplier.get());
          } else if (utils.trustAllCerts()) {
             client.setSslSocketFactory(untrustedSSLContextProvider.get().getSocketFactory());
          }
