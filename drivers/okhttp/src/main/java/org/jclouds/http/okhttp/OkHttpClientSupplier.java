@@ -16,11 +16,19 @@
  */
 package org.jclouds.http.okhttp;
 
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Named;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+
+import org.jclouds.http.HttpUtils;
 import org.jclouds.http.okhttp.OkHttpClientSupplier.NewOkHttpClient;
 
 import com.google.common.annotations.Beta;
 import com.google.common.base.Supplier;
 import com.google.inject.ImplementedBy;
+import com.google.inject.Inject;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
@@ -35,9 +43,36 @@ import com.squareup.okhttp.OkHttpClient;
 public interface OkHttpClientSupplier extends Supplier<OkHttpClient> {
 
    static final class NewOkHttpClient implements OkHttpClientSupplier {
+
+      private final HostnameVerifier verifier;
+      private final Supplier<SSLContext> untrustedSSLContextProvider;
+      private final HttpUtils utils;
+
+      @Inject
+      public NewOkHttpClient(HttpUtils utils, @Named("untrusted") HostnameVerifier verifier,
+                             @Named("untrusted") Supplier<SSLContext> untrustedSSLContextProvider) {
+         this.verifier = verifier;
+         this.untrustedSSLContextProvider = untrustedSSLContextProvider;
+         this.utils = utils;
+      }
+
       @Override
       public OkHttpClient get() {
-         return new OkHttpClient();
+         OkHttpClient client = new OkHttpClient();
+         client.setConnectTimeout(utils.getConnectionTimeout(), TimeUnit.MILLISECONDS);
+         client.setReadTimeout(utils.getSocketOpenTimeout(), TimeUnit.MILLISECONDS);
+         // do not follow redirects since https redirects don't work properly
+         // ex. Caused by: java.io.IOException: HTTPS hostname wrong: should be
+         // <adriancole.s3int0.s3-external-3.amazonaws.com>
+         client.setFollowRedirects(false);
+
+         if (utils.relaxHostname()) {
+            client.setHostnameVerifier(verifier);
+         }
+         if (utils.trustAllCerts()) {
+            client.setSslSocketFactory(untrustedSSLContextProvider.get().getSocketFactory());
+         }
+         return client;
       }
    }
 }

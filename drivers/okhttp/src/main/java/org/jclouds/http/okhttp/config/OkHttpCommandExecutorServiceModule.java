@@ -16,20 +16,12 @@
  */
 package org.jclouds.http.okhttp.config;
 
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Named;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-
 import org.jclouds.http.HttpCommandExecutorService;
-import org.jclouds.http.HttpUtils;
 import org.jclouds.http.config.ConfiguresHttpCommandExecutorService;
 import org.jclouds.http.config.SSLModule;
 import org.jclouds.http.okhttp.OkHttpClientSupplier;
 import org.jclouds.http.okhttp.OkHttpCommandExecutorService;
 
-import com.google.common.base.Supplier;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -52,38 +44,16 @@ public class OkHttpCommandExecutorServiceModule extends AbstractModule {
    }
 
    private static final class OkHttpClientProvider implements Provider<OkHttpClient> {
-      private final HostnameVerifier verifier;
-      private final Supplier<SSLContext> untrustedSSLContextProvider;
-      private final HttpUtils utils;
       private final OkHttpClientSupplier clientSupplier;
 
       @Inject
-      OkHttpClientProvider(HttpUtils utils, @Named("untrusted") HostnameVerifier verifier,
-            @Named("untrusted") Supplier<SSLContext> untrustedSSLContextProvider, OkHttpClientSupplier clientSupplier) {
-         this.utils = utils;
-         this.verifier = verifier;
-         this.untrustedSSLContextProvider = untrustedSSLContextProvider;
+      OkHttpClientProvider(OkHttpClientSupplier clientSupplier) {
          this.clientSupplier = clientSupplier;
       }
 
       @Override
       public OkHttpClient get() {
-         OkHttpClient client = clientSupplier.get();
-         client.setConnectTimeout(utils.getConnectionTimeout(), TimeUnit.MILLISECONDS);
-         client.setReadTimeout(utils.getSocketOpenTimeout(), TimeUnit.MILLISECONDS);
-         // do not follow redirects since https redirects don't work properly
-         // ex. Caused by: java.io.IOException: HTTPS hostname wrong: should be
-         // <adriancole.s3int0.s3-external-3.amazonaws.com>
-         client.setFollowRedirects(false);
-
-         if (utils.relaxHostname()) {
-            client.setHostnameVerifier(verifier);
-         }
-         if (utils.trustAllCerts()) {
-            client.setSslSocketFactory(untrustedSSLContextProvider.get().getSocketFactory());
-         }
-
-         return client;
+         return clientSupplier.get();
       }
    }
 
