@@ -428,7 +428,8 @@
             <exclude>**/README.txt</exclude>
             <exclude>**/DEPENDENCIES</exclude>
             <exclude>**/CONTRIBUTING.md</exclude>
-
+            <exclude>**/.travis.yml</exclude>
+            <exclude>**/.buildscript/**</exclude>
             <!-- reference data lists -->
             <exclude>**/*json</exclude>
             <exclude>**/*readme</exclude>

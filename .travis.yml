@@ -1,0 +1,31 @@
+language: java
+
+jdk:
+- oraclejdk7
+
+install: /bin/true
+
+script: mvn clean install --quiet -Dmaven.test.redirectTestOutputToFile=true -Dsurefire.printSummary=false
+
+after_success:
+  - .buildscript/deploy_snapshot.sh
+
+branches:
+  only:
+  - master
+  - 1.8.x
+  - 1.7.x
+
+notifications:
+  email: false
+
+sudo: false
+
+cache:
+  directories:
+  - $HOME/.m2
+
+env:
+  global:
+  - secure: usuS842qqOPljI4cT3AgdPpGNZniraiDQInx1bFSEdZGl72lzyZL8VpNgDm9AyLACRHROWPPYKeVTq3zraUYtJdfk2RvnTPK9xEEIIxQeJ6cqvivo/ncwa0TvnQYX4X83WCUwWnzYcmnavFDfuPlxySu4xEirF7qEJ08vpJRBjg=
+  - secure: cNDoiH+LkVCd8JKMwCLeJUIenWD7c/YlE7qSFc+YHOGZt6y7T2R48XKQZ0ykeAn6FTsG0adAKczQg0zn6uzkoWrH5RYNtJFSIo1jEYX/icAgDfiphJHv2jOZBb3mtotVOCo3UqeLWd6TfPThDAmuJoVacFBEjM33e2eu8xOB8o0=
