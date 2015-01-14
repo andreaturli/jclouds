@@ -20,7 +20,7 @@ else
   echo "Deploying snapshot..."
   cd project
   echo $PWD
-  mvn versions:set versions:update-child-modules -DnewVersion=1.8.2-$\{revision\}-SNAPSHOT -DgenerateBackupPoms=false --quiet
+  mvn versions:set versions:update-child-modules -DnewVersion=1.8.2-$\{sha1\}-SNAPSHOT -DgenerateBackupPoms=false --quiet
   cd ..
   echo $PWD
   mvn clean source:jar javadoc:jar deploy --settings=".buildscript/settings.xml" -Dmaven.test.skip=true -Dsha1=`git rev-parse HEAD` --quiet
