@@ -19,8 +19,10 @@ elif [ "$TRAVIS_BRANCH" != "$BRANCH" ]; then
 else
   echo "Deploying snapshot..."
   cd project
-  mvn versions:set versions:update-child-modules -DnewVersion=1.8.2-$\{revision\}-SNAPSHOT -DgenerateBackupPoms=false
+  echo $PWD
+  mvn versions:set versions:update-child-modules -DnewVersion=1.8.2-$\{revision\}-SNAPSHOT -DgenerateBackupPoms=false --quiet
   cd ..
-  mvn clean source:jar javadoc:jar deploy --settings=".buildscript/settings.xml" -Dmaven.test.skip=true -Dsha1=`git rev-parse HEAD`
+  echo $PWD
+  mvn clean source:jar javadoc:jar deploy --settings=".buildscript/settings.xml" -Dmaven.test.skip=true -Dsha1=`git rev-parse HEAD` --quiet
   echo "Snapshot deployed!"
 fi
