@@ -450,6 +450,7 @@ public class SoftLayerComputeServiceAdapter implements
    }
 
    private Optional<OperatingSystem> tryExtractOperatingSystemFrom(VirtualGuestBlockDeviceTemplateGroup image) {
+      if (image.getGlobalIdentifier() == null) return Optional.absent();
       return FluentIterable.from(image.getChildren())
               .transformAndConcat(new BlockDeviceTemplateGroupToBlockDeviceTemplateIterable())
               .filter(new IsBootableDevice())
