@@ -25,6 +25,8 @@ public enum CredentialType {
 
    BEARER_TOKEN_CREDENTIALS,
 
+   MAC_TOKEN_CREDENTIALS,
+
    /** Contents are a PEM-encoded P12 Private Key. */
    P12_PRIVATE_KEY_CREDENTIALS;
 

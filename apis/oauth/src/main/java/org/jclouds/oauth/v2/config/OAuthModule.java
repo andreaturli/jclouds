@@ -19,7 +19,6 @@ package org.jclouds.oauth.v2.config;
 import static org.jclouds.oauth.v2.config.CredentialType.P12_PRIVATE_KEY_CREDENTIALS;
 import static org.jclouds.oauth.v2.config.OAuthProperties.CREDENTIAL_TYPE;
 import static org.jclouds.rest.config.BinderUtils.bindHttpApi;
-
 import java.net.URI;
 import java.security.PrivateKey;
 
@@ -29,6 +28,7 @@ import javax.inject.Singleton;
 import org.jclouds.oauth.v2.AuthorizationApi;
 import org.jclouds.oauth.v2.filters.BearerTokenFromCredentials;
 import org.jclouds.oauth.v2.filters.JWTBearerTokenFlow;
+import org.jclouds.oauth.v2.filters.MACTypeAccessTokenFlow;
 import org.jclouds.oauth.v2.filters.OAuthFilter;
 
 import com.google.common.base.Supplier;
@@ -69,12 +69,15 @@ public final class OAuthModule extends AbstractModule {
    @Singleton
    protected OAuthFilter authenticationFilterForCredentialType(CredentialType credentialType,
                                                                JWTBearerTokenFlow serviceAccountAuth,
-                                                               BearerTokenFromCredentials bearerTokenAuth) {
+                                                               BearerTokenFromCredentials bearerTokenAuth,
+                                                               MACTypeAccessTokenFlow macTokenAuth) {
       switch (credentialType) {
          case P12_PRIVATE_KEY_CREDENTIALS:
             return serviceAccountAuth;
          case BEARER_TOKEN_CREDENTIALS:
             return bearerTokenAuth;
+         case MAC_TOKEN_CREDENTIALS:
+            return macTokenAuth;
          default:
             throw new IllegalArgumentException("Unsupported credential type: " + credentialType);
       }

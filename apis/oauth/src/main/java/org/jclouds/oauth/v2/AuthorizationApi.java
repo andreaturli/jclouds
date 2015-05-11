@@ -43,4 +43,5 @@ public interface AuthorizationApi extends Closeable {
    @FormParams(keys = "grant_type", values = "urn:ietf:params:oauth:grant-type:jwt-bearer")
    @Consumes(APPLICATION_JSON)
    Token authorize(@FormParam("assertion") @ParamParser(ClaimsToAssertion.class) Claims claims);
+
 }
