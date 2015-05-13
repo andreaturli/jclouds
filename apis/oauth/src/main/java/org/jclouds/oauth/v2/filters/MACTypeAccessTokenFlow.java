@@ -23,7 +23,6 @@ import static org.jclouds.Constants.PROPERTY_SESSION_INTERVAL;
 import static org.jclouds.crypto.Macs.asByteProcessor;
 import static org.jclouds.oauth.v2.config.OAuthProperties.AUDIENCE;
 import static org.jclouds.util.Strings2.toInputStream;
-
 import java.io.IOException;
 import java.security.InvalidKeyException;
 
@@ -66,11 +65,11 @@ public class MACTypeAccessTokenFlow implements OAuthFilter {
    private final LoadingCache<String, Token> tokenCache;
    private final Crypto crypto;
 
-   public static class TestJWTBearerTokenFlow extends MACTypeAccessTokenFlow {
+   public static class TestMACTypeAccessTokenFlow extends MACTypeAccessTokenFlow {
 
-      @Inject TestJWTBearerTokenFlow(AuthorizeToken loader, @Named(PROPERTY_SESSION_INTERVAL) long tokenDuration,
-            @Named(AUDIENCE) String audience, @Provider Supplier<Credentials> credentialsSupplier, OAuthScopes scopes) {
-         super(loader, tokenDuration, audience, credentialsSupplier, scopes);
+      @Inject TestMACTypeAccessTokenFlow(AuthorizeToken loader, @Named(PROPERTY_SESSION_INTERVAL) long tokenDuration,
+            @Named(AUDIENCE) String audience, @Provider Supplier<Credentials> credentialsSupplier, OAuthScopes scopes, Crypto crypto) {
+         super(loader, tokenDuration, audience, credentialsSupplier, scopes, crypto);
       }
 
       /** Constant time for testing. */
@@ -147,26 +146,27 @@ public class MACTypeAccessTokenFlow implements OAuthFilter {
      80\n
      \n
        */
-     String nonce = "test";
+     String nonce = "4718:abcdefg";
      String httpRequestMethod = "GET";
-     String httpRequestURI = "/v1/api/config/workload/";
+     String httpRequestURI = "/v1/api/config/workloadtemplate";
      String hostname = "portal.brkt.com";
      String port = "443";
 
-     String normalizedRequest = String.format("%s\n%s\n%s\n%s\n%s\n%s\n", timestamp, nonce, httpRequestMethod, httpRequestURI, hostname, port);
-     //Token token = tokenCache.getUnchecked(normalizedRequest);
-
-     String signature = null;
+     String normalizedRequest = String.format("%s\n%s\n%s\n%s\n%s\n%s\n\n", timestamp, nonce, httpRequestMethod, httpRequestURI, hostname, port);
+     System.out.println("normalizedRequest: " + normalizedRequest);
+     String authorizationHeader = null;
      try {
        ByteProcessor<byte[]> hmacSHA256 = asByteProcessor(crypto.hmacSHA256(credentialsSupplier.get().credential.getBytes(Charsets.UTF_8)));
-       signature = base64().encode(readBytes(toInputStream(normalizedRequest), hmacSHA256));
+       String mac = base64().encode(readBytes(toInputStream(normalizedRequest), hmacSHA256));
+       authorizationHeader = String.format("MAC id=\"%s\", ts=\"%d\", nonce=\"%s\", mac=\"%s\"", credentialsSupplier.get().identity,
+         timestamp, nonce, mac);
      } catch (IOException e) {
        e.printStackTrace();
      } catch (InvalidKeyException e) {
        e.printStackTrace();
      }
 
-     return request.toBuilder().addHeader("Authorization", signature).build();
+     return request.toBuilder().addHeader("Authorization", authorizationHeader).build();
    }
 
    long currentTimeSeconds() {
