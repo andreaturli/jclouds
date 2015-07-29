@@ -32,7 +32,9 @@ import org.jclouds.compute.domain.NodeMetadata.Status;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.functions.GroupNamingConvention;
 import org.jclouds.domain.Location;
+import org.jclouds.domain.LoginCredentials;
 import org.jclouds.location.predicates.LocationPredicates;
+import org.jclouds.softlayer.domain.Password;
 import org.jclouds.softlayer.domain.TagReference;
 import org.jclouds.softlayer.domain.VirtualGuest;
 
@@ -41,6 +43,8 @@ import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+
+import autovalue.shaded.com.google.common.common.collect.Iterables;
 
 @Singleton
 public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMetadata> {
@@ -54,6 +58,7 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
    private final GroupNamingConvention nodeNamingConvention;
    private final VirtualGuestToImage virtualGuestToImage;
    private final VirtualGuestToHardware virtualGuestToHardware;
+
 
    @Inject
    VirtualGuestToNodeMetadata(@Memoized Supplier<Set<? extends Location>> locations,
@@ -89,6 +94,13 @@ public class VirtualGuestToNodeMetadata implements Function<VirtualGuest, NodeMe
          builder.publicAddresses(ImmutableSet.of(from.getPrimaryIpAddress()));
       if (from.getPrimaryBackendIpAddress() != null)
          builder.privateAddresses(ImmutableSet.of(from.getPrimaryBackendIpAddress()));
+      // TODO simplify once we move domain classes to AutoValue
+      if (from.getOperatingSystem() != null && from.getOperatingSystem().getPasswords() != null && !from.getOperatingSystem().getPasswords().isEmpty()) {
+         Password password = Iterables.getOnlyElement(from.getOperatingSystem().getPasswords());
+         if (password != null) {
+            builder.credentials(LoginCredentials.builder().identity(password.getUsername()).credential(password.getPassword()).build());
+         }
+      }
       if (from.getTagReferences() != null && !from.getTagReferences().isEmpty()) {
          List<String> tags = Lists.newArrayList();
          for (TagReference tagReference : from.getTagReferences()) {
