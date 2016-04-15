@@ -25,23 +25,15 @@ import static org.jclouds.googlecloud.internal.ListPages.concat;
 import static org.jclouds.googlecomputeengine.compute.strategy.CreateNodesWithGroupEncodedIntoNameThenAddToSet.simplifyPorts;
 import static org.jclouds.googlecomputeengine.config.GoogleComputeEngineProperties.IMAGE_PROJECTS;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Atomics;
-import com.google.common.util.concurrent.UncheckedTimeoutException;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.jclouds.compute.ComputeServiceAdapter;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -68,7 +60,18 @@ import org.jclouds.googlecomputeengine.domain.Region;
 import org.jclouds.googlecomputeengine.domain.Tags;
 import org.jclouds.googlecomputeengine.domain.Zone;
 import org.jclouds.googlecomputeengine.features.InstanceApi;
+import org.jclouds.http.Uris;
 import org.jclouds.location.suppliers.all.JustProvider;
+
+import com.google.common.base.Predicate;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.Atomics;
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 /**
  * This implementation maps the following:
@@ -116,13 +119,15 @@ public final class GoogleComputeEngineServiceAdapter
       GoogleComputeEngineTemplateOptions options = GoogleComputeEngineTemplateOptions.class.cast(template.getOptions());
 
       checkNotNull(options.getNetworks(), "template options must specify a network");
-      checkNotNull(template.getHardware().getUri(), "hardware must have a URI");
-      checkNotNull(template.getImage().getUri(), "image URI is null");
+      String hardwareId = checkNotNull(template.getHardware().getId(), "hardware must have a ID");
+      URI imageUri = checkNotNull(template.getImage().getUri(), "image must have a ID");
 
       String zone = template.getLocation().getId();
+      URI locationURI = URI.create(template.getLocation().getDescription());
+      URI hardwareUri = getHardwareUriInLocation(locationURI, hardwareId);
 
       List<AttachDisk> disks = Lists.newArrayList();
-      disks.add(AttachDisk.newBootDisk(template.getImage().getUri(), getDiskTypeArgument(options, zone)));
+      disks.add(AttachDisk.newBootDisk(imageUri, getDiskTypeArgument(options, zone)));
 
       Iterator<String> networks = options.getNetworks().iterator();
 
@@ -141,15 +146,16 @@ public final class GoogleComputeEngineServiceAdapter
 
       Scheduling scheduling = getScheduling(options);
 
-      NewInstance newInstance = new NewInstance.Builder( name,
-            template.getHardware().getUri(), // machineType
-            network,
-            disks)
-            .description(group)
-            .tags(Tags.create(null, ImmutableList.copyOf(tags)))
-            .serviceAccounts(options.serviceAccounts())
-            .scheduling(scheduling)
-            .build();
+      NewInstance newInstance = new NewInstance.Builder(
+              name,
+              hardwareUri, // machineType
+              network,
+              disks)
+              .description(group)
+              .tags(Tags.create(null, ImmutableList.copyOf(tags)))
+              .serviceAccounts(options.serviceAccounts())
+              .scheduling(scheduling)
+              .build();
 
       // Add metadata from template and for ssh key and image id
       newInstance.metadata().putAll(options.getUserMetadata());
@@ -188,6 +194,10 @@ public final class GoogleComputeEngineServiceAdapter
       diskURIToImage.getUnchecked(instance.get().disks().get(0).source());
 
       return new NodeAndInitialCredentials<Instance>(instance.get(), instance.get().selfLink().toString(), credentials);
+   }
+
+   private URI getHardwareUriInLocation(URI locationURI, String hardwareId) {
+      return Uris.uriBuilder(locationURI).appendPath(String.format("machineTypes/%s", hardwareId)).build();
    }
 
    @Override public Iterable<MachineType> listHardwareProfiles() {

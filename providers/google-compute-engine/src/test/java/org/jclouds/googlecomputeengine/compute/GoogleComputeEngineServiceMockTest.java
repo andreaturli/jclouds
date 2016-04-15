@@ -25,8 +25,6 @@ import static org.testng.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableSet;
-import com.squareup.okhttp.mockwebserver.MockResponse;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.ComputeMetadata;
 import org.jclouds.compute.domain.Hardware;
@@ -38,6 +36,9 @@ import org.jclouds.googlecomputeengine.compute.options.GoogleComputeEngineTempla
 import org.jclouds.googlecomputeengine.domain.Instance;
 import org.jclouds.googlecomputeengine.internal.BaseGoogleComputeEngineApiMockTest;
 import org.testng.annotations.Test;
+
+import com.google.common.collect.ImmutableSet;
+import com.squareup.okhttp.mockwebserver.MockResponse;
 
 @Test(groups = "unit", testName = "GoogleComputeEngineServiceMockTest", singleThreaded = true)
 public class GoogleComputeEngineServiceMockTest extends BaseGoogleComputeEngineApiMockTest {
@@ -189,7 +190,7 @@ public class GoogleComputeEngineServiceMockTest extends BaseGoogleComputeEngineA
       assertSent(server, "GET", "/projects/party/zones/us-central1-a/disks/test");
       assertSent(server, "GET", "/projects/debian-cloud/global/images/debian-7-wheezy-v20140718");
       assertSent(server, "POST", "/projects/party/zones/us-central1-a/instances",
-            String.format(stringFromResource("/instance_insert_2.json"), template.getHardware().getId(), template.getImage().getId()));
+            String.format(stringFromResource("/instance_insert_2.json"), template.getHardware().getUri(), template.getImage().getId()));
 
       assertSent(server, "GET", "/projects/party/zones/us-central1-a/instances/test-1");
    }
@@ -239,7 +240,7 @@ public class GoogleComputeEngineServiceMockTest extends BaseGoogleComputeEngineA
       assertSent(server, "GET", "/projects/debian-cloud/global/images/debian-7-wheezy-v20140718");
       assertSent(server, "GET", "/projects/party/zones/us-central1-a/diskTypes/pd-ssd");
       assertSent(server, "POST", "/projects/party/zones/us-central1-a/instances",
-            String.format(stringFromResource("/instance_insert_ssd.json"), template.getHardware().getId(), template.getImage().getId()));
+            String.format(stringFromResource("/instance_insert_ssd.json"), template.getHardware().getUri(), template.getImage().getId()));
 
       assertSent(server, "GET", "/projects/party/zones/us-central1-a/instances/test-1");
    }
@@ -262,7 +263,7 @@ public class GoogleComputeEngineServiceMockTest extends BaseGoogleComputeEngineA
             stringFromResource("/aggregated_instance_list.json").replace("test-0", instanceName)
                   .replace("default", networkName).replace("RUNNING", status.toString()));
    }
-   
+
    private MockResponse aggregatedListInstanceEmpty() {
       return new MockResponse().setBody(stringFromResource("/aggregated_instance_list_empty.json"));
    }

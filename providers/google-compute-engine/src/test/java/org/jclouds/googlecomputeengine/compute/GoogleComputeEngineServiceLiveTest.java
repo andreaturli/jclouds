@@ -26,13 +26,10 @@ import java.net.URI;
 import java.util.Properties;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.inject.Module;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.internal.BaseComputeServiceLiveTest;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.compute.predicates.NodePredicates;
@@ -46,10 +43,16 @@ import org.jclouds.rest.AuthorizationException;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.inject.Module;
+
 @Test(groups = "live", singleThreaded = true)
 public class GoogleComputeEngineServiceLiveTest extends BaseComputeServiceLiveTest {
 
    protected static final String DEFAULT_ZONE_NAME = "us-central1-a";
+   protected static final String DEFAULT_HARDWARE_ID = "f1-micro";
 
    public GoogleComputeEngineServiceLiveTest() {
       provider = "google-compute-engine";
@@ -98,6 +101,28 @@ public class GoogleComputeEngineServiceLiveTest extends BaseComputeServiceLiveTe
          client.destroyNodesMatching(NodePredicates.inGroup(group));
       }
    }
+
+   public void testCreateNodeWithSpecifiHardwareSpec() throws Exception {
+      String group = this.group + "-specific-hardware";
+      NodeMetadata node = null;
+      try {
+         Template templateWithSpecificHardwareId = buildTemplate(client.templateBuilder().imageNameMatches("ubuntu-1204-precise").hardwareId(DEFAULT_HARDWARE_ID));
+
+         // create a node
+         Set<? extends NodeMetadata> nodes =
+                 client.createNodesInGroup(group, 1, templateWithSpecificHardwareId);
+         assertEquals(nodes.size(), 1, "One node should have been created");
+
+         // Verify the node
+         node = Iterables.get(nodes, 0);
+         assertEquals(node.getHardware().getId(), DEFAULT_HARDWARE_ID);
+      } finally {
+         if (node != null) {
+            client.destroyNode(node.getId());
+         }
+      }
+   }
+
    /**
     * Nodes may have additional metadata entries (particularly they may have an "sshKeys" entry)
     */

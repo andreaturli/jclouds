@@ -16,48 +16,25 @@
  */
 package org.jclouds.googlecomputeengine.compute.functions;
 
-import java.net.URI;
-import java.util.Map;
-
-import javax.inject.Inject;
-
-import org.jclouds.collect.Memoized;
 import org.jclouds.compute.domain.Hardware;
 import org.jclouds.compute.domain.HardwareBuilder;
 import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.Processor;
 import org.jclouds.compute.domain.Volume;
 import org.jclouds.compute.domain.VolumeBuilder;
-import org.jclouds.domain.Location;
 import org.jclouds.googlecomputeengine.domain.MachineType;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
-import com.google.common.base.Supplier;
 import com.google.common.collect.ImmutableSet;
 
 public final class MachineTypeToHardware implements Function<MachineType, Hardware> {
 
-   private final Supplier<Map<URI, Location>> locationsByUri;
-
-   @Inject MachineTypeToHardware(@Memoized Supplier<Map<URI, Location>> locationsByUri) {
-      this.locationsByUri = locationsByUri;
-   }
-
    @Override
    public Hardware apply(MachineType input) {
-      URI zoneLink = URI.create(
-            input.selfLink().toString().replace("/machineTypes/" + input.name(), ""));
-
-      Location zone = locationsByUri.get().get(zoneLink);
-      if (zone == null) {
-         throw new IllegalStateException(
-               String.format("zone %s not present in %s", zoneLink, locationsByUri.get().keySet()));
-      }
       return new HardwareBuilder()
-              .id(input.selfLink().toString())
+              .id(input.name())
               .providerId(input.id())
-              .location(zone)
               .name(input.name())
               .hypervisor("kvm")
               .processor(new Processor(input.guestCpus(), 1.0))
