@@ -147,15 +147,15 @@ public final class GoogleComputeEngineServiceAdapter
       Scheduling scheduling = getScheduling(options);
 
       NewInstance newInstance = new NewInstance.Builder(
-              name,
-              hardwareUri, // machineType
-              network,
-              disks)
-              .description(group)
-              .tags(Tags.create(null, ImmutableList.copyOf(tags)))
-              .serviceAccounts(options.serviceAccounts())
-              .scheduling(scheduling)
-              .build();
+            name,
+            hardwareUri, // machineType
+            network,
+            disks)
+            .description(group)
+            .tags(Tags.create(null, ImmutableList.copyOf(tags)))
+            .serviceAccounts(options.serviceAccounts())
+            .scheduling(scheduling)
+            .build();
 
       // Add metadata from template and for ssh key and image id
       newInstance.metadata().putAll(options.getUserMetadata());
