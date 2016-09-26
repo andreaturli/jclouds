@@ -16,12 +16,13 @@
  */
 package org.jclouds.softlayer.compute;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.net.HostAndPort;
-import com.google.common.net.InetAddresses;
-import com.google.inject.Injector;
-import com.google.inject.Module;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNotNull;
+
+import java.util.Properties;
+import java.util.Random;
+
 import org.jclouds.compute.ComputeServiceAdapter.NodeAndInitialCredentials;
 import org.jclouds.compute.domain.ExecResponse;
 import org.jclouds.compute.domain.Hardware;
@@ -42,12 +43,12 @@ import org.jclouds.sshj.config.SshjSshClientModule;
 import org.testng.annotations.AfterGroups;
 import org.testng.annotations.Test;
 
-import java.util.Properties;
-import java.util.Random;
-
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertFalse;
-import static org.testng.Assert.assertNotNull;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.net.HostAndPort;
+import com.google.common.net.InetAddresses;
+import com.google.inject.Injector;
+import com.google.inject.Module;
 
 @Test(groups = "live", singleThreaded = true, testName = "SoftLayerComputeServiceAdapterLiveTest")
 public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerApiLiveTest {
@@ -62,8 +63,13 @@ public class SoftLayerComputeServiceAdapterLiveTest extends BaseSoftLayerApiLive
       Injector injector = newBuilder().modules(modules).overrides(props).buildInjector();
       adapter = injector.getInstance(SoftLayerComputeServiceAdapter.class);
       templateBuilder = injector.getInstance(TemplateBuilder.class);
-      sshFactory = injector.getInstance(SshClient.Factory.class);
-      return injector.getInstance(SoftLayerApi.class);
+        return injector.getInstance(SoftLayerApi.class);
+   }
+
+   @Test
+   public void testListVirtualGuests() {
+      Iterable<VirtualGuest> virtualGuests = adapter.listNodes();
+      assertFalse(Iterables.isEmpty(virtualGuests), "locations must not be empty");
    }
 
    @Test

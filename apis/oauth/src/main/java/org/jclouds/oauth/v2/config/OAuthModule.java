@@ -59,7 +59,7 @@ public final class OAuthModule extends AbstractModule {
 
    @Provides
    @Authorization
-   protected Supplier<URI> oauthEndpoint(@javax.inject.Named("oauth.endpoint") String endpoint) {
+   protected Supplier<URI> oauthEndpoint(@javax.inject.Named("jclouds.oauth.endpoint") String endpoint) {
       return Suppliers.ofInstance(URI.create(endpoint));
    }
 
@@ -74,7 +74,7 @@ public final class OAuthModule extends AbstractModule {
          return CredentialType.fromValue(credentialType);
       }
    }
-   
+
    @Provides
    @Singleton
    protected Map<CredentialType, Class<? extends OAuthFilter>> authenticationFlowMap() {

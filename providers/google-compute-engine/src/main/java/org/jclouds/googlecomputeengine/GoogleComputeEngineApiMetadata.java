@@ -56,7 +56,7 @@ public class GoogleComputeEngineApiMetadata extends BaseHttpApiMetadata<GoogleCo
 
    public static Properties defaultProperties() {
       Properties properties = BaseHttpApiMetadata.defaultProperties();
-      properties.put("oauth.endpoint", "https://accounts.google.com/o/oauth2/token");
+      properties.put("jclouds.oauth.endpoint", "https://accounts.google.com/o/oauth2/token");
       properties.put(AUDIENCE, "https://accounts.google.com/o/oauth2/token");
       properties.put(JWS_ALG, "RS256");
       properties.put(PROPERTY_SESSION_INTERVAL, 3600);

@@ -51,8 +51,8 @@ public class PrivateKeySupplierTest {
 
    public void testCredentialsAreLoadedOnRightAlgoAndCredentials() {
       Properties propertied = OAuthTestUtils.defaultProperties(new Properties());
-      Credentials validCredentials = new Credentials(propertied.getProperty("oauth.identity"),
-              propertied.getProperty("oauth.credential"));
+      Credentials validCredentials = new Credentials(propertied.getProperty("jclouds.oauth.identity"),
+              propertied.getProperty("jclouds.oauth.credential"));
       PrivateKeySupplier supplier = new PrivateKeySupplier(Suppliers.ofInstance(validCredentials),
             new PrivateKeyForCredentials());
       assertNotNull(supplier.get());

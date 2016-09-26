@@ -35,9 +35,9 @@ public class OAuthTestUtils {
    public static Properties defaultProperties(Properties properties) {
       try {
          properties = properties == null ? new Properties() : properties;
-         properties.put("oauth.identity", "foo");
-         properties.put("oauth.credential", toStringAndClose(OAuthTestUtils.class.getResourceAsStream("/testpk.pem")));
-         properties.put("oauth.endpoint", "http://localhost:5000/o/oauth2/token");
+         properties.put("jclouds.oauth.identity", "foo");
+         properties.put("jclouds.oauth.credential", toStringAndClose(OAuthTestUtils.class.getResourceAsStream("/testpk.pem")));
+         properties.put("jclouds.oauth.endpoint", "http://localhost:5000/o/oauth2/token");
          properties.put(AUDIENCE, "https://accounts.google.com/o/oauth2/token");
          return properties;
       } catch (IOException e) {
@@ -47,9 +47,9 @@ public class OAuthTestUtils {
 
    public static Properties bearerTokenAuthProperties(Properties properties) {
       properties = properties == null ? new Properties() : properties;
-      properties.put("oauth.identity", "761326798069-r5mljlln1rd4lrbhg75efgigp36m78j5@developer.gserviceaccount.com");
-      properties.put("oauth.credential", "1/8xbJqaOZXSUZbHLl5EOtu1pxz3fmmetKx9W8CV4t79M");
-      properties.put("oauth.endpoint", "http://localhost:5000/o/oauth2/token");
+      properties.put("jclouds.oauth.identity", "761326798069-r5mljlln1rd4lrbhg75efgigp36m78j5@developer.gserviceaccount.com");
+      properties.put("jclouds.oauth.credential", "1/8xbJqaOZXSUZbHLl5EOtu1pxz3fmmetKx9W8CV4t79M");
+      properties.put("jclouds.oauth.endpoint", "http://localhost:5000/o/oauth2/token");
       properties.put(AUDIENCE, "https://accounts.google.com/o/oauth2/token");
       properties.put(CREDENTIAL_TYPE, BEARER_TOKEN_CREDENTIALS.toString());
       return properties;

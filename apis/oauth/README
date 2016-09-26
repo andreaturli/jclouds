@@ -3,22 +3,22 @@ In order to use oauth applications must specify the following properties:
 Mandatory, when using non-Azure Active Directory oauth:
 <myprovider>.identity - the oauth identity (e.g., service account email in Google Api's)
 <myprovider>.credential - the private key used to sign requests, in pem format
-oauth.endpoint - the endpoint to use for authentication (e.g., "http://accounts.google.com/o/oauth2/token" in Google Api's)
-oauth.audience - the "audience" of the token request (e.g., "http://accounts.google.com/o/oauth2/token" in Google Api's)
+jclouds.oauth.endpoint - the endpoint to use for authentication (e.g., "http://accounts.google.com/o/oauth2/token" in Google Api's)
+jclouds.oauth.audience - the "audience" of the token request (e.g., "http://accounts.google.com/o/oauth2/token" in Google Api's)
 
 Mandatory, when using oauth to authenticate against Azure Active Directory:
 <myprovider>.identity - the application GUID set up for as a Service Principal for your Azure account
 <myprovider>.credential - the password associated with the application GUID
-oauth.endpoint - the endpoint to use for Azure AD authentication (URL of the form the URL "https://login.microsoftonline.com/<Tenant ID>/oauth2/token")
+jclouds.oauth.endpoint - the endpoint to use for Azure AD authentication (URL of the form the URL "https://login.microsoftonline.com/<Tenant ID>/oauth2/token")
 
 For Azure Active Directory, setting up a service principal to work with Azure Resource Manager and Azure AD as well as finding out the <Tenant ID> is described at https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/
 
 Running the live test on for non client_credentials oauth grant type:
 
 mvn clean install -Plive \
--Dtest.oauth.identity=<email addr> \
--Dtest.oauth.credential=<private key> \
--Dtest.oauth.endpoint=https://accounts.google.com/o/oauth2/token \
+-Dtest.jclouds.oauth.identity=<email addr> \
+-Dtest.jclouds.oauth.credential=<private key> \
+-Dtest.jclouds.oauth.endpoint=https://accounts.google.com/o/oauth2/token \
 -Dtest.jclouds.oauth.audience=https://accounts.google.com/o/oauth2/token \
 -Dtest.jclouds.oauth.scope=https://www.googleapis.com/auth/prediction \
 
@@ -26,9 +26,9 @@ mvn clean install -Plive \
 To Run the live test against Azure Active Directory which uses the client_credentials grant type when using a password:
 
 mvn clean install -Plive \
--Dtest.oauth.identity=<azure app id> \
--Dtest.oauth.credential=<azure app password> \
--Dtest.oauth.endpoint=https://login.microsoftonline.com/<tenant id>/oauth2/token \
+-Dtest.jclouds.oauth.identity=<azure app id> \
+-Dtest.jclouds.oauth.credential=<azure app password> \
+-Dtest.jclouds.oauth.endpoint=https://login.microsoftonline.com/<tenant id>/oauth2/token \
 -Dtest.jclouds.oauth.resource=https://management.azure.com/ \
 -Dtest.jclouds.oauth.credential-type=clientCredentialsSecret
 
@@ -37,9 +37,9 @@ To run the live test against Azure Active directory using the client_credentials
 mvn clean install -Plive \
 -Dtest.jclouds.oauth.credential-type=clientCredentialsP12AndCertificate \
 -Dtest.jclouds.oauth.resource=https://management.azure.com/ \
--Dtest.oauth.endpoint=https://login.microsoftonline.com/<tenant id>/oauth2/token \
--Dtest.jclouds.oauth.audience=https://login.microsoftonline.com/<tenant id>/oauth2/token 
--Dtest.oauth.identity=<azure app id> \
--Dtest.oauth.credential=<path to unencrypted private key PEM file> \
+-Dtest.jclouds.oauth.endpoint=https://login.microsoftonline.com/<tenant id>/oauth2/token \
+-Dtest.jclouds.oauth.audience=https://login.microsoftonline.com/<tenant id>/oauth2/token
+-Dtest.jclouds.oauth.identity=<azure app id> \
+-Dtest.jclouds.oauth.credential=<path to unencrypted private key PEM file> \
 -Dtest.jclouds.oauth.certificate=<path to certificate PEM file>
 

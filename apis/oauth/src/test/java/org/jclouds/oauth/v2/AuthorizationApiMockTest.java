@@ -223,7 +223,7 @@ public class AuthorizationApiMockTest {
 
    private AuthorizationApi api(URL url, CredentialType credentialType) throws IOException {
       Properties overrides = new Properties();
-      overrides.setProperty("oauth.endpoint", url.toString());
+      overrides.setProperty("jclouds.oauth.endpoint", url.toString());
       overrides.setProperty(JWS_ALG, "RS256");
       overrides.setProperty(CREDENTIAL_TYPE, credentialType.toString());
       overrides.setProperty(AUDIENCE, "https://accounts.google.com/o/oauth2/token");

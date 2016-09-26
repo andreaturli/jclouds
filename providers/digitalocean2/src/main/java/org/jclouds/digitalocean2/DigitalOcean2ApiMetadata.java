@@ -63,7 +63,7 @@ public class DigitalOcean2ApiMetadata extends BaseHttpApiMetadata<DigitalOcean2A
 
    public static Properties defaultProperties() {
       Properties properties = BaseHttpApiMetadata.defaultProperties();
-      properties.put("oauth.endpoint", "https://cloud.digitalocean.com/v1/oauth/token");
+      properties.put("jclouds.oauth.endpoint", "https://cloud.digitalocean.com/v1/oauth/token");
       properties.put(JWS_ALG, "RS256");
       properties.put(AUDIENCE, "https://cloud.digitalocean.com/v1/oauth/token");
       properties.put(CREDENTIAL_TYPE, BEARER_TOKEN_CREDENTIALS.toString());

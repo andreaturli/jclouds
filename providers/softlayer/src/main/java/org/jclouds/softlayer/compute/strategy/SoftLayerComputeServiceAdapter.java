@@ -486,7 +486,8 @@ public class SoftLayerComputeServiceAdapter implements
       public boolean apply(VirtualGuest guest) {
          checkNotNull(guest, "virtual guest was null");
 
-         VirtualGuest virtualGuest = client.getVirtualGuestApi().getVirtualGuest(guest.getId());
+         //VirtualGuest virtualGuest = client.getVirtualGuestApi().getVirtualGuest(guest.getId());
+         VirtualGuest virtualGuest = client.getVirtualGuestApi().getVirtualGuestFiltered(guest.getId(),"operatingSystem.passwords;primaryBackendIpAddress;primaryIpAddress;privateNetworkOnlyFlag");
          boolean hasBackendIp = virtualGuest.getPrimaryBackendIpAddress() != null;
          boolean hasPrimaryIp = virtualGuest.getPrimaryIpAddress() != null;
          boolean hasPasswords = virtualGuest.getOperatingSystem() != null

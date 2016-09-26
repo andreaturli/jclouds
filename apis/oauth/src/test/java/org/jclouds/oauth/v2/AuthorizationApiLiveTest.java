@@ -154,10 +154,10 @@ public class AuthorizationApiLiveTest extends BaseApiLiveTest<AuthorizationApi> 
          audience = checkNotNull(setIfTestSystemPropertyPresent(props, AUDIENCE), "test.jclouds.oauth.audience");
          resource = checkNotNull(setIfTestSystemPropertyPresent(props, RESOURCE), "test." + RESOURCE);
          certificate = setCredential(props, CERTIFICATE);
-         credential = setCredential(props, "oauth.credential");
+         credential = setCredential(props, "jclouds.oauth.credential");
       } else if (CredentialType.fromValue(credentialType) == CredentialType.P12_PRIVATE_KEY_CREDENTIALS) {
          audience = checkNotNull(setIfTestSystemPropertyPresent(props, AUDIENCE), "test.jclouds.oauth.audience");
-         credential = setCredential(props, "oauth.credential");
+         credential = setCredential(props, "jclouds.oauth.credential");
          checkNotNull(scope, "test.jclouds.oauth.scope");
       }
 
@@ -170,7 +170,7 @@ public class AuthorizationApiLiveTest extends BaseApiLiveTest<AuthorizationApi> 
             .add(new Module() {
                @Override public void configure(Binder binder) {
                   // ContextBuilder erases oauth.endpoint, as that's the same name as the provider key.
-                  binder.bindConstant().annotatedWith(Names.named("oauth.endpoint")).to(endpoint);
+                  binder.bindConstant().annotatedWith(Names.named("jclouds.oauth.endpoint")).to(endpoint);
                   binder.bind(OAuthScopes.class).toInstance(SingleScope.create(scope));
                }
             }).addAll(super.setupModules()).build();
