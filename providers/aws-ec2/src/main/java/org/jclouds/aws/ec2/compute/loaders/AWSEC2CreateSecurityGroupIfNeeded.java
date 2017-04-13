@@ -33,11 +33,13 @@ import org.jclouds.aws.ec2.options.CreateSecurityGroupOptions;
 import org.jclouds.compute.reference.ComputeServiceConstants;
 import org.jclouds.ec2.compute.domain.RegionAndName;
 import org.jclouds.ec2.compute.domain.RegionNameAndIngressRules;
+import org.jclouds.ec2.domain.SecurityGroup;
 import org.jclouds.logging.Logger;
 import org.jclouds.net.domain.IpPermission;
 import org.jclouds.net.domain.IpProtocol;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.ImmutableSet;
@@ -73,7 +75,7 @@ public class AWSEC2CreateSecurityGroupIfNeeded extends CacheLoader<RegionAndName
       return createSecurityGroupInRegion(from.getRegion(), from.getName(), realFrom.getVpcId(), realFrom.getPorts());
    }
 
-   private String createSecurityGroupInRegion(String region, String name, String vpcId, int... ports) {
+   private String createSecurityGroupInRegion(String region, final String name, String vpcId, int... ports) {
       checkNotNull(region, "region");
       checkNotNull(name, "name");
       logger.debug(">> creating securityGroup region(%s) name(%s)", region, name);
@@ -102,7 +104,14 @@ public class AWSEC2CreateSecurityGroupIfNeeded extends CacheLoader<RegionAndName
                                .build());
             }
 
-            String myOwnerId = Iterables.get(securityApi.describeSecurityGroupsInRegion(region, name), 0).getOwnerId();
+            Optional<SecurityGroup> securityGroupOptional = Iterables.tryFind(securityApi.describeSecurityGroupsInRegion(region), new Predicate<SecurityGroup>() {
+               @Override
+               public boolean apply(SecurityGroup input) {
+                  return name.equalsIgnoreCase(input.getName());
+               }
+            });
+            if (!securityGroupOptional.isPresent()) throw new IllegalStateException();
+            String myOwnerId = securityGroupOptional.get().getOwnerId();
             permissions.add(IpPermission.builder()
                             .fromPort(0)
                             .toPort(65535)

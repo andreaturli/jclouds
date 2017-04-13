@@ -43,7 +43,7 @@ public class AWSSubnetApiMockTest extends BaseAWSEC2ApiMockTest {
               "  </subnet>\n" +
               "</CreateSubnetResponse>"));
 
-      Subnet result = subnetApi().createSubentInRegion(DEFAULT_REGION, "vpc-1a2b3c4d", "10.0.1.0/24");
+      Subnet result = subnetApi().createSubnetInRegion(DEFAULT_REGION, "vpc-1a2b3c4d", "10.0.1.0/24");
       assertEquals(result.getVpcId(), "vpc-1a2b3c4d");
       assertEquals(result.getCidrBlock(), "10.0.1.0/24");
       assertEquals(result.getAvailabilityZone(), "us-east-1a");
@@ -70,7 +70,7 @@ public class AWSSubnetApiMockTest extends BaseAWSEC2ApiMockTest {
                     "  </subnet>\n" +
                     "</CreateSubnetResponse>"));
 
-      Subnet result = subnetApi().createSubentInRegion(DEFAULT_REGION, "vpc-1a2b3c4d", "10.0.1.0/24",
+      Subnet result = subnetApi().createSubnetInRegion(DEFAULT_REGION, "vpc-1a2b3c4d", "10.0.1.0/24",
             new CreateSubnetOptions().dryRun().availabilityZone("us-east-1a"));
       assertEquals(result.getVpcId(), "vpc-1a2b3c4d");
       assertEquals(result.getCidrBlock(), "10.0.1.0/24");

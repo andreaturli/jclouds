@@ -17,6 +17,7 @@
 package org.jclouds.ec2.compute.functions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.ImmutableMultimap.of;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -42,7 +43,8 @@ public class EC2SecurityGroupIdFromName implements Function<String, String> {
       String[] parts = AWSUtils.parseHandle(input);
       String region = parts[0];
       String name = parts[1];
-
-      return  Iterables.getOnlyElement(api.getSecurityGroupApi().get().describeSecurityGroupsInRegion(region, name), null).getId();
+      return Iterables.getOnlyElement(api.getSecurityGroupApi().get().describeSecurityGroupsInRegionWithFilter(region, of("group-name", name))).getId();
+      
+      //return  Iterables.getOnlyElement(api.getSecurityGroupApi().get().describeSecurityGroupsInRegion(region, name), null).getId();
    }
 }
