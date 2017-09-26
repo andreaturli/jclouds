@@ -51,6 +51,11 @@
       <artifactId>jclouds-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.auto.value</groupId>
+      <artifactId>auto-value</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- for the extension namespaces -->
     <dependency>
       <groupId>com.google.inject.extensions</groupId>
