@@ -16,8 +16,6 @@
  */
 package org.jclouds.openstack.keystone.v3.suppliers;
 
-import static com.google.common.collect.Iterables.tryFind;
-
 import java.net.URI;
 import java.util.Collection;
 import java.util.Map;
@@ -27,16 +25,18 @@ import javax.annotation.Resource;
 
 import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.logging.Logger;
-import org.jclouds.openstack.keystone.v2_0.domain.Endpoint;
 import org.jclouds.openstack.keystone.v2_0.domain.Service;
-import org.jclouds.openstack.keystone.v2_0.functions.EndpointToSupplierURI;
+import org.jclouds.openstack.keystone.v3.domain.Catalog;
+import org.jclouds.openstack.keystone.v3.domain.Endpoint;
 import org.jclouds.openstack.keystone.v3.domain.Token;
+import org.jclouds.openstack.keystone.v3.functions.EndpointToSupplierURI;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Supplier;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Iterables;
@@ -85,11 +85,19 @@ public class LocationIdToURIFromTokenForTypeAndVersion implements Supplier<Map<S
 
    @Override
    public Map<String, Supplier<URI>> get() {
+      Multimap<String, Endpoint> locationToEndpoints = FluentIterable.from(tokenSupplier.get().catalog()).filter(new Predicate<Catalog>() {
+         @Override
+         public boolean apply(@javax.annotation.Nullable Catalog input) {
+            return input.type().equals(apiType);
+         }
+      }).transformAndConcat(new Function<Catalog, Iterable<Endpoint>>() {
+         @javax.annotation.Nullable
+         @Override
+         public Iterable<Endpoint> apply(@javax.annotation.Nullable Catalog input) {
+            return input.endpoints();
+         }
+      }).index(endpointToLocationId);
       /*
-      FluentIterable<Service> services = FluentIterable.from(tokenSupplier.get()).filter(apiTypeEquals);
-      if (services.isEmpty())
-         throw new NoSuchElementException(String.format("apiType %s not found in catalog %s", apiType, services));
-
       Iterable<Endpoint> endpoints = concat(services);
 
       if (isEmpty(endpoints))
@@ -99,22 +107,14 @@ public class LocationIdToURIFromTokenForTypeAndVersion implements Supplier<Map<S
       boolean checkVersionId = any(endpoints, versionAware);
 
       Multimap<String, Endpoint> locationToEndpoints = index(endpoints, endpointToLocationId);
-
-      Map<String, Endpoint> locationToEndpoint;
-      if (checkVersionId && apiVersion != null) {
-         locationToEndpoint = refineToVersionSpecificEndpoint(locationToEndpoints);
-         if (locationToEndpoint.size() == 0)
-            throw new NoSuchElementException(String.format(
-                  "no endpoints for apiType %s are of version %s, or version agnostic: %s", apiType, apiVersion,
-                  locationToEndpoints));
-      } else {
-         locationToEndpoint = firstEndpointInLocation(locationToEndpoints);
-      }
+      */
+      Map<String, Endpoint> locationToEndpoint = firstEndpointInLocation(locationToEndpoints);
 
       logger.debug("endpoints for apiType %s and version %s: %s", apiType, apiVersion, locationToEndpoints);
       return Maps.transformValues(locationToEndpoint, endpointToSupplierURI);
-      */
-      return Maps.newHashMap();
+
+      //Map<String, Endpoint> locationToEndpoint = ImmutableMap.of("prd-ca-yul-1", Endpoint.create(URI.create("https://api.montreal.ormuco.com:5000/v3/regions/prd-ca-yul-1")).build());
+      //return Maps.transformValues(locationToEndpoint, endpointToSupplierURI);
    }
 
    @VisibleForTesting
@@ -134,56 +134,56 @@ public class LocationIdToURIFromTokenForTypeAndVersion implements Supplier<Map<S
       return locationToEndpointBuilder.build();
    }
 
-   @VisibleForTesting
-   Map<String, Endpoint> refineToVersionSpecificEndpoint(Multimap<String, Endpoint> locationToEndpoints) {
-      Builder<String, Endpoint> locationToEndpointBuilder = ImmutableMap.<String, Endpoint> builder();
-      for (Map.Entry<String, Collection<Endpoint>> entry : locationToEndpoints.asMap().entrySet()) {
-         String locationId = entry.getKey();
-         Collection<Endpoint> endpoints = entry.getValue();
-         switch (endpoints.size()) {
-         case 0:
-            logNoEndpointsInLocation(locationId);
-            break;
-         default:
-            putIfPresent(locationId, strictMatchEndpointVersion(endpoints, locationId), locationToEndpointBuilder);
-         }
-
-      }
-      return locationToEndpointBuilder.build();
-   }
+//   @VisibleForTesting
+//   Map<String, Endpoint> refineToVersionSpecificEndpoint(Multimap<String, Endpoint> locationToEndpoints) {
+//      Builder<String, Endpoint> locationToEndpointBuilder = ImmutableMap.<String, Endpoint> builder();
+//      for (Map.Entry<String, Collection<Endpoint>> entry : locationToEndpoints.asMap().entrySet()) {
+//         String locationId = entry.getKey();
+//         Collection<Endpoint> endpoints = entry.getValue();
+//         switch (endpoints.size()) {
+//         case 0:
+//            logNoEndpointsInLocation(locationId);
+//            break;
+//         default:
+//            putIfPresent(locationId, strictMatchEndpointVersion(endpoints, locationId), locationToEndpointBuilder);
+//         }
+//
+//      }
+//      return locationToEndpointBuilder.build();
+//   }
 
    /**
     * Prioritizes endpoint.versionId over endpoint.id when matching
     */
-   private Optional<Endpoint> strictMatchEndpointVersion(Iterable<Endpoint> endpoints, String locationId) {
-      Optional<Endpoint> endpointOfVersion = tryFind(endpoints, apiVersionEqualsVersionId);
-      if (!endpointOfVersion.isPresent())
-         logger.debug("no endpoints of apiType %s matched expected version %s in location %s: %s", apiType, apiVersion,
-               locationId, endpoints);
-      return endpointOfVersion;
-   }
+//   private Optional<Endpoint> strictMatchEndpointVersion(Iterable<Endpoint> endpoints, String locationId) {
+//      Optional<Endpoint> endpointOfVersion = tryFind(endpoints, apiVersionEqualsVersionId);
+//      if (!endpointOfVersion.isPresent())
+//         logger.debug("no endpoints of apiType %s matched expected version %s in location %s: %s", apiType, apiVersion,
+//               locationId, endpoints);
+//      return endpointOfVersion;
+//   }
 
    private void logNoEndpointsInLocation(String locationId) {
       logger.debug("no endpoints found for apiType %s in location %s", apiType, locationId);
    }
 
-   private final Predicate<Endpoint> apiVersionEqualsVersionId = new Predicate<Endpoint>() {
-
-      @Override
-      public boolean apply(Endpoint input) {
-         return input.getVersionId().equals(apiVersion);
-      }
-
-   };
-
-   private final Predicate<Endpoint> versionAware = new Predicate<Endpoint>() {
-
-      @Override
-      public boolean apply(Endpoint input) {
-         return input.getVersionId() != null;
-      }
-
-   };
+//   private final Predicate<Endpoint> apiVersionEqualsVersionId = new Predicate<Endpoint>() {
+//
+//      @Override
+//      public boolean apply(Endpoint input) {
+//         return input.getVersionId().equals(apiVersion);
+//      }
+//
+//   };
+//
+//   private final Predicate<Endpoint> versionAware = new Predicate<Endpoint>() {
+//
+//      @Override
+//      public boolean apply(Endpoint input) {
+//         return input.getVersionId() != null;
+//      }
+//
+//   };
 
    private final Predicate<Service> apiTypeEquals = new Predicate<Service>() {
 

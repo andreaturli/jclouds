@@ -35,7 +35,7 @@
         <level value="DEBUG" />
         <appender-ref ref="WIREFILE" />
     </logger>
-    
+
     <root>
         <level value="INFO" />
     </root>

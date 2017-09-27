@@ -28,8 +28,10 @@ import org.jclouds.openstack.keystone.v2_0.domain.ApiAccessKeyCredentials;
 import org.jclouds.openstack.keystone.v3.binders.BindAuthToJsonPayload;
 import org.jclouds.openstack.keystone.v3.domain.PasswordCredentials;
 import org.jclouds.openstack.keystone.v3.domain.Token;
+import org.jclouds.openstack.keystone.v3.parsers.ParseToToken;
 import org.jclouds.rest.annotations.MapBinder;
 import org.jclouds.rest.annotations.PayloadParam;
+import org.jclouds.rest.annotations.ResponseParser;
 import org.jclouds.rest.annotations.SelectJson;
 
 import com.google.inject.name.Named;
@@ -48,10 +50,10 @@ public interface AuthenticationApi extends Closeable {
     */
    @Named("token:create")
    @POST
-   @SelectJson("token")
+//   @SelectJson("token")
+   @ResponseParser(ParseToToken.class)
    @MapBinder(BindAuthToJsonPayload.class)
-   Token create(@Nullable @PayloadParam("tenantName") String tenantName,
-                PasswordCredentials passwordCredentials);
+   Token create(@Nullable @PayloadParam("tenantName") String tenantName, PasswordCredentials passwordCredentials);
 
    /**
     * Authenticate to generate a token.

@@ -16,40 +16,33 @@
  */
 package org.jclouds.openstack.keystone.v3.domain;
 
-import java.net.URI;
 import java.util.List;
 
-import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.json.SerializedNames;
-import org.jclouds.openstack.v2_0.domain.Link;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 
 @AutoValue
-public abstract class Endpoint {
+public abstract class Catalog {
 
    public abstract String id();
 
-   public abstract String region();
+   public abstract String name();
 
-   public abstract String regionId();
+   public abstract String type();
 
-   @Nullable public abstract String serviceId();
+   public abstract List<Endpoint> endpoints();
 
-   public abstract URI url();
-
-   @Nullable public abstract Boolean enabled();
-
-   @Nullable public abstract List<Link> links();
-
-   @SerializedNames({"id", "region", "region_id", "service_id", "url", "enabled", "links"})
-   public static Endpoint create(String id, String region, String regionId, String serviceId, URI url, Boolean enabled, List<Link> links) {
-      return new AutoValue_Endpoint(id, region, regionId, serviceId, url, enabled,
-              links == null ? ImmutableList.<Link>of() : ImmutableList.copyOf(links));
+   @SerializedNames({"id", "name", "type", "endpoints"})
+   public static Catalog create(String id,
+                                String name,
+                                String type,
+                                List<Endpoint> endpoints
+   ) {
+      return new AutoValue_Catalog(id, name, type, endpoints == null ? ImmutableList.<Endpoint>of() : ImmutableList.copyOf(endpoints));
    }
 
-   Endpoint() {
+   Catalog() {
    }
-
 }

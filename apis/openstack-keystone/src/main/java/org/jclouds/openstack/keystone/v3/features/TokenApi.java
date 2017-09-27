@@ -23,7 +23,6 @@ import javax.inject.Named;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
@@ -36,16 +35,11 @@ import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.openstack.keystone.v2_0.domain.Endpoint;
 import org.jclouds.openstack.keystone.v2_0.domain.User;
 import org.jclouds.openstack.keystone.v2_0.filters.AuthenticateRequest;
-import org.jclouds.openstack.keystone.v3.binders.BindAuthToJsonPayload;
-import org.jclouds.openstack.keystone.v3.domain.PasswordCredentials;
+import org.jclouds.openstack.keystone.v3.domain.Region;
 import org.jclouds.openstack.keystone.v3.domain.Token;
-import org.jclouds.openstack.keystone.v3.parsers.ParseToToken;
 import org.jclouds.openstack.v2_0.services.Identity;
 import org.jclouds.rest.annotations.Fallback;
-import org.jclouds.rest.annotations.MapBinder;
-import org.jclouds.rest.annotations.PayloadParam;
 import org.jclouds.rest.annotations.RequestFilters;
-import org.jclouds.rest.annotations.ResponseParser;
 import org.jclouds.rest.annotations.SelectJson;
 
 /**
@@ -55,14 +49,6 @@ import org.jclouds.rest.annotations.SelectJson;
 @RequestFilters(AuthenticateRequest.class)
 @org.jclouds.rest.annotations.Endpoint(Identity.class)
 public interface TokenApi {
-
-   @Named("token:create")
-   @POST
-   @Path("/auth/tokens")
-//   @SelectJson("token")
-   @ResponseParser(ParseToToken.class)
-   @MapBinder(BindAuthToJsonPayload.class)
-   String create(@Nullable @PayloadParam("tenantName") String tenantName, PasswordCredentials passwordCredentials);
 
    /**
     * Validate a token and, if it is valid, return access information regarding the tenant (though not the service catalog)/
@@ -122,12 +108,25 @@ public interface TokenApi {
     * <p/>
     * NOTE: currently not working in openstack ( https://bugs.launchpad.net/keystone/+bug/988672 )
     *
-    * @return the set of endpoints
+    * @return the list of endpoints
     */
-   @Named("token:listEndpoints")
+   @Named("token:endpoints")
    @GET
    @SelectJson("endpoints")
    @Path("/endpoints")
    @Fallback(EmptyListOnNotFoundOr404.class)
    List<Endpoint> endpoints();
+
+   /**
+    * List all regions for a token
+    * <p/>
+    *
+    * @return the list of regions
+    */
+   @Named("token:regions")
+   @GET
+   @SelectJson("regions")
+   @Path("/regions")
+   @Fallback(EmptyListOnNotFoundOr404.class)
+   List<Region> regions();
 }

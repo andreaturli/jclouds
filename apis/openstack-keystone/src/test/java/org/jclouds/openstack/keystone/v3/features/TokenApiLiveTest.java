@@ -17,13 +17,10 @@
 package org.jclouds.openstack.keystone.v3.features;
 
 import org.jclouds.openstack.keystone.v2_0.domain.Endpoint;
-import org.jclouds.openstack.keystone.v3.domain.PasswordCredentials;
+import org.jclouds.openstack.keystone.v3.domain.Region;
 import org.jclouds.openstack.keystone.v3.domain.Token;
 import org.jclouds.openstack.keystone.v3.internal.BaseKeystoneApiLiveTest;
 import org.testng.annotations.Test;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 
 /**
  * Tests TokenApi
@@ -50,13 +47,12 @@ public class TokenApiLiveTest extends BaseKeystoneApiLiveTest {
       for (Endpoint endpoint : api().endpoints()) {
          System.out.println(endpoint);
       }
-
    }
 
-   public void testCreateWithPasswordAuthenticationWithUnscopedAuthorization() {
-      Iterable<String> splitter = Splitter.on(":").split(identity);
-      String token = api().create(Iterables.get(splitter, 0), PasswordCredentials.builder().username(Iterables.get(splitter, 1)).password(credential).build());
-      System.out.println(token);
+   public void testRegions() {
+      for (Region region : api().regions()) {
+         System.out.println(region);
+      }
    }
 
    /*

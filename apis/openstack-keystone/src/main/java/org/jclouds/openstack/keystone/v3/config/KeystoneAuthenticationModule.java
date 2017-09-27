@@ -174,9 +174,7 @@ public class KeystoneAuthenticationModule extends AbstractModule {
       return new Supplier<String>() {
          @Override
          public String get() {
-//            return supplier.get().getToken().getId();
-            // TODO
-            return supplier.get().user().id();
+            return supplier.get().id();
          }
       };
    }

@@ -28,28 +28,77 @@ import com.google.common.collect.ImmutableList;
 @AutoValue
 public abstract class Token {
 
+   @Nullable
+   public abstract String id();
+
    public abstract List<String> methods();
+
    @Nullable
    public abstract Date expiresAt();
+
    @Nullable
    public abstract Object extras();
+   @Nullable
+   public abstract List<Catalog> catalog();
+
    public abstract List<String> auditIds();
+
    public abstract User user();
+
    public abstract Date issuedAt();
 
-   @SerializedNames({"methods", "expires_at", "extras", "audit_ids", "user", "issued_at"})
-   public static Token create(List<String> methods,
-                              Date expiresAt,
-                              Object extras,
-                              List<String> auditIds,
-                              User user,
-                              Date issuedAt
+   @SerializedNames({"id", "methods", "expires_at", "extras", "catalog", "audit_ids", "user", "issued_at"})
+   private static Token create(
+           String id,
+           List<String> methods,
+           Date expiresAt,
+           Object extras,
+           List<Catalog> catalog,
+           List<String> auditIds,
+           User user,
+           Date issuedAt
    ) {
-      return new AutoValue_Token(methods == null ? ImmutableList.<String> of() : ImmutableList.copyOf(methods),
-              expiresAt, extras, auditIds == null ? ImmutableList.<String> of() : ImmutableList.copyOf(auditIds), user, issuedAt
-      );
+      return builder()
+              .id(id)
+              .methods(methods)
+              .expiresAt(expiresAt)
+              .extras(extras)
+              .catalog(catalog)
+              .auditIds(auditIds)
+              .user(user)
+              .issuedAt(issuedAt)
+              .build();
    }
 
-   Token() {
+   public abstract Builder toBuilder();
+
+   public static Builder builder() {
+      return new AutoValue_Token.Builder();
+   }
+
+   @AutoValue.Builder
+   public abstract static class Builder {
+
+      public abstract Builder id(String id);
+      public abstract Builder methods(List<String> methods);
+      public abstract Builder expiresAt(Date expiresAt);
+      public abstract Builder extras(Object extras);
+      public abstract Builder catalog(List<Catalog> catalog);
+      public abstract Builder auditIds(List<String> auditIds);
+      public abstract Builder user(User user);
+      public abstract Builder issuedAt(Date issuedAt);
+
+      abstract List<Catalog> catalog();
+      abstract List<String> methods();
+      abstract List<String> auditIds();
+
+      abstract Token autoBuild();
+
+      public Token build() {
+         return catalog(catalog() != null ? ImmutableList.copyOf(catalog()) : ImmutableList.<Catalog>of())
+                 .methods(methods() != null ? ImmutableList.copyOf(methods()) : ImmutableList.<String>of())
+                 .auditIds(auditIds() != null ? ImmutableList.copyOf(auditIds()) : ImmutableList.<String>of())
+                 .autoBuild();
+      }
    }
 }

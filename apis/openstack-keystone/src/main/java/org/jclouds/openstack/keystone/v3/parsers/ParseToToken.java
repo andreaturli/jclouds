@@ -19,27 +19,33 @@ package org.jclouds.openstack.keystone.v3.parsers;
 import javax.annotation.Nullable;
 
 import org.jclouds.http.HttpResponse;
+import org.jclouds.http.functions.ParseFirstJsonValueNamed;
+import org.jclouds.json.internal.GsonWrapper;
+import org.jclouds.openstack.keystone.v3.domain.Token;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.google.inject.TypeLiteral;
 
-public class ParseToToken implements Function<HttpResponse, String> {
+public class ParseToToken implements Function<HttpResponse, Token> {
 
-//   private final Injector injector;
+   private final Injector injector;
 
-//   @Inject public ParseToToken(Injector injector) {
-//      this.injector = injector;
-//   }
+   @Inject
+   public ParseToToken(Injector injector) {
+      this.injector = injector;
+   }
 
    @Nullable
    @Override
-   public String apply(@Nullable HttpResponse from) {
-      from.getHeaders();
-      from.getPayload();
-//      ParseFirstJsonValueNamed transformer = new ParseFirstJsonValueNamed(injector.getInstance(GsonWrapper.class),
-//              TypeLiteral.get(Token.class));
-//      Token token = (Token) transformer.apply(from);
+   public Token apply(@Nullable HttpResponse from) {
+      ParseFirstJsonValueNamed transformer = new ParseFirstJsonValueNamed(injector.getInstance(GsonWrapper.class),
+              TypeLiteral.get(Token.class), "token");
+      Token token = (Token) transformer.apply(from);
 //      return Token.create(ImmutableList.<String>of(), null, null, ImmutableList.<String>of(), User.create("", "", null, User.Domain.create("", "")), null);
-      return Iterables.getOnlyElement(from.getHeaders().get("X-Subject-Token"));
+      String xSubjectToken = Iterables.getOnlyElement(from.getHeaders().get("X-Subject-Token"));
+      return token.toBuilder().id(xSubjectToken).build();
    }
 }

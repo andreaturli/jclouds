@@ -16,40 +16,31 @@
  */
 package org.jclouds.openstack.keystone.v3.domain;
 
-import java.net.URI;
-import java.util.List;
-
 import org.jclouds.javax.annotation.Nullable;
 import org.jclouds.json.SerializedNames;
-import org.jclouds.openstack.v2_0.domain.Link;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
 
 @AutoValue
-public abstract class Endpoint {
+public abstract class Region {
 
    public abstract String id();
 
-   public abstract String region();
+   public abstract String name();
 
-   public abstract String regionId();
+   public abstract Link link();
 
-   @Nullable public abstract String serviceId();
+   @Nullable public abstract String parentRegionId();
 
-   public abstract URI url();
-
-   @Nullable public abstract Boolean enabled();
-
-   @Nullable public abstract List<Link> links();
-
-   @SerializedNames({"id", "region", "region_id", "service_id", "url", "enabled", "links"})
-   public static Endpoint create(String id, String region, String regionId, String serviceId, URI url, Boolean enabled, List<Link> links) {
-      return new AutoValue_Endpoint(id, region, regionId, serviceId, url, enabled,
-              links == null ? ImmutableList.<Link>of() : ImmutableList.copyOf(links));
+   @SerializedNames({"id", "description", "links", "parent_region_id"})
+   public static Region create(String id,
+                               String name,
+                               Link link,
+                               String parentRegionId
+   ) {
+      return new AutoValue_Region(id, name, link, parentRegionId);
    }
 
-   Endpoint() {
+   Region() {
    }
-
 }
