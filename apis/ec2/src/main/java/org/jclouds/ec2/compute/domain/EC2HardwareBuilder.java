@@ -260,7 +260,12 @@ public class EC2HardwareBuilder extends HardwareBuilder {
       virtualizationTypes(VirtualizationType.HVM);
       return this;
    }
-   
+
+   private EC2HardwareBuilder f1() {
+      virtualizationTypes(VirtualizationType.HVM, VirtualizationType.PARAVIRTUAL);
+      return this;
+   }
+
    private EC2HardwareBuilder g2() {
       virtualizationTypes(VirtualizationType.HVM);
       return this;
@@ -967,52 +972,15 @@ public class EC2HardwareBuilder extends HardwareBuilder {
    }
 
    /**
-    * @see InstanceType#R3_XLARGE
+    * @see InstanceType#F1_2XLARGE
     */
-   public static EC2HardwareBuilder r3_xlarge() {
-      return new EC2HardwareBuilder(InstanceType.R3_XLARGE).r3()
+   public static EC2HardwareBuilder f1_2xlarge() {
+      return new EC2HardwareBuilder(InstanceType.F1_2XLARGE).f1()
             .ram(31232)
             .processors(ImmutableList.of(new Processor(4.0, 2.5)))
             .volumes(ImmutableList.<Volume> of(
                   new VolumeBuilder().type(LOCAL).size(10.0f).device("/dev/sda1").bootDevice(true).durable(false).build(),
                   new VolumeBuilder().type(LOCAL).size(80.0f).device("/dev/sdb").bootDevice(false).durable(false).build()));
-   }
-
-   /**
-    * @see InstanceType#R3_2XLARGE
-    */
-   public static EC2HardwareBuilder r3_2xlarge() {
-      return new EC2HardwareBuilder(InstanceType.R3_2XLARGE).r3()
-            .ram(62464)
-            .processors(ImmutableList.of(new Processor(8.0, 2.5)))
-            .volumes(ImmutableList.<Volume> of(
-                  new VolumeBuilder().type(LOCAL).size(10.0f).device("/dev/sda1").bootDevice(true).durable(false).build(),
-                  new VolumeBuilder().type(LOCAL).size(160.0f).device("/dev/sdb").bootDevice(false).durable(false).build()));
-   }
-
-   /**
-    * @see InstanceType#R3_4XLARGE
-    */
-   public static EC2HardwareBuilder r3_4xlarge() {
-      return new EC2HardwareBuilder(InstanceType.R3_4XLARGE).r3()
-            .ram(124928)
-            .processors(ImmutableList.of(new Processor(16.0, 2.5)))
-            .volumes(ImmutableList.<Volume> of(
-                  new VolumeBuilder().type(LOCAL).size(10.0f).device("/dev/sda1").bootDevice(true).durable(false).build(),
-                  new VolumeBuilder().type(LOCAL).size(320.0f).device("/dev/sdb").bootDevice(false).durable(false).build()));
-   }
-
-   /**
-    * @see InstanceType#R3_8XLARGE
-    */
-   public static EC2HardwareBuilder r3_8xlarge() {
-      return new EC2HardwareBuilder(InstanceType.R3_8XLARGE).r3()
-            .ram(249856)
-            .processors(ImmutableList.of(new Processor(32.0, 2.5)))
-            .volumes(ImmutableList.<Volume> of(
-                  new VolumeBuilder().type(LOCAL).size(10.0f).device("/dev/sda1").bootDevice(true).durable(false).build(),
-                  new VolumeBuilder().type(LOCAL).size(320.0f).device("/dev/sdb").bootDevice(false).durable(false).build(),
-                  new VolumeBuilder().type(LOCAL).size(320.0f).device("/dev/sdc").bootDevice(false).durable(false).build()));
    }
 
    @SuppressWarnings("unchecked")

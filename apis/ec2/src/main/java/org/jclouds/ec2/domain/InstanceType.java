@@ -539,6 +539,67 @@ public class InstanceType {
     */
    public static final String I2_XLARGE = "i2.xlarge";
 
+
+   /**
+    * F1 2 Extra Large
+    * <ul>
+    *    <li>122 GiB of memory</li>
+    *    <li>8 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>1 SSD-based volume with 960 GiB of instance storage</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String F1_2XLARGE = "f1.2xlarge";
+
+   /**
+    * F1 16 Extra Large
+    * <ul>
+    *    <li>976 GiB of memory</li>
+    *    <li>64 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>4 SSD-based volume with 960 GiB of instance storage</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    *    </ul>
+    */
+   public static final String F1_16XLARGE = "f1.16xlarge";
+
+   /**
+    * G3 4 Extra Large
+    * <ul>
+    *    <li>122 GiB of memory</li>
+    *    <li>16 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String G3_4XLARGE = "g3.4xlarge";
+
+   /**
+    * G3 8 Extra Large
+    * <ul>
+    *    <li>244 GiB of memory</li>
+    *    <li>32 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String G3_8XLARGE = "g3.8xlarge";
+
+   /**
+    * G3 16 Extra Large
+    * <ul>
+    *    <li>488 GiB of memory</li>
+    *    <li>64 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String G3_16XLARGE = "g3.16xlarge";
+
    /**
     * I2 Double Extra Large
     * <ul>
@@ -575,6 +636,77 @@ public class InstanceType {
     */
    public static final String I2_8XLARGE = "i2.8xlarge";
 
+   /**
+    * P2 Extra Large
+    * <ul>
+    *    <li>61 GiB of memory</li>
+    *    <li>4 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String P2_XLARGE = "p2.xlarge";
+
+   /**
+    * P2 8 Extra Large
+    * <ul>
+    *    <li>488 GiB of memory</li>
+    *    <li>32 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String P2_8XLARGE = "p2.8xlarge";
+
+   /**
+    * P2 16 Extra Large
+    * <ul>
+    *    <li>732 GiB of memory</li>
+    *    <li>64 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String P2_16XLARGE = "p2.16xlarge";
+
+   /**
+    * P3 Extra Large
+    * <ul>
+    *    <li>61 GiB of memory</li>
+    *    <li>4 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String P3_2XLARGE = "p3.2xlarge";
+
+   /**
+    * P3 8 Extra Large
+    * <ul>
+    *    <li>244 GiB of memory</li>
+    *    <li>32 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String P3_8XLARGE = "p3.8xlarge";
+
+   /**
+    * P3 16 Extra Large
+    * <ul>
+    *    <li>488 GiB of memory</li>
+    *    <li>64 EC2 Compute Units (4 virtual cores)</li>
+    *    <li>EBS only</li>
+    *    <li>64-bit platform</li>
+    *    <li>Accelerated computing</li>
+    * </ul>
+    */
+   public static final String P3_16XLARGE = "p3.16xlarge";
 
    /**
     * R3 Large Memory Optimized
