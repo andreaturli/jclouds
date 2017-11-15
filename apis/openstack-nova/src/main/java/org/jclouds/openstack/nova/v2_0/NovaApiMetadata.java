@@ -92,7 +92,7 @@ public class NovaApiMetadata extends BaseHttpApiMetadata<NovaApi>  {
          .defaultModules(ImmutableSet.<Class<? extends Module>>builder()
 //                                     .add(AuthenticationApiModule.class)
 //                                     .add(KeystoneAuthenticationModule.class)
-//                                     .add(RegionModule.class)
+//                                     .add(KeystoneAuthenticationModule.RegionModule.class)
                                      .add(NovaParserModule.class)
                                      .add(NovaHttpApiModule.class)
                                      .add(NovaComputeServiceContextModule.class).build());

@@ -17,28 +17,29 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>jclouds-project</artifactId>
-    <groupId>org.apache.jclouds</groupId>
-    <version>2.1.0-SNAPSHOT</version>
-    <relativePath>../project/pom.xml</relativePath>
-  </parent>
-  <artifactId>jclouds-drivers-project</artifactId>
-  <packaging>pom</packaging>
-  <name>jclouds drivers project</name>
-  <modules>
-    <module>apachehc</module>
-    <module>bouncycastle</module>
-    <module>enterprise</module>
-    <module>gae</module>
-    <module>joda</module>
-    <module>jsch</module>
-    <module>log4j</module>
-    <module>netty</module>
-    <module>okhttp</module>
-    <module>slf4j</module>
-    <module>sshj</module>
-  </modules>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>jclouds-project</artifactId>
+        <groupId>org.apache.jclouds</groupId>
+        <version>2.1.0-SNAPSHOT</version>
+        <relativePath>../project/pom.xml</relativePath>
+    </parent>
+    <artifactId>jclouds-drivers-project</artifactId>
+    <packaging>pom</packaging>
+    <name>jclouds drivers project</name>
+    <modules>
+        <module>apachehc</module>
+        <module>bouncycastle</module>
+        <module>enterprise</module>
+        <module>gae</module>
+        <module>joda</module>
+        <module>jsch</module>
+        <module>log4j</module>
+        <module>netty</module>
+        <module>okhttp</module>
+        <module>slf4j</module>
+        <module>sshj</module>
+    </modules>
 </project>

@@ -17,42 +17,43 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <artifactId>jclouds-project</artifactId>
-    <groupId>org.apache.jclouds</groupId>
-    <version>2.1.0-SNAPSHOT</version>
-    <relativePath>../project/pom.xml</relativePath>
-  </parent>
-  <groupId>org.apache.jclouds.api</groupId>
-  <artifactId>jclouds-apis-project</artifactId>
-  <packaging>pom</packaging>
-  <name>jclouds apis project</name>
-  <modules>
-    <module>atmos</module>
-    <module>byon</module>
-    <module>chef</module>
-    <module>cloudstack</module>
-    <module>cloudwatch</module>
-    <module>docker</module>
-    <module>ec2</module>
-    <module>elasticstack</module>
-    <module>filesystem</module>
-    <module>oauth</module>
-    <module>openstack-cinder</module>
-    <module>openstack-keystone</module>
-    <module>openstack-nova-ec2</module>
-    <module>openstack-nova</module>
-    <module>openstack-swift</module>
-    <module>openstack-trove</module>
-    <module>rackspace-clouddns</module>
-    <module>rackspace-cloudfiles</module>
-    <module>rackspace-cloudidentity</module>
-    <module>rackspace-cloudloadbalancers</module>
-    <module>route53</module>
-    <module>s3</module>
-    <module>sqs</module>
-    <module>sts</module>
-  </modules>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>jclouds-project</artifactId>
+        <groupId>org.apache.jclouds</groupId>
+        <version>2.1.0-SNAPSHOT</version>
+        <relativePath>../project/pom.xml</relativePath>
+    </parent>
+    <groupId>org.apache.jclouds.api</groupId>
+    <artifactId>jclouds-apis-project</artifactId>
+    <packaging>pom</packaging>
+    <name>jclouds apis project</name>
+    <modules>
+        <module>atmos</module>
+        <module>byon</module>
+        <module>chef</module>
+        <module>cloudstack</module>
+        <module>cloudwatch</module>
+        <module>docker</module>
+        <module>ec2</module>
+        <module>elasticstack</module>
+        <module>filesystem</module>
+        <module>oauth</module>
+        <module>openstack-cinder</module>
+        <module>openstack-keystone</module>
+        <module>openstack-nova-ec2</module>
+        <module>openstack-nova</module>
+        <module>openstack-swift</module>
+        <module>openstack-trove</module>
+        <module>rackspace-clouddns</module>
+        <module>rackspace-cloudfiles</module>
+        <module>rackspace-cloudidentity</module>
+        <module>rackspace-cloudloadbalancers</module>
+        <module>route53</module>
+        <module>s3</module>
+        <module>sqs</module>
+        <module>sts</module>
+    </modules>
 </project>
