@@ -16,8 +16,6 @@
  */
 package org.jclouds.openstack.nova.v2_0.features;
 
-import com.google.common.base.Optional;
-
 import java.util.Map;
 
 import javax.inject.Named;
@@ -40,9 +38,8 @@ import org.jclouds.Fallbacks.VoidOnNotFoundOr404;
 import org.jclouds.collect.PagedIterable;
 import org.jclouds.fallbacks.MapHttp4xxCodesToExceptions;
 import org.jclouds.javax.annotation.Nullable;
-import org.jclouds.openstack.v2_0.domain.PaginatedCollection;
+import org.jclouds.openstack.keystone.filters.KeystoneAuthenticationFilter;
 import org.jclouds.openstack.keystone.v2_0.KeystoneFallbacks.EmptyPaginatedCollectionOnNotFoundOr404;
-import org.jclouds.openstack.keystone.v2_0.filters.AuthenticateRequest;
 import org.jclouds.openstack.nova.v2_0.binders.BindMetadataToJsonPayload;
 import org.jclouds.openstack.nova.v2_0.domain.RebootType;
 import org.jclouds.openstack.nova.v2_0.domain.Server;
@@ -54,6 +51,7 @@ import org.jclouds.openstack.nova.v2_0.functions.internal.ParseServerDetails;
 import org.jclouds.openstack.nova.v2_0.functions.internal.ParseServers;
 import org.jclouds.openstack.nova.v2_0.options.CreateServerOptions;
 import org.jclouds.openstack.nova.v2_0.options.RebuildServerOptions;
+import org.jclouds.openstack.v2_0.domain.PaginatedCollection;
 import org.jclouds.openstack.v2_0.domain.Resource;
 import org.jclouds.openstack.v2_0.options.PaginationOptions;
 import org.jclouds.rest.annotations.Fallback;
@@ -67,10 +65,12 @@ import org.jclouds.rest.annotations.Transform;
 import org.jclouds.rest.annotations.Unwrap;
 import org.jclouds.rest.binders.BindToJsonPayload;
 
+import com.google.common.base.Optional;
+
 /**
  * Provides access to the OpenStack Compute (Nova) Server API.
  */
-@RequestFilters(AuthenticateRequest.class)
+@RequestFilters(KeystoneAuthenticationFilter.class)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/servers")
 public interface ServerApi {
@@ -137,8 +137,7 @@ public interface ServerApi {
     * @param flavorRef
     *           reference to the flavor to use when creating the server
     * @param options
-    *           optional parameters to be passed into the server creation
-    *           request
+    *           optional parameters to be passed into the server creation request
     * @return the newly created server
     */
    @Named("server:create")
@@ -336,8 +335,7 @@ public interface ServerApi {
    @SelectJson("metadata")
    @Produces(MediaType.APPLICATION_JSON)
    @MapBinder(BindToJsonPayload.class)
-   Map<String, String> setMetadata(@PathParam("id") String id,
-         @PayloadParam("metadata") Map<String, String> metadata);
+   Map<String, String> setMetadata(@PathParam("id") String id, @PayloadParam("metadata") Map<String, String> metadata);
 
    /**
     * Update the metadata for a server.
@@ -409,14 +407,14 @@ public interface ServerApi {
    void deleteMetadata(@PathParam("id") String id, @PathParam("key") String key);
 
    /**
-    * Get usage information about the server such as CPU usage, Memory and IO.
-    * The information returned by this method is dependent on the hypervisor
-    * in use by the OpenStack installation and whether that hypervisor supports
-    * this method. More information can be found in the
-    * <a href="http://api.openstack.org/api-ref.html"> OpenStack API
-    * reference</a>. <br/>
-    * At the moment the returned response is a generic map. In future versions
-    * of OpenStack this might be subject to change.
+    * Get usage information about the server such as CPU usage, Memory and IO. The
+    * information returned by this method is dependent on the hypervisor in use by
+    * the OpenStack installation and whether that hypervisor supports this method.
+    * More information can be found in the
+    * <a href="http://api.openstack.org/api-ref.html"> OpenStack API reference</a>.
+    * <br/>
+    * At the moment the returned response is a generic map. In future versions of
+    * OpenStack this might be subject to change.
     *
     * @param id
     *           id of the server

@@ -35,14 +35,14 @@ import org.jclouds.Fallbacks.NullOnNotFoundOr404;
 import org.jclouds.Fallbacks.VoidOnNotFoundOr404;
 import org.jclouds.collect.PagedIterable;
 import org.jclouds.javax.annotation.Nullable;
-import org.jclouds.openstack.v2_0.domain.PaginatedCollection;
+import org.jclouds.openstack.keystone.filters.KeystoneAuthenticationFilter;
 import org.jclouds.openstack.keystone.v2_0.KeystoneFallbacks.EmptyPaginatedCollectionOnNotFoundOr404;
-import org.jclouds.openstack.keystone.v2_0.filters.AuthenticateRequest;
 import org.jclouds.openstack.nova.v2_0.binders.BindMetadataToJsonPayload;
 import org.jclouds.openstack.nova.v2_0.domain.Image;
 import org.jclouds.openstack.nova.v2_0.functions.internal.OnlyMetadataValueOrNull;
 import org.jclouds.openstack.nova.v2_0.functions.internal.ParseImageDetails;
 import org.jclouds.openstack.nova.v2_0.functions.internal.ParseImages;
+import org.jclouds.openstack.v2_0.domain.PaginatedCollection;
 import org.jclouds.openstack.v2_0.domain.Resource;
 import org.jclouds.openstack.v2_0.options.PaginationOptions;
 import org.jclouds.rest.annotations.Fallback;
@@ -57,7 +57,7 @@ import org.jclouds.rest.binders.BindToJsonPayload;
 /**
  * Provides access to the OpenStack Compute (Nova) Image API.
  */
-@RequestFilters(AuthenticateRequest.class)
+@RequestFilters(KeystoneAuthenticationFilter.class)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/images")
 public interface ImageApi {
@@ -117,7 +117,8 @@ public interface ImageApi {
    /**
     * Delete the specified image
     *
-    * @param id id of the image
+    * @param id
+    *           id of the image
     */
    @Named("image:delete")
    @DELETE
@@ -171,7 +172,8 @@ public interface ImageApi {
    @SelectJson("metadata")
    @Produces(MediaType.APPLICATION_JSON)
    @MapBinder(BindToJsonPayload.class)
-   Map<String, String> updateMetadata(@PathParam("id") String id, @PayloadParam("metadata") Map<String, String> metadata);
+   Map<String, String> updateMetadata(@PathParam("id") String id,
+         @PayloadParam("metadata") Map<String, String> metadata);
 
    /**
     * Update the metadata for an image.

@@ -29,6 +29,7 @@ import java.util.Properties;
 
 import org.jclouds.apis.ApiMetadata;
 import org.jclouds.compute.ComputeServiceContext;
+import org.jclouds.openstack.keystone.config.KeystoneModule;
 import org.jclouds.openstack.keystone.v2_0.config.CredentialTypes;
 import org.jclouds.openstack.nova.v2_0.compute.config.NovaComputeServiceContextModule;
 import org.jclouds.openstack.nova.v2_0.config.NovaHttpApiModule;
@@ -44,7 +45,7 @@ import com.google.inject.Module;
  * Implementation of {@link ApiMetadata} for Nova 2.0 API
  */
 @AutoService(ApiMetadata.class)
-public class NovaApiMetadata extends BaseHttpApiMetadata<NovaApi>  {
+public class NovaApiMetadata extends BaseHttpApiMetadata<NovaApi> {
 
    @Override
    public Builder toBuilder() {
@@ -70,7 +71,7 @@ public class NovaApiMetadata extends BaseHttpApiMetadata<NovaApi>  {
       properties.setProperty(AUTO_GENERATE_KEYPAIRS, "false");
       properties.setProperty(TIMEOUT_SECURITYGROUP_PRESENT, "500");
       // Keystone 1.1 expires tokens after 24 hours and allows renewal 1 hour
-      // before expiry by default.  We choose a value less than the latter
+      // before expiry by default. We choose a value less than the latter
       // since the former persists between jclouds invocations.
       properties.setProperty(PROPERTY_SESSION_INTERVAL, 30 * 60 + "");
       return properties;
@@ -79,23 +80,19 @@ public class NovaApiMetadata extends BaseHttpApiMetadata<NovaApi>  {
    public static class Builder extends BaseHttpApiMetadata.Builder<NovaApi, Builder> {
 
       protected Builder() {
-          id("openstack-nova")
-         .name("OpenStack Nova Diablo+ API")
-         .identityName("${tenantName}:${userName} or ${userName}, if your keystone supports a default tenant")
-         .credentialName("${password}")
-         .endpointName("Keystone base url ending in /v2.0/")
-         .documentation(URI.create("http://api.openstack.org/"))
-         .version("2")
-         .defaultEndpoint("http://localhost:5000/v2.0/")
-         .defaultProperties(NovaApiMetadata.defaultProperties())
-         .view(typeToken(ComputeServiceContext.class))
-         .defaultModules(ImmutableSet.<Class<? extends Module>>builder()
-//                                     .add(AuthenticationApiModule.class)
-//                                     .add(KeystoneAuthenticationModule.class)
-//                                     .add(KeystoneAuthenticationModule.RegionModule.class)
-                                     .add(NovaParserModule.class)
-                                     .add(NovaHttpApiModule.class)
-                                     .add(NovaComputeServiceContextModule.class).build());
+         id("openstack-nova").name("OpenStack Nova Diablo+ API")
+               .identityName("${tenantName}:${userName} or ${userName}, if your keystone supports a default tenant")
+               .credentialName("${password}").endpointName("Keystone base url ending in /v2.0/")
+               .documentation(URI.create("http://api.openstack.org/")).version("2")
+               .defaultEndpoint("http://localhost:5000/v2.0/").defaultProperties(NovaApiMetadata.defaultProperties())
+               .view(typeToken(ComputeServiceContext.class))
+               .defaultModules(ImmutableSet.<Class<? extends Module>> builder()
+                     // .add(AuthenticationApiModule.class)
+                     // .add(KeystoneAuthenticationModule.class)
+                     .add(KeystoneModule.class)
+                     // .add(RegionModule.class)
+                     .add(NovaParserModule.class).add(NovaHttpApiModule.class)
+                     .add(NovaComputeServiceContextModule.class).build());
       }
 
       @Override

@@ -31,8 +31,8 @@ import org.jclouds.Fallbacks.NullOnNotFoundOr404;
 import org.jclouds.Fallbacks.VoidOnNotFoundOr404;
 import org.jclouds.collect.PagedIterable;
 import org.jclouds.javax.annotation.Nullable;
+import org.jclouds.openstack.keystone.filters.KeystoneAuthenticationFilter;
 import org.jclouds.openstack.keystone.v2_0.KeystoneFallbacks.EmptyPaginatedCollectionOnNotFoundOr404;
-import org.jclouds.openstack.keystone.v2_0.filters.AuthenticateRequest;
 import org.jclouds.openstack.nova.v2_0.domain.Flavor;
 import org.jclouds.openstack.nova.v2_0.functions.internal.ParseFlavorDetails;
 import org.jclouds.openstack.nova.v2_0.functions.internal.ParseFlavors;
@@ -52,7 +52,8 @@ import org.jclouds.rest.annotations.WrapWith;
  * <p/>
  *
  */
-@RequestFilters(AuthenticateRequest.class)
+//@RequestFilters(AuthenticateRequest.class)
+@RequestFilters(KeystoneAuthenticationFilter.class)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("/flavors")
 public interface FlavorApi {
