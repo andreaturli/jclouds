@@ -69,6 +69,12 @@ public final class KeystoneProperties {
     */
    public static final String SERVICE_TYPE = "jclouds.keystone.service-type";
 
+   public static final String KEYSTONE_VERSION = "jclouds.keystone.version";
+
+   public static final String KEYSTONE_VERSION_2 = "2";
+   public static final String KEYSTONE_VERSION_3 = "3";
+
+
    private KeystoneProperties() {
       throw new AssertionError("intentionally unimplemented");
    }

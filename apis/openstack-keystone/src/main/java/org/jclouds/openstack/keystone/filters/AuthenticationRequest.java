@@ -22,29 +22,14 @@ import org.jclouds.openstack.keystone.config.IdentityService;
 import org.jclouds.openstack.v2_0.reference.AuthHeaders;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 
-public class AuthenticationRequestFlow implements KeystoneAuthenticationFilter {
+public class AuthenticationRequest implements KeystoneAuthenticationFilter {
 
-   // private final Supplier<Credentials> credentialsSupplier;
-   // private final String apiVersion;
-   // private final IdentityService.Factory factory;
-   // private final AuthenticationApi api;
-
-   public static final String KEYSTONE_VERSION = "2";
    private final IdentityService identityService;
 
    @Inject
-   AuthenticationRequestFlow(@Named(KEYSTONE_VERSION) IdentityService identityService) {
+   AuthenticationRequest(IdentityService identityService) {
       this.identityService = identityService;
-      // @Provider Supplier<Credentials> credentialsSupplier, //, @ApiVersion String
-      // apiVersion,
-      // AuthenticationApi api) {
-      // IdentityService.Factory factory) {
-      // this.credentialsSupplier = credentialsSupplier;
-      // this.apiVersion = apiVersion;
-      // this.factory = factory;
-      // this.api = api;
    }
 
    @Override

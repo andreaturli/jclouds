@@ -17,6 +17,7 @@
 package org.jclouds.openstack.keystone.v2_0;
 
 import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.CREDENTIAL_TYPE;
+import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.KEYSTONE_VERSION;
 import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.SERVICE_TYPE;
 
 import java.net.URI;
@@ -59,6 +60,7 @@ public class KeystoneApiMetadata extends BaseHttpApiMetadata<KeystoneApi> {
       Properties properties = BaseHttpApiMetadata.defaultProperties();
       properties.setProperty(CREDENTIAL_TYPE, CredentialTypes.PASSWORD_CREDENTIALS);
       properties.setProperty(SERVICE_TYPE, ServiceType.IDENTITY);
+      properties.setProperty(KEYSTONE_VERSION, "3");
       return properties;
    }
 

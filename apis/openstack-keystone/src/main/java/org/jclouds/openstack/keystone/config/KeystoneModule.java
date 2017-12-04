@@ -17,17 +17,15 @@
 package org.jclouds.openstack.keystone.config;
 
 import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.CREDENTIAL_TYPE;
-import static org.jclouds.rest.config.BinderUtils.bindHttpApi;
+import static org.jclouds.openstack.keystone.v2_0.config.KeystoneProperties.KEYSTONE_VERSION;
 
 import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import com.google.inject.PrivateModule;
-import org.jclouds.openstack.keystone.filters.AuthenticationRequestFlow;
+import org.jclouds.openstack.keystone.filters.AuthenticationRequest;
 import org.jclouds.openstack.keystone.filters.KeystoneAuthenticationFilter;
-import org.jclouds.openstack.keystone.v2_0.AuthenticationApi;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.inject.AbstractModule;
@@ -35,32 +33,28 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.Provides;
-import com.google.inject.name.Names;
 
 public final class KeystoneModule extends AbstractModule {
 
    @Override
    protected void configure() {
-////      bindHttpApi(binder(), AuthenticationApi.class);
       bind(KeystoneCredentialType.class).toProvider(CredentialTypeFromPropertyOrDefault.class);
-//      install(new FactoryModuleBuilder()
-//              .implement(IdentityService.class, KeystoneV2IdentityService.class)
-//              .build(IdentityService.Factory.class));
+      bind(KeystoneVersions.class).toProvider(KeystoneVersionFromPropertyOrDefault.class);
 
-      install(new PrivateModule() {
-         @Override
-         protected void configure() {
-            // bind IdentityService annotated as English to IdentityService PRIVATELY
-//                bind(IdentityService.class).annotatedWith(English.class).to(IdentityService.class);
-            bind(IdentityService.class).annotatedWith(Names.named("2")).to(IdentityService.class);
+      install(new KeystoneV2Module());
+      install(new KeystoneV3Module());
+   }
 
-            // expose IdentityService annotated as English GLOBALLY. this fulfills injection point (1)
-            expose(IdentityService.class).annotatedWith(Names.named("2")); //.annotatedWith(English.class);
+   @Singleton
+   public static class KeystoneVersionFromPropertyOrDefault implements Provider<KeystoneVersions> {
+      @Inject(optional = true)
+      @Named(KEYSTONE_VERSION)
+      String keystoneVersion = KeystoneVersions.V3.toString();
 
-            bindHttpApi(binder(), AuthenticationApi.class);
-            bind(AuthenticationStrategy.class).to(KeystoneV2AuthenticationStrategy.class);
-         }
-      });
+      @Override
+      public KeystoneVersions get() {
+         return KeystoneVersions.fromValue(keystoneVersion);
+      }
    }
 
    @Singleton
@@ -79,8 +73,8 @@ public final class KeystoneModule extends AbstractModule {
    @Singleton
    protected Map<KeystoneCredentialType, Class<? extends KeystoneAuthenticationFilter>> authenticationRequestMap() {
       return ImmutableMap.<KeystoneCredentialType, Class<? extends KeystoneAuthenticationFilter>> of(
-            KeystoneCredentialType.PASSWORD_CREDENTIALS, AuthenticationRequestFlow.class,
-            KeystoneCredentialType.API_ACCESS_KEY_CREDENTIALS, AuthenticationRequestFlow.class);
+            KeystoneCredentialType.PASSWORD_CREDENTIALS, AuthenticationRequest.class,
+            KeystoneCredentialType.API_ACCESS_KEY_CREDENTIALS, AuthenticationRequest.class);
    }
 
    @Provides

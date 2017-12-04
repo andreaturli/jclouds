@@ -16,28 +16,21 @@
  */
 package org.jclouds.openstack.keystone.config;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import static com.google.common.base.CaseFormat.LOWER_CAMEL;
+import static com.google.common.base.CaseFormat.UPPER_UNDERSCORE;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-public class IdentityService {
+public enum KeystoneVersions {
 
-    @Inject
-    @Named("v2")
-    AuthenticationStrategy authenticationStrategyV2;
+   V2,
 
-    @Inject
-    @Named("v3")
-    AuthenticationStrategy authenticationStrategyV3;
+   V3;
 
-    @Inject KeystoneVersions keystoneVersion;
+   @Override public String toString() {
+      return UPPER_UNDERSCORE.to(LOWER_CAMEL, name());
+   }
 
-    public String authenticate() {
-        if (keystoneVersion == KeystoneVersions.V2) {
-            return authenticationStrategyV2.authenticate();
-        } else if (keystoneVersion == KeystoneVersions.V3) {
-            return authenticationStrategyV3.authenticate();
-        } else {
-            throw new IllegalStateException("Can't find authentication strategy for " + keystoneVersion);
-        }
-    }
+   public static KeystoneVersions fromValue(String keystoneVersion) {
+      return valueOf(LOWER_CAMEL.to(UPPER_UNDERSCORE, checkNotNull(keystoneVersion, "keystoneVersion")));
+   }
 }
