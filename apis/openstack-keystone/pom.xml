@@ -84,7 +84,28 @@
       <artifactId>auto-service</artifactId>
       <optional>true</optional>
     </dependency>
+    <dependency>
+      <groupId>com.google.auto.value</groupId>
+      <artifactId>auto-value</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+    <!-- Disabling error-prone compiler due to: https://github.com/google/error-prone/issues/711
+         The fix is only available in error-prone versions that do not support Java 7 -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <source>${maven.compile.source}</source>
+          <target>${maven.compile.target}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
   <profiles>
     <profile>
