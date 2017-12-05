@@ -30,21 +30,15 @@ public abstract class Token {
 
    @Nullable
    public abstract String id();
-
    public abstract List<String> methods();
-
    @Nullable
    public abstract Date expiresAt();
-
    @Nullable
    public abstract Object extras();
    @Nullable
    public abstract List<Catalog> catalog();
-
    public abstract List<String> auditIds();
-
    public abstract User user();
-
    public abstract Date issuedAt();
 
    @SerializedNames({"id", "methods", "expires_at", "extras", "catalog", "audit_ids", "user", "issued_at"})

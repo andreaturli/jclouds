@@ -16,6 +16,8 @@
  */
 package org.jclouds.openstack.keystone.config;
 
-interface AuthenticationStrategy {
-    String authenticate();
+public interface AuthenticationStrategy {
+
+   String authenticate();
+
 }

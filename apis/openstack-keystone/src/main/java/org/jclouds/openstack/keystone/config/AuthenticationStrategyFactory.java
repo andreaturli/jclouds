@@ -14,23 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jclouds.openstack.keystone.filters;
+package org.jclouds.openstack.keystone.config;
 
-import org.jclouds.http.HttpException;
-import org.jclouds.http.HttpRequest;
-import org.jclouds.openstack.keystone.config.IdentityService;
-import org.jclouds.openstack.v2_0.reference.AuthHeaders;
+import javax.inject.Named;
 
-import com.google.inject.Inject;
+public interface AuthenticationStrategyFactory {
+   @Named("v2")
+   AuthenticationStrategy createV2();
 
-public class AuthenticationRequest implements KeystoneAuthenticationFilter {
-
-   @Inject private IdentityService identityService;
-
-   @Override
-   public HttpRequest filter(HttpRequest request) throws HttpException {
-      String tokenId = identityService.authenticate();
-      return request.toBuilder().addHeader(AuthHeaders.AUTH_TOKEN, tokenId).build();
-   }
-
+   @Named("v3")
+   AuthenticationStrategy createV3();
 }

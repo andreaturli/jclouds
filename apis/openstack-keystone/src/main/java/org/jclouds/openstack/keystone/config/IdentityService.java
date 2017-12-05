@@ -17,27 +17,22 @@
 package org.jclouds.openstack.keystone.config;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 public class IdentityService {
 
-    @Inject
-    @Named("v2")
-    AuthenticationStrategy authenticationStrategyV2;
+//    @Inject private AuthenticationStrategyFactory factory;
 
-    @Inject
-    @Named("v3")
-    AuthenticationStrategy authenticationStrategyV3;
-
-    @Inject KeystoneVersions keystoneVersion;
+//    @Inject KeystoneVersions keystoneVersion;
+    @Inject AuthenticationStrategy strategy;
 
     public String authenticate() {
-        if (keystoneVersion == KeystoneVersions.V2) {
-            return authenticationStrategyV2.authenticate();
-        } else if (keystoneVersion == KeystoneVersions.V3) {
-            return authenticationStrategyV3.authenticate();
-        } else {
-            throw new IllegalStateException("Can't find authentication strategy for " + keystoneVersion);
-        }
+        return strategy.authenticate();
+//        if (keystoneVersion == KeystoneVersions.V2) {
+//            return factory.createV2().authenticate();
+//        } else if (keystoneVersion == KeystoneVersions.V3) {
+//            return factory.createV3().authenticate();
+//        } else {
+//            throw new IllegalStateException("Can't find authentication strategy for " + keystoneVersion);
+//        }
     }
 }
