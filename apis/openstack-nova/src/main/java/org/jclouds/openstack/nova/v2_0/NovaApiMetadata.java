@@ -87,11 +87,7 @@ public class NovaApiMetadata extends BaseHttpApiMetadata<NovaApi> {
                .defaultEndpoint("http://localhost:5000/v2.0/").defaultProperties(NovaApiMetadata.defaultProperties())
                .view(typeToken(ComputeServiceContext.class))
                .defaultModules(ImmutableSet.<Class<? extends Module>> builder()
-//                      .add(AuthenticationApiModule.class)
-//                      .add(KeystoneAuthenticationModule.class)
-//                       .add(KeystoneModule.class)
                        .add(KeystoneFactoryModule.class)
-//                      .add(KeystoneAuthenticationModule.RegionModule.class)
                        .add(NovaParserModule.class)
                        .add(NovaHttpApiModule.class)
                      .add(NovaComputeServiceContextModule.class).build());
