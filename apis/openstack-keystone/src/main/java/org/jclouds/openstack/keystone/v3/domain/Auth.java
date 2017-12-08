@@ -37,7 +37,7 @@ public abstract class Auth {
    public abstract static class Identity {
       
       public abstract List<String> methods();
-      public abstract TokenAuth token();
+      @Nullable public abstract TokenAuth token();
       public abstract PasswordAuth password();
 
       @SerializedNames({ "methods", "token", "password" })

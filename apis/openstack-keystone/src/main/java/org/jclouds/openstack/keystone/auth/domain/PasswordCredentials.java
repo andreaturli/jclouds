@@ -30,7 +30,7 @@ public abstract class PasswordCredentials {
    public abstract String username();
    public abstract String password();
 
-   public static PasswordCredentials create(String username, String password, String tenantId, String tenantName) {
+   public static PasswordCredentials create(String username, String password) {
       return builder().username(username).password(password).build();
    }
 

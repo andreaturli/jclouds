@@ -26,7 +26,7 @@ import com.google.common.base.Supplier;
 import com.google.inject.ImplementedBy;
 import com.google.inject.assistedinject.Assisted;
 
-@ImplementedBy(RegionIdToAdminURIFromAccessForTypeAndVersion.class)
+@ImplementedBy(RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion.class)
 public interface RegionIdToAdminURISupplier extends Supplier<Map<String, Supplier<URI>>> {
 
    interface Factory {

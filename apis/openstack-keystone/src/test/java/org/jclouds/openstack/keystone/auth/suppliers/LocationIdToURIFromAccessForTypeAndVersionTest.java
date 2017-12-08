@@ -28,7 +28,7 @@ import javax.inject.Singleton;
 import org.jclouds.location.Provider;
 import org.jclouds.openstack.keystone.auth.domain.AuthInfo;
 import org.jclouds.openstack.keystone.catalog.ServiceEndpoint;
-import org.jclouds.openstack.keystone.catalog.suppliers.LocationIdToURIFromAccessForTypeAndVersion;
+import org.jclouds.openstack.keystone.catalog.suppliers.LocationIdToURIFromServiceEndpointsForTypeAndVersion;
 import org.jclouds.openstack.keystone.v2_0.catalog.V2ServiceCatalog;
 import org.jclouds.openstack.keystone.v2_0.parse.ParseAccessTest;
 import org.jclouds.openstack.keystone.v2_0.parse.ParseRackspaceAccessTest;
@@ -47,7 +47,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 @Test(groups = "unit", testName = "LocationIdToURIFromAccessForTypeAndVersionTest")
 public class LocationIdToURIFromAccessForTypeAndVersionTest {
-   private final LocationIdToURIFromAccessForTypeAndVersion.Factory factory = Guice.createInjector(
+   private final LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory factory = Guice.createInjector(
          new AbstractModule() {
 
             @Override
@@ -55,9 +55,9 @@ public class LocationIdToURIFromAccessForTypeAndVersionTest {
                bindConstant().annotatedWith(Provider.class).to("openstack-keystone");
                bind(new TypeLiteral<Supplier<URI>>() {
                }).annotatedWith(Provider.class).toInstance(Suppliers.ofInstance(URI.create("https://identity")));
-               install(new FactoryModuleBuilder().implement(LocationIdToURIFromAccessForTypeAndVersion.class,
-                     LocationIdToURIFromAccessForTypeAndVersion.class).build(
-                     LocationIdToURIFromAccessForTypeAndVersion.Factory.class));
+               install(new FactoryModuleBuilder().implement(LocationIdToURIFromServiceEndpointsForTypeAndVersion.class,
+                     LocationIdToURIFromServiceEndpointsForTypeAndVersion.class).build(
+                     LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory.class));
                // We test against a 2.0 service catalog but it is OK for the purpose of this test
                bind(new TypeLiteral<Supplier<List<ServiceEndpoint>>>() {
                }).to(V2ServiceCatalog.class).in(Scopes.SINGLETON);
@@ -69,7 +69,7 @@ public class LocationIdToURIFromAccessForTypeAndVersionTest {
                return Suppliers.<AuthInfo> ofInstance(new ParseAccessTest().expected());
             }
 
-         }).getInstance(LocationIdToURIFromAccessForTypeAndVersion.Factory.class);
+         }).getInstance(LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory.class);
 
    public void testRegionUnmatchesOkWhenNoVersionIdSet() {
       assertEquals(
@@ -91,7 +91,7 @@ public class LocationIdToURIFromAccessForTypeAndVersionTest {
                   URI.create("https://az-3.region-a.geo-1.compute.hpcloudsvc.com/v2/3456")));
    }
 
-   private final LocationIdToURIFromAccessForTypeAndVersion.Factory raxFactory = Guice.createInjector(
+   private final LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory raxFactory = Guice.createInjector(
          new AbstractModule() {
 
             @Override
@@ -99,9 +99,9 @@ public class LocationIdToURIFromAccessForTypeAndVersionTest {
                bindConstant().annotatedWith(Provider.class).to("rackspace");
                bind(new TypeLiteral<Supplier<URI>>() {
                }).annotatedWith(Provider.class).toInstance(Suppliers.ofInstance(URI.create("https://identity")));
-               install(new FactoryModuleBuilder().implement(LocationIdToURIFromAccessForTypeAndVersion.class,
-                     LocationIdToURIFromAccessForTypeAndVersion.class).build(
-                     LocationIdToURIFromAccessForTypeAndVersion.Factory.class));
+               install(new FactoryModuleBuilder().implement(LocationIdToURIFromServiceEndpointsForTypeAndVersion.class,
+                     LocationIdToURIFromServiceEndpointsForTypeAndVersion.class).build(
+                     LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory.class));
                // We test against a 2.0 service catalog but it is OK for the purpose of this test
                bind(new TypeLiteral<Supplier<List<ServiceEndpoint>>>() {
                }).to(V2ServiceCatalog.class).in(Scopes.SINGLETON);
@@ -112,7 +112,7 @@ public class LocationIdToURIFromAccessForTypeAndVersionTest {
             public Supplier<AuthInfo> provide() {
                return Suppliers.<AuthInfo> ofInstance(new ParseRackspaceAccessTest().expected());
             }
-         }).getInstance(LocationIdToURIFromAccessForTypeAndVersion.Factory.class);
+         }).getInstance(LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory.class);
 
    @Test(expectedExceptions = NoSuchElementException.class)
    public void testWhenNotInList() {

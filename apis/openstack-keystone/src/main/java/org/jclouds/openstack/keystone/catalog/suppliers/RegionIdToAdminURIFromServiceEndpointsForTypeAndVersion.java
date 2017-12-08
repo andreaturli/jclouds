@@ -21,26 +21,24 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.jclouds.javax.annotation.Nullable;
-import org.jclouds.location.suppliers.RegionIdToURISupplier;
 import org.jclouds.openstack.keystone.catalog.ServiceEndpoint;
-import org.jclouds.openstack.keystone.catalog.functions.ServiceEndpointResolutionStrategy;
+import org.jclouds.openstack.keystone.catalog.functions.AdminEndpointResolutionStrategy;
 import org.jclouds.openstack.keystone.catalog.functions.ServiceEndpointToRegion;
 
 import com.google.common.base.Supplier;
 import com.google.inject.assistedinject.Assisted;
 
-public class RegionIdToURIFromAccessForTypeAndVersion extends LocationIdToURIFromAccessForTypeAndVersion implements
-      RegionIdToURISupplier {
-
+public class RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion extends LocationIdToURIFromServiceEndpointsForTypeAndVersion implements
+      RegionIdToAdminURISupplier {
    @Inject
-   public RegionIdToURIFromAccessForTypeAndVersion(Supplier<List<ServiceEndpoint>> serviceEndpoints,
-         ServiceEndpointResolutionStrategy resolveServiceEndpointURI, ServiceEndpointToRegion serviceEndpointToRegion,
-         @Assisted("apiType") String apiType, @Nullable @Assisted("apiVersion") String apiVersion) {
+   public RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion(Supplier<List<ServiceEndpoint>> serviceEndpoints,
+                                                                  AdminEndpointResolutionStrategy resolveServiceEndpointURI, ServiceEndpointToRegion serviceEndpointToRegion,
+                                                                  @Assisted("apiType") String apiType, @Nullable @Assisted("apiVersion") String apiVersion) {
       super(serviceEndpoints, resolveServiceEndpointURI, serviceEndpointToRegion, apiType, apiVersion);
    }
 
    @Override
    public String toString() {
-      return "regionIdToURIFromAccessForTypeAndVersion(" + apiType + ", " + apiVersion + ")";
+      return "regionIdToAdminURIFromServiceEndpointsForTypeAndVersion(" + apiType + ", " + apiVersion + ")";
    }
 }

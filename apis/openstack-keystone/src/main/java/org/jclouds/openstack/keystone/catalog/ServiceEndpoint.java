@@ -32,11 +32,11 @@ import com.google.common.base.Enums;
 @AutoValue
 public abstract class ServiceEndpoint {
 
-   public static enum Interface {
+   public enum Interface {
       PUBLIC, ADMIN, INTERNAL, UNRECOGNIZED;
 
       public static Interface fromValue(String iface) {
-         return Enums.getIfPresent(Interface.class, iface.toLowerCase()).or(UNRECOGNIZED);
+         return Enums.getIfPresent(Interface.class, iface.toUpperCase()).or(UNRECOGNIZED);
       }
    }
 

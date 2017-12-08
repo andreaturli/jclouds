@@ -16,26 +16,35 @@
  */
 package org.jclouds.openstack.keystone.v3.parsers;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import javax.inject.Singleton;
+
+import com.google.common.collect.Iterables;
 import org.jclouds.http.HttpResponse;
 import org.jclouds.http.functions.ParseFirstJsonValueNamed;
 import org.jclouds.json.internal.GsonWrapper;
 import org.jclouds.openstack.keystone.v3.domain.Token;
 
-import com.google.common.collect.Iterables;
+import com.google.common.base.Function;
 import com.google.inject.Inject;
 import com.google.inject.TypeLiteral;
 
-public class ParseToken extends ParseFirstJsonValueNamed<Token> {
+@Singleton
+public class ParseTokenFromHttpResponse implements Function<HttpResponse, Token> {
+   private final ParseFirstJsonValueNamed<Token> parser;
 
    @Inject
-   ParseToken(GsonWrapper json, TypeLiteral<Token> type, String... nameChoices) {
-      super(json, type, nameChoices);
+   public ParseTokenFromHttpResponse(GsonWrapper gsonView) {
+      this.parser = new ParseFirstJsonValueNamed<Token>(gsonView, TypeLiteral.get(Token.class), "token");
    }
 
-   @Override
-   public Token apply(HttpResponse from) {
-      Token token = super.apply(from);
-      String xSubjectToken = Iterables.getOnlyElement(from.getHeaders().get("X-Subject-Token"));
-      return token.toBuilder().id(xSubjectToken).build();
+   public Token apply(HttpResponse response) {
+      checkNotNull(response, "response");
+      Token toParse = parser.apply(response);
+      checkNotNull(toParse, "parsed result from %s", response);
+      String xSubjectToken = Iterables.getOnlyElement(response.getHeaders().get("X-Subject-Token"));
+      return toParse.toBuilder().id(xSubjectToken).build();
    }
+
 }

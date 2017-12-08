@@ -21,24 +21,26 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.jclouds.javax.annotation.Nullable;
+import org.jclouds.location.suppliers.RegionIdToURISupplier;
 import org.jclouds.openstack.keystone.catalog.ServiceEndpoint;
-import org.jclouds.openstack.keystone.catalog.functions.AdminEndpointResolutionStrategy;
+import org.jclouds.openstack.keystone.catalog.functions.ServiceEndpointResolutionStrategy;
 import org.jclouds.openstack.keystone.catalog.functions.ServiceEndpointToRegion;
 
 import com.google.common.base.Supplier;
 import com.google.inject.assistedinject.Assisted;
 
-public class RegionIdToAdminURIFromAccessForTypeAndVersion extends LocationIdToURIFromAccessForTypeAndVersion implements
-      RegionIdToAdminURISupplier {
+public class RegionIdToURIFromServiceEndpointsForTypeAndVersion extends LocationIdToURIFromServiceEndpointsForTypeAndVersion implements
+      RegionIdToURISupplier {
+
    @Inject
-   public RegionIdToAdminURIFromAccessForTypeAndVersion(Supplier<List<ServiceEndpoint>> serviceEndpoints,
-         AdminEndpointResolutionStrategy resolveServiceEndpointURI, ServiceEndpointToRegion serviceEndpointToRegion,
-         @Assisted("apiType") String apiType, @Nullable @Assisted("apiVersion") String apiVersion) {
+   public RegionIdToURIFromServiceEndpointsForTypeAndVersion(Supplier<List<ServiceEndpoint>> serviceEndpoints,
+                                                             ServiceEndpointResolutionStrategy resolveServiceEndpointURI, ServiceEndpointToRegion serviceEndpointToRegion,
+                                                             @Assisted("apiType") String apiType, @Nullable @Assisted("apiVersion") String apiVersion) {
       super(serviceEndpoints, resolveServiceEndpointURI, serviceEndpointToRegion, apiType, apiVersion);
    }
 
    @Override
    public String toString() {
-      return "regionIdToAdminURIFromAccessForTypeAndVersion(" + apiType + ", " + apiVersion + ")";
+      return "regionIdToURIFromAccessForTypeAndVersion(" + apiType + ", " + apiVersion + ")";
    }
 }

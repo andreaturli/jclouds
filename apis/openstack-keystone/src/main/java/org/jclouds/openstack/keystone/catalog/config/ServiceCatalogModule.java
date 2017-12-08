@@ -34,10 +34,10 @@ import org.jclouds.location.suppliers.all.RegionToProvider;
 import org.jclouds.location.suppliers.derived.RegionIdsFromRegionIdToURIKeySet;
 import org.jclouds.location.suppliers.implicit.FirstRegion;
 import org.jclouds.openstack.keystone.catalog.ServiceEndpoint;
-import org.jclouds.openstack.keystone.catalog.suppliers.LocationIdToURIFromAccessForTypeAndVersion;
-import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURIFromAccessForTypeAndVersion;
+import org.jclouds.openstack.keystone.catalog.suppliers.LocationIdToURIFromServiceEndpointsForTypeAndVersion;
+import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion;
 import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURISupplier;
-import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToURIFromAccessForTypeAndVersion;
+import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToURIFromServiceEndpointsForTypeAndVersion;
 import org.jclouds.openstack.keystone.config.KeystoneProperties;
 import org.jclouds.openstack.keystone.v2_0.catalog.V2ServiceCatalog;
 import org.jclouds.openstack.keystone.v3.catalog.V3ServiceCatalog;
@@ -88,14 +88,14 @@ public class ServiceCatalogModule extends AbstractModule {
    public static class ProviderModule extends AbstractModule {
       @Override
       protected void configure() {
-         install(new FactoryModuleBuilder().build(LocationIdToURIFromAccessForTypeAndVersion.Factory.class));
+         install(new FactoryModuleBuilder().build(LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory.class));
       }
 
       @Provides
       @Singleton
       protected final Supplier<URI> provideZoneIdToURISupplierForApiVersion(
             @Named(KeystoneProperties.SERVICE_TYPE) String serviceType, @ApiVersion String apiVersion,
-            LocationIdToURIFromAccessForTypeAndVersion.Factory factory) {
+            LocationIdToURIFromServiceEndpointsForTypeAndVersion.Factory factory) {
          return getLastValueInMap(factory.createForApiTypeAndVersion(serviceType, apiVersion));
       }
 
@@ -115,9 +115,9 @@ public class ServiceCatalogModule extends AbstractModule {
       @Override
       protected void configure() {
          install(new FactoryModuleBuilder().implement(RegionIdToURISupplier.class,
-               RegionIdToURIFromAccessForTypeAndVersion.class).build(RegionIdToURISupplier.Factory.class));
+               RegionIdToURIFromServiceEndpointsForTypeAndVersion.class).build(RegionIdToURISupplier.Factory.class));
          install(new FactoryModuleBuilder().implement(RegionIdToAdminURISupplier.class,
-               RegionIdToAdminURIFromAccessForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
+               RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
          // Dynamically build the region list as opposed to from properties
          bind(RegionIdsSupplier.class).to(RegionIdsFromRegionIdToURIKeySet.class);
          bind(ImplicitLocationSupplier.class).to(FirstRegion.class).in(Scopes.SINGLETON);

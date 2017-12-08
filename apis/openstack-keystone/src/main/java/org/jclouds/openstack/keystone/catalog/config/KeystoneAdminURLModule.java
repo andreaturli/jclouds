@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 import javax.inject.Singleton;
 
 import org.jclouds.location.Provider;
-import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURIFromAccessForTypeAndVersion;
+import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion;
 import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURISupplier;
 import org.jclouds.openstack.v2_0.ServiceType;
 import org.jclouds.openstack.v2_0.services.Identity;
@@ -41,7 +41,7 @@ public class KeystoneAdminURLModule extends AbstractModule {
    @Override
    protected void configure() {
       install(new FactoryModuleBuilder().implement(RegionIdToAdminURISupplier.class,
-               RegionIdToAdminURIFromAccessForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
+               RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
    }
 
    /**

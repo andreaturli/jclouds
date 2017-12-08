@@ -43,12 +43,12 @@ import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-public class LocationIdToURIFromAccessForTypeAndVersion implements Supplier<Map<String, Supplier<URI>>> {
+public class LocationIdToURIFromServiceEndpointsForTypeAndVersion implements Supplier<Map<String, Supplier<URI>>> {
 
    public interface Factory {
       
-      LocationIdToURIFromAccessForTypeAndVersion createForApiTypeAndVersion(@Assisted("apiType") String apiType,
-            @Nullable @Assisted("apiVersion") String apiVersion) throws NoSuchElementException;
+      LocationIdToURIFromServiceEndpointsForTypeAndVersion createForApiTypeAndVersion(@Assisted("apiType") String apiType,
+                                                                                      @Nullable @Assisted("apiVersion") String apiVersion) throws NoSuchElementException;
    }
 
    @Resource
@@ -61,9 +61,9 @@ public class LocationIdToURIFromAccessForTypeAndVersion implements Supplier<Map<
    protected final String apiVersion;
 
    @Inject
-   LocationIdToURIFromAccessForTypeAndVersion(Supplier<List<ServiceEndpoint>> serviceEndpoints,
-         ServiceEndpointResolutionStrategy resolveServiceEndpointURI, ServiceEndpointToRegion serviceEndpointToRegion,
-         @Assisted("apiType") String apiType, @Nullable @Assisted("apiVersion") String apiVersion) {
+   LocationIdToURIFromServiceEndpointsForTypeAndVersion(Supplier<List<ServiceEndpoint>> serviceEndpoints,
+                                                        ServiceEndpointResolutionStrategy resolveServiceEndpointURI, ServiceEndpointToRegion serviceEndpointToRegion,
+                                                        @Assisted("apiType") String apiType, @Nullable @Assisted("apiVersion") String apiVersion) {
       this.serviceEndpoints = serviceEndpoints;
       this.resolveServiceEndpointURI = resolveServiceEndpointURI;
       this.serviceEndpointToRegion = serviceEndpointToRegion;
@@ -124,6 +124,6 @@ public class LocationIdToURIFromAccessForTypeAndVersion implements Supplier<Map<
 
    @Override
    public String toString() {
-      return "locationIdToURIFromAccessForTypeAndVersion(" + apiType + ", " + apiVersion + ")";
+      return "locationIdToURIFromServiceEndpointsForTypeAndVersion(" + apiType + ", " + apiVersion + ")";
    }
 }

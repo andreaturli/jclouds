@@ -28,7 +28,7 @@ import javax.inject.Singleton;
 import org.jclouds.location.Provider;
 import org.jclouds.openstack.keystone.auth.domain.AuthInfo;
 import org.jclouds.openstack.keystone.catalog.ServiceEndpoint;
-import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURIFromAccessForTypeAndVersion;
+import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion;
 import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToAdminURISupplier;
 import org.jclouds.openstack.keystone.v2_0.catalog.V2ServiceCatalog;
 import org.jclouds.openstack.keystone.v2_0.parse.ParseAccessTest;
@@ -56,7 +56,7 @@ public class RegionIdToAdminURIFromAccessForTypeAndVersionTest {
          bind(new TypeLiteral<Supplier<URI>>() {
          }).annotatedWith(Provider.class).toInstance(Suppliers.ofInstance(URI.create("https://identity")));
          install(new FactoryModuleBuilder().implement(RegionIdToAdminURISupplier.class,
-                  RegionIdToAdminURIFromAccessForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
+                  RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
          // We test against a 2.0 service catalog but it is OK for the purpose of this test
          bind(new TypeLiteral<Supplier<List<ServiceEndpoint>>>() {
          }).to(V2ServiceCatalog.class).in(Scopes.SINGLETON);
@@ -88,7 +88,7 @@ public class RegionIdToAdminURIFromAccessForTypeAndVersionTest {
          bind(new TypeLiteral<Supplier<URI>>() {
          }).annotatedWith(Provider.class).toInstance(Suppliers.ofInstance(URI.create("https://identity")));
          install(new FactoryModuleBuilder().implement(RegionIdToAdminURISupplier.class,
-                  RegionIdToAdminURIFromAccessForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
+                  RegionIdToAdminURIFromServiceEndpointsForTypeAndVersion.class).build(RegionIdToAdminURISupplier.Factory.class));
          // We test against a 2.0 service catalog but it is OK for the purpose of this test
          bind(new TypeLiteral<Supplier<List<ServiceEndpoint>>>() {
          }).to(V2ServiceCatalog.class).in(Scopes.SINGLETON);

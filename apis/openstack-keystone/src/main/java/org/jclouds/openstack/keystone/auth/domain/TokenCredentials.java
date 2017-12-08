@@ -28,7 +28,7 @@ public abstract class TokenCredentials {
 
    public abstract String id();
 
-   public static TokenCredentials create(String id, String secretKey, String tenantId, String tenantName) {
+   public static TokenCredentials create(String id) {
       return builder().id(id).build();
    }
 

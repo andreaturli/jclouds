@@ -28,7 +28,7 @@ import org.jclouds.location.Provider;
 import org.jclouds.location.suppliers.RegionIdToURISupplier;
 import org.jclouds.openstack.keystone.auth.domain.AuthInfo;
 import org.jclouds.openstack.keystone.catalog.ServiceEndpoint;
-import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToURIFromAccessForTypeAndVersion;
+import org.jclouds.openstack.keystone.catalog.suppliers.RegionIdToURIFromServiceEndpointsForTypeAndVersion;
 import org.jclouds.openstack.keystone.v2_0.catalog.V2ServiceCatalog;
 import org.jclouds.openstack.keystone.v2_0.parse.ParseAccessTest;
 import org.jclouds.openstack.keystone.v2_0.parse.ParseRackspaceAccessTest;
@@ -55,7 +55,7 @@ public class RegionIdToURIFromAccessForTypeAndVersionTest {
          bind(new TypeLiteral<Supplier<URI>>() {
          }).annotatedWith(Provider.class).toInstance(Suppliers.ofInstance(URI.create("https://identity")));
          install(new FactoryModuleBuilder().implement(RegionIdToURISupplier.class,
-                  RegionIdToURIFromAccessForTypeAndVersion.class).build(
+                  RegionIdToURIFromServiceEndpointsForTypeAndVersion.class).build(
                   RegionIdToURISupplier.Factory.class));
          // We test against a 2.0 service catalog but it is OK for the purpose of this test
          bind(new TypeLiteral<Supplier<List<ServiceEndpoint>>>() {
@@ -91,7 +91,7 @@ public class RegionIdToURIFromAccessForTypeAndVersionTest {
          bind(new TypeLiteral<Supplier<URI>>() {
          }).annotatedWith(Provider.class).toInstance(Suppliers.ofInstance(URI.create("https://identity")));
          install(new FactoryModuleBuilder().implement(RegionIdToURISupplier.class,
-                  RegionIdToURIFromAccessForTypeAndVersion.class).build(
+                  RegionIdToURIFromServiceEndpointsForTypeAndVersion.class).build(
                   RegionIdToURISupplier.Factory.class));
          // We test against a 2.0 service catalog but it is OK for the purpose of this test
          bind(new TypeLiteral<Supplier<List<ServiceEndpoint>>>() {

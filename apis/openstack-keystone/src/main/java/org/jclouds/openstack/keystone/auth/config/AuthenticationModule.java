@@ -99,7 +99,7 @@ public class AuthenticationModule extends AbstractModule {
    }
 
    protected Map<String, Function<Credentials, AuthInfo>> authenticationMethods(Injector i) {
-      Builder<Function<Credentials, AuthInfo>> fns = ImmutableSet.<Function<Credentials, AuthInfo>> builder();
+      Builder<Function<Credentials, AuthInfo>> fns = ImmutableSet.builder();
       fns.add(i.getInstance(AuthenticatePasswordCredentials.class));
       fns.add(i.getInstance(AuthenticateApiAccessKeyCredentials.class));
       fns.add(i.getInstance(AuthenticateTokenCredentials.class));
@@ -121,7 +121,7 @@ public class AuthenticationModule extends AbstractModule {
    // at 11 hours for now.
    @Provides
    @Singleton
-   public final LoadingCache<Credentials, AuthInfo> provideAccessCache(Function<Credentials, AuthInfo> getAccess) {
+   public final LoadingCache<Credentials, AuthInfo> provideAuthInfoCache(Function<Credentials, AuthInfo> getAccess) {
       return CacheBuilder.newBuilder().expireAfterWrite(11, TimeUnit.HOURS).build(CacheLoader.from(getAccess));
    }
 
@@ -130,7 +130,7 @@ public class AuthenticationModule extends AbstractModule {
    // http://code.google.com/p/guava-libraries/issues/detail?id=872
    @Provides
    @Singleton
-   protected final Supplier<AuthInfo> provideAccessSupplier(final LoadingCache<Credentials, AuthInfo> cache,
+   protected final Supplier<AuthInfo> provideAuthInfoSupplier(final LoadingCache<Credentials, AuthInfo> cache,
          @Provider final Supplier<Credentials> creds) {
       return new Supplier<AuthInfo>() {
          @Override

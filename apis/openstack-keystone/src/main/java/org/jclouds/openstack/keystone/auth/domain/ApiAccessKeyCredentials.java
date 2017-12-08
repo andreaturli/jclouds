@@ -29,7 +29,7 @@ public abstract class ApiAccessKeyCredentials {
    public abstract String accessKey();
    public abstract String secretKey();
 
-   public static ApiAccessKeyCredentials create(String accessKey, String secretKey, String tenantId, String tenantName) {
+   public static ApiAccessKeyCredentials create(String accessKey, String secretKey) {
       return builder().accessKey(accessKey).secretKey(secretKey).build();
    }
 
