@@ -16,16 +16,16 @@
  */
 package org.jclouds.compute;
 
-import static org.jclouds.scriptbuilder.domain.Statements.exec;
-import static org.jclouds.scriptbuilder.domain.Statements.extractTargzAndFlattenIntoDirectory;
-import static org.jclouds.scriptbuilder.domain.Statements.literal;
-
-import java.net.URI;
-
 import org.jclouds.scriptbuilder.domain.Statement;
 import org.jclouds.scriptbuilder.domain.StatementList;
 import org.jclouds.scriptbuilder.statements.java.InstallJDK;
 import org.jclouds.scriptbuilder.statements.login.AdminAccess;
+
+import java.net.URI;
+
+import static org.jclouds.scriptbuilder.domain.Statements.exec;
+import static org.jclouds.scriptbuilder.domain.Statements.extractTargzAndFlattenIntoDirectory;
+import static org.jclouds.scriptbuilder.domain.Statements.literal;
 
 public class JettyStatements {
 
@@ -45,14 +45,15 @@ public class JettyStatements {
             AdminAccess.builder().adminUsername("web").build(),
             InstallJDK.fromOpenJDK(),
             authorizePortInIpTables(),
-            extractTargzAndFlattenIntoDirectory(JETTY_URL, JETTY_HOME),
-            exec("chown -R web " + JETTY_HOME));
+            exec("sudo mkdir -p " + JETTY_HOME),
+            exec("chown -R web " + JETTY_HOME),
+            extractTargzAndFlattenIntoDirectory(JETTY_URL, JETTY_HOME));
    }
 
    private static Statement authorizePortInIpTables() {
       return new StatementList(
-            exec("iptables -I INPUT 1 -p tcp --dport " + port + " -j ACCEPT"),
-            exec("iptables-save"));
+            exec("sudo iptables -I INPUT 1 -p tcp --dport " + port + " -j ACCEPT"),
+            exec("sudo iptables-save"));
    }
    
    public static Statement start() {

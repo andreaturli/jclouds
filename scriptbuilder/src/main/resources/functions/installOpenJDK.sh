@@ -53,6 +53,8 @@ function installOpenJDK() {
           PACKAGE=$(apt-cache search --names-only '^openjdk-.-jdk$' | sort -r | cut -d' ' -f1 | head -1) && \
           [ ! -z "$PACKAGE" ] && \
           {  apt-get-install $PACKAGE-headless || apt-get-install $PACKAGE; }
+    elif which yum &> /dev/null; then
+        yum install -y java-devel
     elif which rpm &> /dev/null; then
       PACKAGE=$(repoquery --qf='%{name}' --pkgnarrow=available 'java-*-openjdk-devel' | sort -r | head -1) && \
         [ ! -z "$PACKAGE" ] && \
