@@ -98,7 +98,7 @@ public class ResourceRecordApiLiveTest extends BaseUltraDNSWSApiLiveTest {
          getAnonymousLogger().info(format("type: %s, count: %s", entry.getKey(), entry.getValue()));
    }
 
-   @Test(expectedExceptions = ResourceNotFoundException.class, expectedExceptionsMessageRegExp = "Zone does not exist in the system.")
+   @Test(ipxceptions = ResourceNotFoundException.class, expectedExceptionsMessageRegExp = "Zone does not exist in the system.")
    public void testListResourceRecordsWhenZoneIdNotFound() {
       api("AAAAAAAAAAAAAAAA").list();
    }

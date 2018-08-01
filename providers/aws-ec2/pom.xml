@@ -17,7 +17,8 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.jclouds</groupId>
@@ -36,11 +37,11 @@
     <test.aws.credential>FIXME_CREDENTIAL</test.aws.credential>
     <test.aws-ec2.endpoint>https://ec2.us-east-1.amazonaws.com</test.aws-ec2.endpoint>
     <test.aws-ec2.api-version>2012-06-01</test.aws-ec2.api-version>
-    <test.aws-ec2.build-version />
+    <test.aws-ec2.build-version/>
     <test.aws-ec2.identity>${test.aws.identity}</test.aws-ec2.identity>
     <test.aws-ec2.credential>${test.aws.credential}</test.aws-ec2.credential>
 
-    <test.aws-ec2.template />
+    <test.aws-ec2.template/>
     <!-- Active EBS template as of 9/25/2013 -->
     <test.aws-ec2.ebs-template>hardwareId=m1.small,imageId=us-east-1/ami-53b1ff3a</test.aws-ec2.ebs-template>
     <!-- Windows_Server-2008-R2 with WinRM enabled (setup instructions at http://www.frontiertown.co.uk/2011/12/overthere-control-windows-from-java/) -->
@@ -124,6 +125,34 @@
       <optional>true</optional>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Generate services -->
+      <plugin>
+        <artifactId>maven-invoker-plugin</artifactId>
+        <!-- https://issues.apache.org/jira/browse/MINVOKER-224 prevents an upgrade to 3.0.1 -->
+        <version>2.0.0</version>
+        <executions>
+          <execution>
+            <id>generate-services</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <pom>gen/pom.xml</pom>
+              <goals>
+                <goal>compile</goal>
+                <goal>exec:java</goal>
+              </goals>
+              <streamLogs>true</streamLogs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <profiles>
     <profile>
