@@ -30,7 +30,7 @@ import static org.jclouds.scriptbuilder.domain.Statements.literal;
 public class JettyStatements {
 
    public static final URI JETTY_URL = URI.create(System.getProperty("test.jetty-url",
-         "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.12.v20180830/jetty-distribution-9.4.12.v20180830.tar.gz));
+         "https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-distribution/9.4.12.v20180830/jetty-distribution-9.4.12.v20180830.tar.gz"));
 
    public static final String JETTY_HOME = "/usr/local/jetty";
    

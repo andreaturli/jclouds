@@ -16,6 +16,46 @@
  */
 package org.jclouds.http;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.io.ByteSource;
+import com.google.inject.Injector;
+import com.google.inject.Module;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.jclouds.ContextBuilder;
+import org.jclouds.io.ByteStreams2;
+import org.jclouds.utils.TestUtils;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.google.common.base.Throwables.getStackTraceAsString;
 import static com.google.common.hash.Hashing.md5;
 import static com.google.common.io.BaseEncoding.base64;
@@ -30,44 +70,6 @@ import static org.jclouds.Constants.PROPERTY_TRUST_ALL_CERTS;
 import static org.jclouds.providers.AnonymousProviderMetadata.forApiOnEndpoint;
 import static org.jclouds.util.Closeables2.closeQuietly;
 import static org.jclouds.util.Strings2.toStringAndClose;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.jclouds.ContextBuilder;
-import org.jclouds.io.ByteStreams2;
-import org.jclouds.utils.TestUtils;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Optional;
-import org.testng.annotations.Parameters;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.io.ByteSource;
-import com.google.inject.Injector;
-import com.google.inject.Module;
 
 public abstract class BaseJettyTest {
 
@@ -230,17 +232,29 @@ public abstract class BaseJettyTest {
       server2 = new Server();
       server2.setHandler(server2Handler);
 
-      SslSelectChannelConnector ssl_connector = new SslSelectChannelConnector();
-      ssl_connector.setPort(testPort + 1);
-      ssl_connector.setMaxIdleTime(30000);
-      SslContextFactory ssl = ssl_connector.getSslContextFactory();
-      ssl.setKeyStorePath("src/test/resources/test.jks");
-      ssl.setKeyStorePassword("jclouds");
-      ssl.setTrustStore("src/test/resources/test.jks");
-      ssl.setTrustStorePassword("jclouds");
+      int httpPort = testPort;
+      int httpsPort = testPort + 1;
+      final Server server = new Server();
+      final HttpConfiguration httpConfiguration = new HttpConfiguration();
+      httpConfiguration.setSecureScheme("https");
+      httpConfiguration.setSecurePort(httpsPort);
 
-      server2.setConnectors(new Connector[] { ssl_connector });
+      final ServerConnector http = new ServerConnector(server,
+            new HttpConnectionFactory(httpConfiguration));
+      http.setPort(httpPort);
+      server2.addConnector(http);
 
+      String keyStorePath = "src/test/resources/test.jks";
+      String keyStorePassword = "jclouds";
+      final SslContextFactory sslContextFactory = new SslContextFactory(keyStorePath);
+      sslContextFactory.setKeyStorePassword(keyStorePassword);
+      final HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
+      httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
+      final ServerConnector httpsConnector = new ServerConnector(server,
+            new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+            new HttpConnectionFactory(httpsConfiguration));
+      httpsConnector.setPort(httpsPort);
+      server2.addConnector(httpsConnector);
       server2.start();
    }
 
